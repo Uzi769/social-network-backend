@@ -14,50 +14,39 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "post")
+@Table(name = "comment")
 @Builder
-public class Post {
+public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @NotNull
     private Long id;
 
+    @NotEmpty
+    @Column(name = "body")
+    private String body;
+
     @Column(name = "date")
     private LocalDate date;
 
-    @Column(name = "topic")
-    private String topic;
-
-    @NotEmpty
-    @Column(name = "content")
-    private String content;
+    @OneToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
-    @JoinColumn(name = "user_id")
-    private UserEntity author;
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "post_tag",
-            joinColumns = {@JoinColumn(name = "post_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "tag_id", referencedColumnName = "id")})
-    private List<Tag> tags;
-
-    @OneToMany(mappedBy = "post")
-    private List<Comment> comments;
+    @JoinColumn(name = "post_id")
+    private Post post;
 }
