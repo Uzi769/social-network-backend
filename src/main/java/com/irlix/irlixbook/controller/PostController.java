@@ -1,8 +1,8 @@
 package com.irlix.irlixbook.controller;
 
-import com.irlix.irlixbook.service.PostService;
-import com.irlix.irlixbook.dao.model.PostInput;
-import com.irlix.irlixbook.dao.model.PostOutput;
+import com.irlix.irlixbook.service.post.PostService;
+import com.irlix.irlixbook.dao.model.post.PostInput;
+import com.irlix.irlixbook.dao.model.post.PostOutput;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,6 +38,4 @@ public class PostController {
     public void create(@RequestBody @Valid PostInput postInput) {
         postService.save(postInput);
     }
-
-
 }

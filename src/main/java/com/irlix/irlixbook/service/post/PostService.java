@@ -1,7 +1,7 @@
-package com.irlix.irlixbook.service;
+package com.irlix.irlixbook.service.post;
 
-import com.irlix.irlixbook.dao.model.PostInput;
-import com.irlix.irlixbook.dao.model.PostOutput;
+import com.irlix.irlixbook.dao.model.post.PostInput;
+import com.irlix.irlixbook.dao.model.post.PostOutput;
 
 import java.util.List;
 
