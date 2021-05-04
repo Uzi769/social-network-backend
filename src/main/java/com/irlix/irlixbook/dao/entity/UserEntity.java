@@ -66,6 +66,10 @@ public class UserEntity {
     @Column(name = "direction")
     private String direction;
 
+    @NotEmpty
+    @Column(name = "technologies")
+    private String technologies;
+
     @Column(name = "phone")
     @Pattern(regexp = "(^\\+?[78][-\\(]?\\d{3}\\)?-?\\d{3}-?\\d{2}-?\\d{2}$)")
     private String phone;
@@ -86,7 +90,6 @@ public class UserEntity {
 
     @Column(name = "is_delete")
     private boolean delete;
-    
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_role",
