@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,17 +19,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Getter
@@ -40,7 +36,7 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "user_entity")
 @Builder
-public class UserEntity {
+public class UserEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,13 +49,6 @@ public class UserEntity {
 
     @Column(name = "birth_date")
     private LocalDate birthDate;
-public class UserEntity implements UserDetails {
-
-    @Id
-    @GeneratedValue(generator = "UUID")
-    @ToString.Include
-    @NotNull
-    private UUID id;
 
     @NotEmpty
     @Column(name = "password")
@@ -101,7 +90,8 @@ public class UserEntity implements UserDetails {
     private List<Role> roles;
 
     @OneToMany(mappedBy = "author")
-    private List<Post> bookings;
+    private List<Post> posts;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
