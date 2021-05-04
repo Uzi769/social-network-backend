@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -39,6 +40,7 @@ public class Comment {
     @Column(name = "body")
     private String body;
 
+    @CreationTimestamp
     @Column(name = "date")
     private LocalDate date;
 
