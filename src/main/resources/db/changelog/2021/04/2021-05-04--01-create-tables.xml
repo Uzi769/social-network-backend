@@ -134,9 +134,4 @@
                                  constraintName="user_direction_direction_id"
                                  referencedTableName="direction" referencedColumnNames="id"/>
     </changeSet>
-
-
-
-
-
 </databaseChangeLog>
