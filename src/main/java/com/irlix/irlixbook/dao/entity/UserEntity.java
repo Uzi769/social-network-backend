@@ -48,15 +48,15 @@ public class UserEntity {
     private UUID id;
 
     @NotEmpty
-    @Column(name = "password")
-    private String password;
-
-    @NotEmpty
     @Column(name = "full_name")
     private String fullName;
 
     @Column(name = "birth_date")
     private LocalDate birthDate;
+
+    @NotEmpty
+    @Column(name = "password")
+    private String password;
 
     @NotEmpty
     @Column(name = "city")
@@ -86,9 +86,7 @@ public class UserEntity {
 
     @Column(name = "is_delete")
     private boolean delete;
-
-    @Column(name = "minutes_for_booking")
-    private Integer minutesForBooking;
+    
 
     @Column(name = "password_active")
     private boolean passwordActive;
