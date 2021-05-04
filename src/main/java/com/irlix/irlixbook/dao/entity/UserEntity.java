@@ -5,10 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -27,11 +23,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -93,7 +85,15 @@ public class UserEntity {
             inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
     private List<Role> roles;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_direction",
+            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "direction_id", referencedColumnName = "id")})
+    private List<Direction> directions;
+
+    @OneToOne(mappedBy = "user")
+    private Comment comment;
+
     @OneToMany(mappedBy = "author")
     private List<Post> posts;
-
 }
