@@ -1,5 +1,8 @@
-package com.irlix.irlixbook.dao.entity;
+package com.irlix.irlixbook.dao.model;
 
+import com.irlix.irlixbook.dao.entity.Comment;
+import com.irlix.irlixbook.dao.entity.Tag;
+import com.irlix.irlixbook.dao.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,37 +32,10 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "post")
 @Builder
-public class Post {
+public class PostInput {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull
-    private Long id;
-
-    @CreationTimestamp
-    @Column(name = "date")
-    private LocalDate date;
-
-    @Column(name = "topic")
     private String topic;
-
-    @NotEmpty
-    @Column(name = "content")
     private String content;
-
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
-    @JoinColumn(name = "user_id")
-    private UserEntity author;
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "post_tag",
-            joinColumns = {@JoinColumn(name = "post_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "tag_id", referencedColumnName = "id")})
-    private List<Tag> tags;
-
-    @OneToMany(mappedBy = "post")
-    private List<Comment> comments;
+    private Long author_id;
 }
