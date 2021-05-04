@@ -1,6 +1,5 @@
 package com.irlix.irlixbook.config.controller;
 
-import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.model.user.UserEntityOutput;
 import com.irlix.irlixbook.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,15 +10,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/users")
@@ -68,10 +64,10 @@ public class UserController {
     })
 //    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER'})")
     @GetMapping(value = "/info/{id}")
-    public UserEntity getUserEntity(
+    public UserEntityOutput getUserEntity(
             @Parameter(description = "User to get all info. Cannot be null or empty.", required = true,
-            schema = @Schema(implementation = Long.class))
-                                        @PathVariable("id") Long id) {
+                    schema = @Schema(implementation = Long.class))
+            @PathVariable("id") Long id) {
         return userService.getUserEntity(id);
     }
 }

@@ -3,7 +3,6 @@ package com.irlix.irlixbook.config.controller;
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
 import com.irlix.irlixbook.dao.model.auth.AuthResponse;
 import com.irlix.irlixbook.service.user.UserService;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;

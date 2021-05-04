@@ -30,15 +30,17 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final RoleRepository roleRepository;
     private final ConversionService conversionService;
     private final PasswordEncoder passwordEncoder;
-    private final String USER_ROLE = "USER";
+    private static final String USER_ROLE = "USER";
 
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public UserEntity getUserEntity(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> {
-            log.error("User not found by id " + id + ". Class UserServiceImpl, method getUserEntity");
-            return new NotFoundException("User not found by id" + id);
-        });
+    public UserEntityOutput getUserEntity(Long id) {
+        return userRepository.findById(id)
+                .map(userEntity -> conversionService.convert(userEntity, UserEntityOutput.class))
+                .orElseThrow(() -> {
+                    log.error("User not found by id " + id + ". Class UserServiceImpl, method getUserEntity");
+                    return new NotFoundException("User not found by id" + id);
+                });
     }
 
     @Override
@@ -89,7 +91,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         UserDetails userDetails = userRepository.findByEmail(email).orElseThrow(() -> {
             log.error("User not find by email " + email);
-            return new UsernameNotFoundException("User not find by email " + email);});
+            return new UsernameNotFoundException("User not find by email " + email);
+        });
         userDetails.getAuthorities();
         return userDetails;
     }

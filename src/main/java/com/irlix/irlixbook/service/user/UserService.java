@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface UserService {
 
-    UserEntity getUserEntity(Long id);
+    UserEntityOutput getUserEntity(Long id);
 
     void deleteUser(Long id);
 
