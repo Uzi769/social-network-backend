@@ -3,11 +3,14 @@ package com.irlix.irlixbook.service.user;
 import com.irlix.irlixbook.config.security.utils.JwtProvider;
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
 import com.irlix.irlixbook.dao.entity.UserEntity;
+import com.irlix.irlixbook.dao.model.PageableInput;
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
 import com.irlix.irlixbook.dao.model.user.UserEntityOutput;
+import com.irlix.irlixbook.dao.model.user.UserInputSearch;
 import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.RoleRepository;
 import com.irlix.irlixbook.repository.UserRepository;
+import com.irlix.irlixbook.repository.summary.UserRepositorySummary;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.convert.ConversionService;
@@ -19,7 +22,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Service
@@ -28,6 +33,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final UserRepositorySummary userRepositorySummary;
     private final ConversionService conversionService;
     private final PasswordEncoder passwordEncoder;
     private static final String USER_ROLE = "USER";
@@ -79,6 +85,21 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public UserEntityOutput getUserInfo() {
         UserEntity user = SecurityContextUtils.getUserFromContext();
         return conversionService.convert(user, UserEntityOutput.class);
+    }
+
+    @Override
+    public List<UserEntityOutput> searchWithPagination(UserInputSearch dto, PageableInput pageable) {
+        List<UserEntity> userEntityList = userRepositorySummary.search(dto, pageable);
+        return userEntityList.stream()
+                .map(userEntity -> conversionService.convert(userEntity, UserEntityOutput.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserEntityOutput> getUserEntityList() {
+        return userRepository.findAll().stream()
+                .map(userEntity -> conversionService.convert(userEntity, UserEntityOutput.class))
+                .collect(Collectors.toList());
     }
 
     @Override

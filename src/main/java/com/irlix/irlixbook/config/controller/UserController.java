@@ -1,6 +1,8 @@
 package com.irlix.irlixbook.config.controller;
 
+import com.irlix.irlixbook.dao.model.PageableInput;
 import com.irlix.irlixbook.dao.model.user.UserEntityOutput;
+import com.irlix.irlixbook.dao.model.user.UserInputSearch;
 import com.irlix.irlixbook.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -13,9 +15,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -70,4 +75,34 @@ public class UserController {
             @PathVariable("id") Long id) {
         return userService.getUserEntity(id);
     }
+
+    @Operation(summary = "Get user information", description = "Returns single user information", tags = {"user"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful operation"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "403", description = "Forbidden. You can't get users information"),
+            @ApiResponse(responseCode = "404", description = "User information not found")
+    })
+//    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER'})")
+    @GetMapping(value = "/all")
+    public List<UserEntityOutput> getUserEntityList() {
+        return userService.getUserEntityList();
+    }
+
+    @Operation(summary = "Find users", tags = {"user"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful operation"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "403", description = "Forbidden. You can't get users via search"),
+            @ApiResponse(responseCode = "404", description = "Users not found")
+    })
+//    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping(value = "/search")
+    public List<UserEntityOutput> searchUser(
+            @Parameter(description = "User search parameters. Cannot be null or empty.", required = true,
+                    schema = @Schema(implementation = UserInputSearch.class))
+                    UserInputSearch dto, PageableInput pageable) {
+        return userService.searchWithPagination(dto, pageable);
+    }
+
 }
