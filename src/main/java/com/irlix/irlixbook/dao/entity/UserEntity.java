@@ -94,6 +94,6 @@ public class UserEntity {
     private List<Role> roles;
 
     @OneToMany(mappedBy = "author")
-    private List<Post> bookings;
+    private List<Post> posts;
 
 }
