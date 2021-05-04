@@ -14,6 +14,12 @@ public class UserEntityConverterToOutputForUser implements Converter<UserEntity,
                 .email(userEntity.getEmail())
                 .fullName(userEntity.getFullName())
                 .phone(userEntity.getPhone())
+                .anotherPhone(userEntity.getAnotherPhone())
+                .birthDate(userEntity.getBirthDate())
+                .city(userEntity.getCity())
+                .skype(userEntity.getSkype())
+                .technologies(userEntity.getTechnologies())
+                .telegram(userEntity.getTelegram())
                 .build();
     }
 }

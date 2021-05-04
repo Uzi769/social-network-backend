@@ -15,8 +15,8 @@ import java.util.Date;
 @UtilityClass
 public class JwtProvider {
 
-    @Value("${secretkey}")
-    private String jwtSecret;
+//    @Value("${secretkey}")
+    private String jwtSecret = "secretkey";
 
     public String generateToken(String login) {
         Date date = Date.from(LocalDate.now().plusDays(15).atStartOfDay(ZoneId.systemDefault()).toInstant());

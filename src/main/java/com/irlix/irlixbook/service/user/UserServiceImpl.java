@@ -69,7 +69,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (passwordEncoder.matches(password, userEntity.getPassword()) && !userEntity.isDelete()) {
             return JwtProvider.generateToken(userEntity.getEmail());
         } else {
-            throw new NotFoundException("User not active");
+            throw new NotFoundException("Wrong password");
         }
     }
 
@@ -85,6 +85,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    @Transactional
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         UserDetails userDetails = userRepository.findByEmail(email).orElseThrow(() -> {
             log.error("User not find by email " + email);
