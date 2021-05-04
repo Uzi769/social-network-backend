@@ -25,6 +25,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -53,13 +55,34 @@ public class UserEntity {
     @Column(name = "full_name")
     private String fullName;
 
+    @Column(name = "birth_date")
+    private LocalDate birthDate;
+
+    @NotEmpty
+    @Column(name = "city")
+    private String city;
+
+    @NotEmpty
+    @Column(name = "direction")
+    private String direction;
+
     @Column(name = "phone")
     @Pattern(regexp = "(^\\+?[78][-\\(]?\\d{3}\\)?-?\\d{3}-?\\d{2}-?\\d{2}$)")
     private String phone;
 
+    @Column(name = "another_phone")
+    @Pattern(regexp = "(^\\+?[78][-\\(]?\\d{3}\\)?-?\\d{3}-?\\d{2}-?\\d{2}$)")
+    private String anotherPhone;
+
     @Email
     @Column(name = "email")
     private String email;
+
+    @Column(name = "skype")
+    private String skype;
+
+    @Column(name = "telegram")
+    private String telegram;
 
     @Column(name = "is_delete")
     private boolean delete;
@@ -79,11 +102,4 @@ public class UserEntity {
             inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
     private List<Role> roles;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.getRoles()
-                .stream()
-                .map(i -> new SimpleGrantedAuthority(i.getName()))
-                .collect(Collectors.toList());
-    }
 }
