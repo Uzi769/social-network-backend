@@ -93,4 +93,7 @@ public class UserEntity {
             inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
     private List<Role> roles;
 
+    @OneToMany(mappedBy = "author")
+    private List<Post> bookings;
+
 }
