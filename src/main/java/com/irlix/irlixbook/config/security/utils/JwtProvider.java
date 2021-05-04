@@ -17,7 +17,7 @@ public class JwtProvider {
 //    @Value("${secretkey}")
     private String jwtSecret = "secretkey";
 
-    public String generateToken(String login) {
+    public static String generateToken(String login) {
         Date date = Date.from(LocalDate.now().plusDays(15).atStartOfDay(ZoneId.systemDefault()).toInstant());
         return Jwts.builder()
                 .setSubject(login)
@@ -26,7 +26,7 @@ public class JwtProvider {
                 .compact();
     }
 
-    public boolean validateToken(String token) {
+    public static boolean validateToken(String token) {
         try {
             Jwts
                     .parser()
@@ -39,7 +39,7 @@ public class JwtProvider {
         return false;
     }
 
-    public String getLoginFromToken(String token) {
+    public static String getLoginFromToken(String token) {
         Claims claims = Jwts
                 .parser()
                 .setSigningKey(jwtSecret)
