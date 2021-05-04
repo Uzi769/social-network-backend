@@ -85,7 +85,7 @@
                                  constraintName="comment_user_id"
                                  referencedTableName="user_entity" referencedColumnNames="id"/>
         <addForeignKeyConstraint baseTableName="comment" baseColumnNames="post_id"
-                                 constraintName="post_post_id"
+                                 constraintName="comment_post_id"
                                  referencedTableName="post" referencedColumnNames="id"/>
     </changeSet>
 
