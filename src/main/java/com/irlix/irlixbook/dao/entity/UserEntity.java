@@ -14,6 +14,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -42,10 +43,9 @@ import java.util.stream.Collectors;
 public class UserEntity {
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    @ToString.Include
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @NotNull
-    private UUID id;
+    private Long id;
 
     @NotEmpty
     @Column(name = "full_name")
@@ -61,10 +61,6 @@ public class UserEntity {
     @NotEmpty
     @Column(name = "city")
     private String city;
-
-    @NotEmpty
-    @Column(name = "direction")
-    private String direction;
 
     @NotEmpty
     @Column(name = "technologies")
