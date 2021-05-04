@@ -88,12 +88,6 @@ public class UserEntity {
     private boolean delete;
     
 
-    @Column(name = "password_active")
-    private boolean passwordActive;
-
-    @Column(name = "fcm_token")
-    private String fcm_token;
-
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_role",
             joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
