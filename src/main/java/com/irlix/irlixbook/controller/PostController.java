@@ -9,6 +9,7 @@ import com.irlix.irlixbook.dao.model.post.PostOutput;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,4 +52,11 @@ public class PostController {
     public List<PostOutput> search(PostSearch dto, PageableInput pageable) {
         return postService.search(dto, pageable);
     }
+
+    @CrossOrigin
+    @DeleteMapping(value = "/{id}}")
+    public void delete(@PathVariable("id") Long id) {
+        postService.delete(id);
+    }
+
 }

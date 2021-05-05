@@ -78,4 +78,11 @@ public class PostServiceImpl implements PostService {
                 .map(post -> conversionService.convert(post, PostOutput.class))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    @Transactional
+    public void delete(Long id) {
+        postRepository.findById(id);
+        log.info("Post deleted. Class PostServiceImpl, method delete");
+    }
 }

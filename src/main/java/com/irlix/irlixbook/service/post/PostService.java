@@ -20,4 +20,6 @@ public interface PostService {
     Post getById(Long id);
 
     List<PostOutput> search(PostSearch dto, PageableInput pageable);
+
+    void delete(Long id);
 }
