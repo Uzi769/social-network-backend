@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +30,7 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "You are successfully logged in!",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = AuthResponse.class))))
     })
+    @CrossOrigin
     @PostMapping("/signin")
     public ResponseEntity<String> auth(@RequestBody AuthRequest request) {
         return ResponseEntity.ok()

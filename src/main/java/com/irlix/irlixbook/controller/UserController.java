@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,6 +45,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found")
     })
 //    @PreAuthorize("hasAuthority('ADMIN')")
+    @CrossOrigin
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(
@@ -61,6 +63,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User information not found")
     })
 //    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER'})")
+    @CrossOrigin
     @GetMapping(value = "/info")
     public UserEntityOutput getUserInfo() {
         return userService.getUserInfo();
@@ -74,6 +77,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User information not found")
     })
 //    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER'})")
+    @CrossOrigin
     @GetMapping(value = "/info/{id}")
     public UserEntityOutput getUserEntity(
             @Parameter(description = "User to get all info. Cannot be null or empty.", required = true,
@@ -91,6 +95,7 @@ public class UserController {
     })
 //    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER'})")
     @GetMapping(value = "/all")
+    @CrossOrigin
     public List<UserEntityOutput> getUserEntityList() {
         return userService.getUserEntityList();
     }
@@ -103,6 +108,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Users not found")
     })
 //    @PreAuthorize("hasAuthority('ADMIN')")
+    @CrossOrigin
     @GetMapping(value = "/search")
     public List<UserEntityOutput> searchUser(
             @Parameter(description = "User search parameters. Cannot be null or empty.", required = true,
@@ -119,6 +125,7 @@ public class UserController {
             @ApiResponse(responseCode = "409", description = "User already exists")
     })
 //    @PreAuthorize("hasAuthority('ADMIN')")
+    @CrossOrigin
     @PostMapping(value = "/create", consumes = {"application/json"}, produces = {"application/json"})
     @ResponseStatus(HttpStatus.CREATED)
     public void createUser(
@@ -137,6 +144,7 @@ public class UserController {
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
 //    @PreAuthorize("hasAuthority('ADMIN')")
+    @CrossOrigin
     @PutMapping(value = "/", consumes = {"application/json"}, produces = {"application/json"})
     public void updateUser(
             @Parameter(description = "User to update. Cannot be null or empty.", required = true,
@@ -154,6 +162,7 @@ public class UserController {
     })
     @ResponseStatus(HttpStatus.CREATED)
 //    @PreAuthorize("hasAuthority('USER')")
+    @CrossOrigin
     @PutMapping("/update-password")
     public void updatePassword(
             @Parameter(description = "Cannot be null or empty.")

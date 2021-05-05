@@ -1,0 +1,33 @@
+stages:
+    - build jar
+    - deploy
+
+build:
+  stage: build jar
+  before_script:
+    - source .${CI_COMMIT_REF_NAME}.env
+  script:
+    - mvn clean install -DskipTests=true
+  artifacts:
+    paths:
+      - target/*.jar
+    expire_in: 1 week
+  only:
+    - master
+
+deploy:
+  stage: deploy
+  before_script:
+    - which ssh-agent
+    - eval $(ssh-agent -s)
+    - ssh-add - <<< "${SSH_PRIVATE_KEY}"
+    - '[[ -f /.dockerenv ]] && mkdir -p ~/.ssh && ssh-keyscan -H "$SSH_KNOWN_HOST" >> ~/.ssh/known_hosts'
+    - cat ~/.ssh/known_hosts
+    - mvn clean install -DskipTests=true
+    - pwd
+    - scp /builds/irlix/social-network/backend/target/*.jar "$SSH_LOGIN"@"$SSH_KNOWN_HOST":/docker/Container/back_container
+  script:
+    - ssh "$SSH_LOGIN"@"$SSH_KNOWN_HOST" "cd /opt/irlix/social-network/ docker-compose down; docker-compose build; docker-compose up -d; exit"
+  only:
+    - develop
+

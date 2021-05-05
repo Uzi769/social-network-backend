@@ -1,13 +1,11 @@
 package com.irlix.irlixbook.controller;
 
-import com.irlix.irlixbook.dao.model.comment.CommentInput;
-import com.irlix.irlixbook.dao.model.comment.CommentOutput;
 import com.irlix.irlixbook.dao.model.tag.TagInput;
 import com.irlix.irlixbook.dao.model.tag.TagOutput;
-import com.irlix.irlixbook.service.comment.CommentService;
 import com.irlix.irlixbook.service.tag.TagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,11 +23,13 @@ public class TagController {
 
     private final TagService tagService;
 
+    @CrossOrigin
     @GetMapping
     public List<TagOutput> findAll() {
         return tagService.findAll();
     }
 
+    @CrossOrigin
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void create(@RequestBody @Valid TagInput tagInput) {
