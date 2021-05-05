@@ -1,10 +1,10 @@
-package com.irlix.irlixbook.service.impl;
+package com.irlix.irlixbook.service.post;
 
 import com.irlix.irlixbook.dao.entity.Post;
 import com.irlix.irlixbook.dao.model.PostInput;
 import com.irlix.irlixbook.dao.model.PostOutput;
 import com.irlix.irlixbook.repository.PostRepository;
-import com.irlix.irlixbook.service.PostService;
+import com.irlix.irlixbook.service.post.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.convert.ConversionService;

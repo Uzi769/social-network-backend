@@ -1,6 +1,6 @@
 package com.irlix.irlixbook.controller;
 
-import com.irlix.irlixbook.service.PostService;
+import com.irlix.irlixbook.service.post.PostService;
 import com.irlix.irlixbook.dao.model.PostInput;
 import com.irlix.irlixbook.dao.model.PostOutput;
 import lombok.RequiredArgsConstructor;
