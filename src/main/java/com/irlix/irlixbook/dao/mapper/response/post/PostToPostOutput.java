@@ -1,8 +1,7 @@
-package com.irlix.irlixbook.dao.mapper.response;
+package com.irlix.irlixbook.dao.mapper.response.post;
 
 import com.irlix.irlixbook.dao.entity.Post;
-import com.irlix.irlixbook.dao.model.PostInput;
-import com.irlix.irlixbook.dao.model.PostOutput;
+import com.irlix.irlixbook.dao.model.post.PostOutput;
 import org.springframework.core.convert.converter.Converter;
 
 public class PostToPostOutput implements Converter<Post, PostOutput> {

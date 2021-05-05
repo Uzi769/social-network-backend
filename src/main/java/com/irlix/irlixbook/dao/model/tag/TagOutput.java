@@ -1,4 +1,4 @@
-package com.irlix.irlixbook.dao.model;
+package com.irlix.irlixbook.dao.model.tag;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,9 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PostInput {
-
-    private String topic;
-    private String content;
-    private Long author_id;
+public class TagOutput {
+    private String name;
 }

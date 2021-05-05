@@ -1,5 +1,6 @@
-package com.irlix.irlixbook.dao.model;
+package com.irlix.irlixbook.dao.model.comment;
 
+import com.irlix.irlixbook.dao.entity.Post;
 import com.irlix.irlixbook.dao.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,11 +15,9 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PostOutput {
-
-    private Long id;
+public class CommentOutput {
+    private String body;
     private LocalDate date;
-    private String topic;
-    private String content;
-    private UserEntity author;
+    private UserEntity user;
+    private Post post;
 }
