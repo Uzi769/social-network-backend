@@ -25,6 +25,10 @@ public class TagServiceImpl implements TagService {
     @Override
     public void save(TagInput tagInput) {
         Tag tag = conversionService.convert(tagInput, Tag.class);
+        if (tag != null) {
+            log.error("TagInput cannot be null");
+            throw new NullPointerException("TagInput cannot be null");
+        }
         tagRepository.save(tag);
         log.info("Tag saved. Class TagServiceImpl, method save");
     }

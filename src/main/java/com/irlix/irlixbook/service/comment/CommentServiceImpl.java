@@ -1,5 +1,6 @@
 package com.irlix.irlixbook.service.comment;
 
+import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
 import com.irlix.irlixbook.dao.entity.Comment;
 import com.irlix.irlixbook.dao.entity.Post;
 import com.irlix.irlixbook.dao.model.comment.CommentInput;
@@ -22,7 +23,6 @@ import java.util.stream.Collectors;
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
-    private final UserService userService;
     private final PostService postService;
     private final ConversionService conversionService;
 
@@ -30,11 +30,14 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public void save(CommentInput commentInput) {
         Comment comment = conversionService.convert(commentInput, Comment.class);
-        comment.setUser(userService.getById(commentInput.getUserId()));
+        if (comment != null) {
+            log.error("CommentInput cannot be null");
+            throw new NullPointerException("CommentInput cannot be null");
+        }
+        comment.setUser(SecurityContextUtils.getUserFromContext());
         comment.setPost(postService.getById(commentInput.getPostId()));
         commentRepository.save(comment);
         log.info("Comment saved. Class CommentServiceImpl, method save");
-
     }
 
     @Override
