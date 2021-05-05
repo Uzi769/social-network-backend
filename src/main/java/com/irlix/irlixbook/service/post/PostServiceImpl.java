@@ -3,10 +3,14 @@ package com.irlix.irlixbook.service.post;
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
 import com.irlix.irlixbook.dao.entity.Post;
 import com.irlix.irlixbook.dao.entity.Tag;
+import com.irlix.irlixbook.dao.model.PageableInput;
 import com.irlix.irlixbook.dao.model.post.PostInput;
 import com.irlix.irlixbook.dao.model.post.PostOutput;
+import com.irlix.irlixbook.dao.model.post.PostSearch;
+import com.irlix.irlixbook.dao.model.user.UserEntityOutput;
 import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.PostRepository;
+import com.irlix.irlixbook.repository.summary.PostRepositorySummary;
 import com.irlix.irlixbook.service.tag.TagService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -23,6 +27,7 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
     private final ConversionService conversionService;
+    private final PostRepositorySummary repositorySummary;
     private final TagService tagService;
 
     @Override
@@ -63,5 +68,13 @@ public class PostServiceImpl implements PostService {
         List<PostOutput> postOutputs = postRepository.findAll().stream()
                 .map(post -> conversionService.convert(post, PostOutput.class)).collect(Collectors.toList());
         return postOutputs;
+    }
+
+    @Override
+    public List<PostOutput> search(PostSearch dto, PageableInput pageable) {
+        List<Post> posts = repositorySummary.search(dto, pageable);
+        return posts.stream()
+                .map(post -> conversionService.convert(post, PostOutput.class))
+                .collect(Collectors.toList());
     }
 }
