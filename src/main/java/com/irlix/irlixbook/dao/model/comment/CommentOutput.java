@@ -18,6 +18,6 @@ import java.time.LocalDate;
 public class CommentOutput {
     private String body;
     private LocalDate date;
-    private UserEntity user;
-    private Post post;
+    private Long userId;
+    private Long postId;
 }
