@@ -7,7 +7,6 @@ import com.irlix.irlixbook.dao.model.PageableInput;
 import com.irlix.irlixbook.dao.model.post.PostInput;
 import com.irlix.irlixbook.dao.model.post.PostOutput;
 import com.irlix.irlixbook.dao.model.post.PostSearch;
-import com.irlix.irlixbook.dao.model.user.UserEntityOutput;
 import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.PostRepository;
 import com.irlix.irlixbook.repository.summary.PostRepositorySummary;
@@ -16,12 +15,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
 @Log4j2
+@Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
 
@@ -40,6 +40,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional
     public void save(PostInput postInput) {
         Post post = conversionService.convert(postInput, Post.class);
         if (post == null) {
@@ -48,7 +49,7 @@ public class PostServiceImpl implements PostService {
         }
         post.setAuthor(SecurityContextUtils.getUserFromContext());
         List<Tag> tags = postInput.getTags().stream()
-                .map(tag -> tagService.getByName(tag))
+                .map(tagService::getByName)
                 .collect(Collectors.toList());
 
         post.setTags(tags);
@@ -65,9 +66,8 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostOutput> findAll() {
-        List<PostOutput> postOutputs = postRepository.findAll().stream()
+        return postRepository.findAll().stream()
                 .map(post -> conversionService.convert(post, PostOutput.class)).collect(Collectors.toList());
-        return postOutputs;
     }
 
     @Override

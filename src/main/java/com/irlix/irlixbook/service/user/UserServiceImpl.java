@@ -42,14 +42,17 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final UserRepositorySummary userRepositorySummary;
     private final ConversionService conversionService;
     private final PasswordEncoder passwordEncoder;
+
     private static final String USER_ROLE = "USER";
+    private static final String USER_NOT_FOUND = "User not found";
+
 
     @Override
     public UserEntity getById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> {
-                    log.error("User not found");
-                    return new NotFoundException("User not found");
+                    log.error(USER_NOT_FOUND);
+                    return new NotFoundException(USER_NOT_FOUND);
                 });
     }
 
@@ -59,21 +62,21 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userRepository.findById(id)
                 .map(userEntity -> conversionService.convert(userEntity, UserEntityOutput.class))
                 .orElseThrow(() -> {
-                    log.error("User not found by id " + id + ". Class UserServiceImpl, method getUserEntity");
-                    return new NotFoundException("User not found by id" + id);
+                    log.error(USER_NOT_FOUND);
+                    return new NotFoundException(USER_NOT_FOUND);
                 });
     }
 
     @Override
     public void deleteUser(Long id) {
         UserEntity userEntity = userRepository.findById(id).orElseThrow(() -> {
-            log.error("User not found by id: " + id + ". Class UserServiceImpl, method deleteUser");
-            return new NotFoundException("User not found by id: " + id);
+            log.error(USER_NOT_FOUND);
+            return new NotFoundException(USER_NOT_FOUND);
         });
 
         userEntity.setDelete(true);
         userRepository.save(userEntity);
-        log.info("Soft delete user by id: " + id + ". Class UserServiceImpl, method deleteUser");
+        log.info("Soft delete user. Class UserServiceImpl, method deleteUser");
     }
 
     @Override
@@ -84,10 +87,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         UserEntity userEntity = new UserEntity();
         if (email != null) {
-            userEntity = findByEmail(email).orElseThrow(() -> new NotFoundException("User not found"));
+            userEntity = findByEmail(email).orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
         }
         if (phone != null) {
-            userEntity = userRepository.findByPhone(phone).orElseThrow(() -> new NotFoundException("User not found"));
+            userEntity = userRepository.findByPhone(phone).orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
         }
         if (passwordEncoder.matches(password, userEntity.getPassword()) && !userEntity.isDelete()) {
             return JwtProvider.generateToken(userEntity.getEmail());
@@ -126,8 +129,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         UserDetails userDetails = userRepository.findByEmail(email).orElseThrow(() -> {
-            log.error("User not find by email " + email);
-            return new UsernameNotFoundException("User not find by email " + email);
+            log.error(USER_NOT_FOUND);
+            return new UsernameNotFoundException(USER_NOT_FOUND);
         });
         userDetails.getAuthorities();
         return userDetails;
@@ -162,6 +165,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    @Transactional
     public void updatePassword(UserPasswordInput userPasswordInput) {
         UserEntity user = SecurityContextUtils.getUserFromContext();
         validPassword(userPasswordInput, user);

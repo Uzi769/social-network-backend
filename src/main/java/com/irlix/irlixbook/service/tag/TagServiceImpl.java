@@ -9,23 +9,26 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
 @Log4j2
+@Service
 @RequiredArgsConstructor
 public class TagServiceImpl implements TagService {
 
     private final TagRepository tagRepository;
     private final ConversionService conversionService;
 
+    private static final String TAG_NOT_FOUND = "Tag not found";
+
     private Tag getById(Long id) {
         return tagRepository.findById(id)
                 .orElseThrow(() -> {
-                    log.error("Tag not found");
-                    return new NotFoundException("Tag not found");
+                    log.error(TAG_NOT_FOUND);
+                    return new NotFoundException(TAG_NOT_FOUND);
                 });
     }
 
@@ -34,11 +37,12 @@ public class TagServiceImpl implements TagService {
         return tagRepository.findByName(name)
                 .orElseThrow(() -> {
                     log.error("Tag not found. Class TagServiceImpl, method getByName");
-                    return new NotFoundException("Tag not found");
+                    return new NotFoundException(TAG_NOT_FOUND);
                 });
     }
 
     @Override
+    @Transactional
     public void save(TagInput tagInput) {
         Tag tag = conversionService.convert(tagInput, Tag.class);
         if (tag == null) {
@@ -58,8 +62,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public List<TagOutput> findAll() {
-        List<TagOutput> tagOutputs = tagRepository.findAll().stream()
+        return tagRepository.findAll().stream()
                 .map(tag -> conversionService.convert(tag, TagOutput.class)).collect(Collectors.toList());
-        return tagOutputs;
     }
 }
