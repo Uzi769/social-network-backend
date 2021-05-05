@@ -100,6 +100,9 @@ public class UserEntity implements UserDetails {
     @OneToMany(mappedBy = "author")
     private List<Post> posts;
 
+    @OneToMany(mappedBy = "user")
+    private List<Photo> photos;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.getRoles()
