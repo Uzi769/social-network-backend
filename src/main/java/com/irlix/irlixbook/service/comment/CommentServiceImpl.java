@@ -58,5 +58,10 @@ public class CommentServiceImpl implements CommentService {
         return commentRepository.findAll().stream()
                 .map(comment -> conversionService.convert(comment, CommentOutput.class)).collect(Collectors.toList());
     }
-    
+
+    @Override
+    public void delete(Long id) {
+        commentRepository.findById(id);
+        log.info("Comment deleted. Class PostServiceImpl, method delete");
+    }
 }
