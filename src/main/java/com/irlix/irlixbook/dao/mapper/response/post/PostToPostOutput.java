@@ -1,17 +1,13 @@
 package com.irlix.irlixbook.dao.mapper.response.post;
 
 import com.irlix.irlixbook.dao.entity.Post;
-import com.irlix.irlixbook.dao.mapper.response.tag.TagToTagOutput;
 import com.irlix.irlixbook.dao.model.post.PostOutput;
-import lombok.RequiredArgsConstructor;
+import com.irlix.irlixbook.dao.model.tag.TagOutput;
 import org.springframework.core.convert.converter.Converter;
 
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 public class PostToPostOutput implements Converter<Post, PostOutput> {
-
-    private final TagToTagOutput tagOutput;
 
     @Override
     public PostOutput convert(Post post) {
@@ -23,8 +19,8 @@ public class PostToPostOutput implements Converter<Post, PostOutput> {
                 .content(post.getContent())
                 .date(post.getDate())
                 .tagOutput(post.getTags().stream()
-                        .map(tagOutput::convert)
-                        .collect(Collectors.toList()))
+                        .map(tag -> TagOutput.builder()
+                                .name(tag.getName()).build()).collect(Collectors.toList()))
                 .build();
     }
 }
