@@ -58,5 +58,5 @@ public class CommentServiceImpl implements CommentService {
         return commentRepository.findAll().stream()
                 .map(comment -> conversionService.convert(comment, CommentOutput.class)).collect(Collectors.toList());
     }
-    
+
 }

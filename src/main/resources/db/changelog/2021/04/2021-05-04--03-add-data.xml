@@ -5,17 +5,14 @@
 
     <changeSet author="Gelnaz" id="04052021-13">
         <insert tableName="direction">
-            <column name="id" value="1"/>
             <column name="title" value="frontend"/>
             <column name="description" value="some description"/>
         </insert>
         <insert tableName="direction">
-            <column name="id" value="2"/>
             <column name="title" value="backend"/>
             <column name="description" value="some description"/>
         </insert>
         <insert tableName="direction">
-            <column name="id" value="3"/>
             <column name="title" value="HR"/>
             <column name="description" value="some description"/>
         </insert>
@@ -50,11 +47,9 @@
     </changeSet>
     <changeSet author="Gelnaz" id="04052021-16">
         <insert tableName="tag">
-            <column name="id" value="1"/>
             <column name="name" value="all"/>
         </insert>
         <insert tableName="tag">
-            <column name="id" value="2"/>
             <column name="name" value="backend"/>
         </insert>
     </changeSet>
