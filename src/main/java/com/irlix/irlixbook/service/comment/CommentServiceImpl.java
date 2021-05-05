@@ -30,7 +30,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public void save(CommentInput commentInput) {
         Comment comment = conversionService.convert(commentInput, Comment.class);
-        if (comment != null) {
+        if (comment == null) {
             log.error("CommentInput cannot be null");
             throw new NullPointerException("CommentInput cannot be null");
         }
