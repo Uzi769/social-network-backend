@@ -68,6 +68,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 });
     }
 
+
+    @Override
+    public UserEntity findUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error(USER_NOT_FOUND);
+                    return new NotFoundException(USER_NOT_FOUND);
+                });
+    }
+
     @Override
     @Transactional
     public void deleteUser(Long id) {

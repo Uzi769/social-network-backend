@@ -36,4 +36,6 @@ public interface UserService {
     void updatePassword(UserPasswordInput userPasswordInput);
 
     void updateUser(UserUpdateInput userUpdateInput);
+
+    UserEntity findUserById(Long id);
 }
