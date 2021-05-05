@@ -14,9 +14,7 @@ import java.util.Optional;
 
 public interface UserService {
 
-    UserEntityOutput getUserEntity(Long id);
-
-    UserEntity getById(Long id);
+    UserEntityOutput getUserById(Long id);
 
     void deleteUser(Long id);
 

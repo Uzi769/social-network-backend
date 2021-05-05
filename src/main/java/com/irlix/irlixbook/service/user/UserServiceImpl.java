@@ -46,19 +46,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private static final String USER_ROLE = "USER";
     private static final String USER_NOT_FOUND = "User not found";
 
-
-    @Override
-    public UserEntity getById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.error(USER_NOT_FOUND);
-                    return new NotFoundException(USER_NOT_FOUND);
-                });
-    }
-
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public UserEntityOutput getUserEntity(Long id) {
+    public UserEntityOutput getUserById(Long id) {
         return userRepository.findById(id)
                 .map(userEntity -> conversionService.convert(userEntity, UserEntityOutput.class))
                 .orElseThrow(() -> {
