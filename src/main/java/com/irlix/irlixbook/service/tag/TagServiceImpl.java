@@ -1,9 +1,9 @@
 package com.irlix.irlixbook.service.tag;
 
-import com.irlix.irlixbook.dao.entity.Post;
 import com.irlix.irlixbook.dao.entity.Tag;
 import com.irlix.irlixbook.dao.model.tag.TagInput;
 import com.irlix.irlixbook.dao.model.tag.TagOutput;
+import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -21,6 +21,22 @@ public class TagServiceImpl implements TagService {
     private final TagRepository tagRepository;
     private final ConversionService conversionService;
 
+    private Tag getById(Long id) {
+        return tagRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("Tag not found");
+                    return new NotFoundException("Tag not found");
+                });
+    }
+
+    @Override
+    public Tag getByName(String name) {
+        return tagRepository.findByName(name)
+                .orElseThrow(() -> {
+                    log.error("Tag not found. Class TagServiceImpl, method getByName");
+                    return new NotFoundException("Tag not found");
+                });
+    }
 
     @Override
     public void save(TagInput tagInput) {
@@ -35,7 +51,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public TagOutput findById(Long id) {
-        TagOutput tagOutput = conversionService.convert(tagRepository.findById(id), TagOutput.class);
+        TagOutput tagOutput = conversionService.convert(getById(id), TagOutput.class);
         log.info("Return Tag by id. Class TagServiceImpl, method findById");
         return tagOutput;
     }

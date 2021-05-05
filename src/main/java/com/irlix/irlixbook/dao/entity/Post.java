@@ -60,6 +60,6 @@ public class Post {
             inverseJoinColumns = {@JoinColumn(name = "tag_id", referencedColumnName = "id")})
     private List<Tag> tags;
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
     private List<Comment> comments;
 }
