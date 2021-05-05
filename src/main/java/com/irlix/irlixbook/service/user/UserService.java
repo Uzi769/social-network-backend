@@ -13,6 +13,8 @@ public interface UserService {
 
     UserEntityOutput getUserEntity(Long id);
 
+    UserEntity getById(Long id);
+
     void deleteUser(Long id);
 
     String generateToken(AuthRequest request);

@@ -1,5 +1,7 @@
 package com.irlix.irlixbook.service.tag;
 
+import com.irlix.irlixbook.dao.entity.Post;
+import com.irlix.irlixbook.dao.entity.Tag;
 import com.irlix.irlixbook.dao.model.tag.TagInput;
 import com.irlix.irlixbook.dao.model.tag.TagOutput;
 import com.irlix.irlixbook.repository.TagRepository;
@@ -22,7 +24,9 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public void save(TagInput tagInput) {
-//TODO
+        Tag tag = conversionService.convert(tagInput, Tag.class);
+        tagRepository.save(tag);
+        log.info("Tag saved. Class TagServiceImpl, method save");
     }
 
     @Override
@@ -36,7 +40,6 @@ public class TagServiceImpl implements TagService {
     public List<TagOutput> findAll() {
         List<TagOutput> tagOutputs = tagRepository.findAll().stream()
                 .map(tag -> conversionService.convert(tag, TagOutput.class)).collect(Collectors.toList());
-
         return tagOutputs;
     }
 }

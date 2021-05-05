@@ -1,5 +1,6 @@
 package com.irlix.irlixbook.service.post;
 
+import com.irlix.irlixbook.dao.entity.Post;
 import com.irlix.irlixbook.dao.model.post.PostInput;
 import com.irlix.irlixbook.dao.model.post.PostOutput;
 
@@ -11,4 +12,6 @@ public interface PostService {
     PostOutput findById(Long id);
 
     List<PostOutput> findAll();
+
+    Post getById(Long id);
 }

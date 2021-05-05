@@ -39,6 +39,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private static final String USER_ROLE = "USER";
 
     @Override
+    public UserEntity getById(Long id) {
+
+        return userRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("User not found");
+                    return new NotFoundException("User not found");
+                });
+    }
+
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public UserEntityOutput getUserEntity(Long id) {
         return userRepository.findById(id)

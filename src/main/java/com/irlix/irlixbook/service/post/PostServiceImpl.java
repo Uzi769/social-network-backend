@@ -3,6 +3,7 @@ package com.irlix.irlixbook.service.post;
 import com.irlix.irlixbook.dao.entity.Post;
 import com.irlix.irlixbook.dao.model.post.PostInput;
 import com.irlix.irlixbook.dao.model.post.PostOutput;
+import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -20,6 +21,14 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final ConversionService conversionService;
 
+    @Override
+    public Post getById(Long id) {
+        return postRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("Post not found");
+                    return new NotFoundException("Post not found");
+                });
+    }
 
     @Override
     public void save(PostInput postInput) {
