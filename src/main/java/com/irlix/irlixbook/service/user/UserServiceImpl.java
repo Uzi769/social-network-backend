@@ -113,8 +113,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public UserEntityOutput getUserInfo() {
-        UserEntity user = SecurityContextUtils.getUserFromContext();
-        return conversionService.convert(user, UserEntityOutput.class);
+        Long id = SecurityContextUtils.getUserFromContext().getId();
+        UserEntity userEntity = findUserById(id);
+        return conversionService.convert(userEntity, UserEntityOutput.class);
     }
 
     @Override
