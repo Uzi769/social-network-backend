@@ -22,14 +22,12 @@
     </changeSet>
     <changeSet author="Gelnaz" id="04052021-14">
         <insert tableName="post">
-            <column name="id" value="1"/>
             <column name="date" value="2021-04-05"/>
             <column name="user_id" value="1"/>
             <column name="topic" value="Хакатон"/>
             <column name="content" value="С 4 по 7 мая проходит Хакатон"/>
         </insert>
         <insert tableName="post">
-            <column name="id" value="2"/>
             <column name="date" value="2021-04-05"/>
             <column name="user_id" value="1"/>
             <column name="topic" value="Важно"/>
@@ -38,14 +36,12 @@
     </changeSet>
     <changeSet author="Gelnaz" id="04052021-15">
         <insert tableName="comment">
-            <column name="id" value="1"/>
             <column name="date" value="2021-04-05"/>
             <column name="body" value="Классно. Что нужно для участия?"/>
             <column name="user_id" value="2"/>
             <column name="post_id" value="1"/>
         </insert>
         <insert tableName="comment">
-            <column name="id" value="2"/>
             <column name="date" value="2021-04-05"/>
             <column name="body" value="Мой. Уже бегу!"/>
             <column name="user_id" value="1"/>

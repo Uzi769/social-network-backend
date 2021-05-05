@@ -71,6 +71,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional
     public List<PostOutput> search(PostSearch dto, PageableInput pageable) {
         List<Post> posts = repositorySummary.search(dto, pageable);
         return posts.stream()
