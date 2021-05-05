@@ -23,11 +23,13 @@ public class ConversionConfig implements WebMvcConfigurer {
         registry.addConverter(new UserEntityConverterToOutputForUser());
         registry.addConverter(new UserCreateInputToUserEntity());
         registry.addConverter(new UserUpdateInputToUserEntity());
+        registry.addConverter(new TagInputToTag());
+        TagToTagOutput tagOutput = new TagToTagOutput();
+        registry.addConverter(tagOutput);
         registry.addConverter(new PostInputToPost());
-        registry.addConverter(new PostToPostOutput());
+        registry.addConverter(new PostToPostOutput(tagOutput));
         registry.addConverter(new CommentInputToComment());
         registry.addConverter(new CommentToCommentOutput());
-        registry.addConverter(new TagInputToTag());
-        registry.addConverter(new TagToTagOutput());
+
     }
 }

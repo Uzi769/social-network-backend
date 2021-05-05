@@ -68,7 +68,6 @@ public class PostServiceImpl implements PostService {
     public List<PostOutput> findAll() {
         return postRepository.findAll().stream()
                 .map(post -> conversionService.convert(post, PostOutput.class))
-                .map(post -> )
                 .collect(Collectors.toList());
     }
 
