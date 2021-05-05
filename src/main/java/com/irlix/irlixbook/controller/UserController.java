@@ -1,6 +1,7 @@
 package com.irlix.irlixbook.controller;
 
 import com.irlix.irlixbook.dao.model.PageableInput;
+import com.irlix.irlixbook.dao.model.user.UserBirthdaysOutput;
 import com.irlix.irlixbook.dao.model.user.UserCreateInput;
 import com.irlix.irlixbook.dao.model.user.UserEntityOutput;
 import com.irlix.irlixbook.dao.model.user.UserInputSearch;
@@ -84,6 +85,20 @@ public class UserController {
                     schema = @Schema(implementation = Long.class))
             @PathVariable("id") Long id) {
         return userService.getUserById(id);
+    }
+
+    @Operation(summary = "Get user information", description = "Returns single user information", tags = {"user"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful operation"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "403", description = "Forbidden. You can't get users information"),
+            @ApiResponse(responseCode = "404", description = "User information not found")
+    })
+//    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER'})")
+    @CrossOrigin
+    @GetMapping(value = "/birthdays/")
+    public List<UserBirthdaysOutput> getUserWithBirthdays() {
+        return userService.getUserWithBirthDays();
     }
 
     @Operation(summary = "Get user information", description = "Returns single user information", tags = {"user"})
