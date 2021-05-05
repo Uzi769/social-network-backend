@@ -33,6 +33,10 @@ public class PostServiceImpl implements PostService {
     @Override
     public void save(PostInput postInput) {
         Post post = conversionService.convert(postInput, Post.class);
+        if (post != null) {
+            log.error("CommentInput cannot be null");
+            throw new NullPointerException("CommentInput cannot be null");
+        }
         postRepository.save(post);
         log.info("Post saved. Class PostServiceImpl, method save");
     }
