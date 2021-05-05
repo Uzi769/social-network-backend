@@ -1,4 +1,4 @@
-package com.irlix.irlixbook.config.controller;
+package com.irlix.irlixbook.controller;
 
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
 import com.irlix.irlixbook.dao.model.auth.AuthResponse;

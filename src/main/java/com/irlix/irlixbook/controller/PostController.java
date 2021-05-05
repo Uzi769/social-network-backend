@@ -38,6 +38,4 @@ public class PostController {
     public void create(@RequestBody @Valid PostInput postInput) {
         postService.save(postInput);
     }
-
-
 }
