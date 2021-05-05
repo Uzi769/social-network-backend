@@ -6,6 +6,7 @@ import com.irlix.irlixbook.dao.entity.Role;
 import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.model.PageableInput;
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
+import com.irlix.irlixbook.dao.model.user.UserBirthdaysOutput;
 import com.irlix.irlixbook.dao.model.user.UserCreateInput;
 import com.irlix.irlixbook.dao.model.user.UserEntityOutput;
 import com.irlix.irlixbook.dao.model.user.UserInputSearch;
@@ -17,6 +18,7 @@ import com.irlix.irlixbook.repository.RoleRepository;
 import com.irlix.irlixbook.repository.UserRepository;
 import com.irlix.irlixbook.repository.summary.UserRepositorySummary;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -45,6 +47,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     private static final String USER_ROLE = "USER";
     private static final String USER_NOT_FOUND = "User not found";
+
+    @SneakyThrows
+    @Override
+    public List<UserBirthdaysOutput> getUserWithBirthDays() {
+        return userRepository.findByBirthDate()
+                .stream()
+                .map(i -> conversionService.convert(i, UserBirthdaysOutput.class))
+                .collect(Collectors.toList());
+    }
 
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
@@ -193,22 +204,22 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (userEntityForUpdate.getPhone() != null && !userEntityForUpdate.getPhone().equals(userEntity.getPhone())) {
             checkingPhoneForUniqueness(userEntity, userEntityForUpdate.getPhone());
         }
-        if (userEntityForUpdate.getFullName() != null){
+        if (userEntityForUpdate.getFullName() != null) {
             userEntity.setFullName(userEntityForUpdate.getFullName());
         }
-        if (userEntityForUpdate.getBirthDate() != null){
+        if (userEntityForUpdate.getBirthDate() != null) {
             userEntity.setBirthDate(userEntityForUpdate.getBirthDate());
         }
-        if (userEntityForUpdate.getCity() != null){
+        if (userEntityForUpdate.getCity() != null) {
             userEntity.setCity(userEntityForUpdate.getCity());
         }
-        if (userEntityForUpdate.getSkype() != null){
+        if (userEntityForUpdate.getSkype() != null) {
             userEntity.setSkype(userEntityForUpdate.getSkype());
         }
-        if (userEntityForUpdate.getTechnologies() != null){
+        if (userEntityForUpdate.getTechnologies() != null) {
             userEntity.setTechnologies(userEntityForUpdate.getTechnologies());
         }
-        if (userEntityForUpdate.getTelegram() != null){
+        if (userEntityForUpdate.getTelegram() != null) {
             userEntity.setTelegram(userEntityForUpdate.getTelegram());
         }
         if (userEntityForUpdate.getAnotherPhone() != null) {

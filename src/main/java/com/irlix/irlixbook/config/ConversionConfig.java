@@ -9,6 +9,7 @@ import com.irlix.irlixbook.dao.mapper.response.tag.TagToTagOutput;
 import com.irlix.irlixbook.dao.mapper.response.user.UserEntityConverterToOutputForUser;
 import com.irlix.irlixbook.dao.mapper.request.post.PostInputToPost;
 import com.irlix.irlixbook.dao.mapper.response.post.PostToPostOutput;
+import com.irlix.irlixbook.dao.mapper.response.user.UserEntityToUserBirthdaysOutput;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
@@ -26,6 +27,7 @@ public class ConversionConfig implements WebMvcConfigurer {
         registry.addConverter(new TagInputToTag());
         TagToTagOutput tagOutput = new TagToTagOutput();
         registry.addConverter(tagOutput);
+        registry.addConverter(new UserEntityToUserBirthdaysOutput());
         registry.addConverter(new PostInputToPost());
         registry.addConverter(new PostToPostOutput(tagOutput));
         registry.addConverter(new CommentInputToComment());
