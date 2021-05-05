@@ -4,6 +4,7 @@ import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
 import com.irlix.irlixbook.dao.entity.Comment;
 import com.irlix.irlixbook.dao.model.comment.CommentInput;
 import com.irlix.irlixbook.dao.model.comment.CommentOutput;
+import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.CommentRepository;
 import com.irlix.irlixbook.service.post.PostService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class CommentServiceImpl implements CommentService {
     private final PostService postService;
     private final ConversionService conversionService;
 
+    private static final String COMMENT_NOT_FOUND = "Comment not found";
 
     @Override
     @Transactional
@@ -41,7 +43,12 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentOutput findById(Long id) {
-        CommentOutput commentOutput = conversionService.convert(commentRepository.findById(id), CommentOutput.class);
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error(COMMENT_NOT_FOUND);
+                    return new NotFoundException(COMMENT_NOT_FOUND);
+                });
+        CommentOutput commentOutput = conversionService.convert(comment, CommentOutput.class);
         log.info("Return Comment by id. Class CommentServiceImpl, method findById");
         return commentOutput;
     }
