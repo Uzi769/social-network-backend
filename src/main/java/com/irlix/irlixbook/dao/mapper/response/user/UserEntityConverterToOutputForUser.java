@@ -2,8 +2,11 @@ package com.irlix.irlixbook.dao.mapper.response.user;
 
 
 import com.irlix.irlixbook.dao.entity.UserEntity;
+import com.irlix.irlixbook.dao.model.direction.DirectionOutput;
 import com.irlix.irlixbook.dao.model.user.UserEntityOutput;
 import org.springframework.core.convert.converter.Converter;
+
+import java.util.stream.Collectors;
 
 public class UserEntityConverterToOutputForUser implements Converter<UserEntity, UserEntityOutput> {
 
@@ -20,6 +23,12 @@ public class UserEntityConverterToOutputForUser implements Converter<UserEntity,
                 .skype(userEntity.getSkype())
                 .technologies(userEntity.getTechnologies())
                 .telegram(userEntity.getTelegram())
+                .directionList(userEntity.getDirections().stream().map(direction -> DirectionOutput.builder()
+                        .title(direction.getTitle())
+                        .description(direction.getDescription())
+                        .build())
+                        .collect(Collectors.toList())
+                )
                 .build();
     }
 }
