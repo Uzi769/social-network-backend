@@ -83,7 +83,7 @@ public class UserController {
             @Parameter(description = "User to get all info. Cannot be null or empty.", required = true,
                     schema = @Schema(implementation = Long.class))
             @PathVariable("id") Long id) {
-        return userService.getUserEntity(id);
+        return userService.getUserById(id);
     }
 
     @Operation(summary = "Get user information", description = "Returns single user information", tags = {"user"})
