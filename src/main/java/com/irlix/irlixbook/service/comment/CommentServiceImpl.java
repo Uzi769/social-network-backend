@@ -6,11 +6,11 @@ import com.irlix.irlixbook.dao.model.comment.CommentInput;
 import com.irlix.irlixbook.dao.model.comment.CommentOutput;
 import com.irlix.irlixbook.repository.CommentRepository;
 import com.irlix.irlixbook.service.post.PostService;
-import com.irlix.irlixbook.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,6 +26,7 @@ public class CommentServiceImpl implements CommentService {
 
 
     @Override
+    @Transactional
     public void save(CommentInput commentInput) {
         Comment comment = conversionService.convert(commentInput, Comment.class);
         if (comment == null) {
@@ -47,9 +48,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<CommentOutput> findAll() {
-        List<CommentOutput> commentOutputs = commentRepository.findAll().stream()
+        return commentRepository.findAll().stream()
                 .map(comment -> conversionService.convert(comment, CommentOutput.class)).collect(Collectors.toList());
-
-        return commentOutputs;
     }
 }
