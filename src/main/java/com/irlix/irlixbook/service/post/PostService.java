@@ -8,10 +8,12 @@ import com.irlix.irlixbook.dao.model.post.PostSearch;
 import com.irlix.irlixbook.dao.model.user.UserEntityOutput;
 import com.irlix.irlixbook.dao.model.user.UserInputSearch;
 
+import javax.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 
 public interface PostService {
-    void save(PostInput postInput);
+    List<PostOutput> save(PostInput postInput);
 
     PostOutput findById(Long id);
 
@@ -21,5 +23,7 @@ public interface PostService {
 
     List<PostOutput> search(PostSearch dto, PageableInput pageable);
 
-    void delete(Long id);
+    List<PostOutput> update(Long id, @Valid PostInput postInput);
+
+    List<PostOutput> delete(Long id);
 }

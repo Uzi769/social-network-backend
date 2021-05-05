@@ -32,7 +32,7 @@ public class TagController {
     @CrossOrigin
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void create(@RequestBody @Valid TagInput tagInput) {
-        tagService.save(tagInput);
+    public List<TagOutput> create(@RequestBody @Valid TagInput tagInput) {
+        return tagService.save(tagInput);
     }
 }

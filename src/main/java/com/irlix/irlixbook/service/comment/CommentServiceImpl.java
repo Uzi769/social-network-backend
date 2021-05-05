@@ -35,7 +35,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public void save(CommentInput commentInput) {
+    public List<CommentOutput> save(CommentInput commentInput) {
         Comment comment = conversionService.convert(commentInput, Comment.class);
         if (comment == null) {
             log.error("CommentInput cannot be null");
@@ -45,6 +45,7 @@ public class CommentServiceImpl implements CommentService {
         comment.setPost(postService.getById(commentInput.getPostId()));
         commentRepository.save(comment);
         log.info("Comment saved. Class CommentServiceImpl, method save");
+        return findAll();
     }
 
     @Override
@@ -66,9 +67,10 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void delete(Long id) {
+    public List<CommentOutput> delete(Long id) {
         commentRepository.findById(id);
         log.info("Comment deleted. Class PostServiceImpl, method delete");
+        return findAll();
     }
 
     @Override

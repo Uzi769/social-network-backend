@@ -7,6 +7,7 @@ import com.irlix.irlixbook.dao.model.comment.CommentSearch;
 import com.irlix.irlixbook.dao.model.post.PostInput;
 import com.irlix.irlixbook.dao.model.post.PostOutput;
 import com.irlix.irlixbook.dao.model.post.PostSearch;
+import com.irlix.irlixbook.dao.model.tag.TagOutput;
 import com.irlix.irlixbook.service.comment.CommentService;
 import com.irlix.irlixbook.service.post.PostService;
 import lombok.RequiredArgsConstructor;
@@ -40,8 +41,8 @@ public class CommentController {
     @CrossOrigin
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void create(@RequestBody @Valid CommentInput commentInput) {
-        commentService.save(commentInput);
+    public List<CommentOutput> create(@RequestBody @Valid CommentInput commentInput) {
+        return commentService.save(commentInput);
     }
 
     @CrossOrigin

@@ -17,7 +17,9 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -41,7 +43,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void save(PostInput postInput) {
+    public List<PostOutput> save(PostInput postInput) {
         Post post = conversionService.convert(postInput, Post.class);
         if (post == null) {
             log.error("PostInput cannot be null");
@@ -55,6 +57,7 @@ public class PostServiceImpl implements PostService {
         post.setTags(tags);
         postRepository.save(post);
         log.info("Post saved. Class PostServiceImpl, method save");
+        return findAll();
     }
 
     @Override
@@ -82,8 +85,39 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void delete(Long id) {
+    public List<PostOutput> delete(Long id) {
         postRepository.findById(id);
         log.info("Post deleted. Class PostServiceImpl, method delete");
+        return findAll();
     }
+
+    @Override
+    public List<PostOutput> update(Long id, @Valid PostInput postInput) {
+        Post post = getById(id);
+        if (postInput == null) {
+            log.error("Post cannot be null, Class PostServiceImpl, method update");
+            throw new NullPointerException("Post cannot be null");
+        }
+        Post newPost = conversionService.convert(postInput, Post.class);
+
+        updatePost(post, newPost);
+        postRepository.save(post);
+        log.info("Update office by id: " + id + ". Class OfficeServiceImpl, method update");
+        return findAll();
+    }
+    private void updatePost(Post post, Post newPost) {
+        if (newPost.getTopic() != null) {
+            post.setTopic(newPost.getTopic());
+        }
+        if (newPost.getContent() != null) {
+            post.setContent(newPost.getContent());
+        }
+        if (newPost.getTags() != null) {
+            List<Tag> list = post.getTags();
+            newPost.getTags().stream()
+                    .map(p -> list.add(p));
+            post.setTags(list);
+        }
+    }
+
 }

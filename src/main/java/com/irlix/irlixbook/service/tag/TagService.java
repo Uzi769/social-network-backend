@@ -7,7 +7,7 @@ import com.irlix.irlixbook.dao.model.tag.TagOutput;
 import java.util.List;
 
 public interface TagService {
-    void save(TagInput tagInput);
+    List<TagOutput> save(TagInput tagInput);
 
     TagOutput findById(Long id);
 
