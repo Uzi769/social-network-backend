@@ -25,6 +25,9 @@ deploy:
     - cat ~/.ssh/known_hosts
     - mvn clean install -DskipTests=true
     - pwd
+    - scp /builds/irlix/social-network/backend/target/*.jar "$SSH_LOGIN"@"$SSH_KNOWN_HOST":/docker/Container/back_container
+  script:
+    - ssh "$SSH_LOGIN"@"$SSH_KNOWN_HOST" "cd /opt/irlix/social-network/ docker-compose down; docker-compose build; docker-compose up -d; exit"
   only:
     - develop
 
