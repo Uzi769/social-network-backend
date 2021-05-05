@@ -1,15 +1,13 @@
 package com.irlix.irlixbook.dao.model.post;
 
-import com.irlix.irlixbook.dao.entity.Tag;
+import com.irlix.irlixbook.dao.model.tag.TagOutput;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.lang.reflect.Array;
 import java.time.LocalDate;
-import java.util.List;
 
 @Getter
 @Setter
@@ -24,5 +22,5 @@ public class PostOutput {
     private String content;
     private Long userId;
     private Integer commentCount;
-    private Tag[] tagList;
+    private TagOutput tagOutput;
 }

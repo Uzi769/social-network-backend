@@ -13,7 +13,6 @@ public class PostToPostOutput implements Converter<Post, PostOutput> {
                 .topic(post.getTopic())
                 .userId(post.getAuthor().getId())
                 .commentCount(post.getComments().size())
-                //.tagList(post.getTags().toArray())
                 .content(post.getContent())
                 .date(post.getDate())
                 .build();
