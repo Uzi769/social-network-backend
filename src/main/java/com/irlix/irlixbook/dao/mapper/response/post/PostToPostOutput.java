@@ -1,16 +1,12 @@
 package com.irlix.irlixbook.dao.mapper.response.post;
 
 import com.irlix.irlixbook.dao.entity.Post;
-import com.irlix.irlixbook.dao.mapper.response.tag.TagToTagOutput;
 import com.irlix.irlixbook.dao.model.post.PostOutput;
 import com.irlix.irlixbook.dao.model.tag.TagOutput;
-import com.irlix.irlixbook.service.tag.TagService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
 
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 public class PostToPostOutput implements Converter<Post, PostOutput> {
 
     @Override
@@ -28,4 +24,3 @@ public class PostToPostOutput implements Converter<Post, PostOutput> {
                 .build();
     }
 }
-
