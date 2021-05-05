@@ -33,9 +33,8 @@ public class AuthController {
     @CrossOrigin
     @PostMapping("/sign-in")
     public ResponseEntity<String> auth(@RequestBody AuthRequest request) {
-        String token = userService.generateToken(request);
         return ResponseEntity.ok()
-                .header("Authorization", token)
-                .body(token);
+                .header("Authorization", userService.generateToken(request))
+                .body("Auth");
     }
 }
