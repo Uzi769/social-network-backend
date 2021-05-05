@@ -1,5 +1,8 @@
 package com.irlix.irlixbook.controller;
 
+import com.irlix.irlixbook.dao.model.PageableInput;
+import com.irlix.irlixbook.dao.model.post.PostSearch;
+import com.irlix.irlixbook.dao.model.user.UserInputSearch;
 import com.irlix.irlixbook.service.post.PostService;
 import com.irlix.irlixbook.dao.model.post.PostInput;
 import com.irlix.irlixbook.dao.model.post.PostOutput;
@@ -18,7 +21,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/post")
+@RequestMapping("/posts")
 public class PostController {
 
     private final PostService postService;
@@ -37,5 +40,10 @@ public class PostController {
     @ResponseStatus(HttpStatus.CREATED)
     public void create(@RequestBody @Valid PostInput postInput) {
         postService.save(postInput);
+    }
+
+    @GetMapping(value = "/search")
+    public List<PostOutput> search(PostSearch dto, PageableInput pageable) {
+        return postService.search(dto, pageable);
     }
 }

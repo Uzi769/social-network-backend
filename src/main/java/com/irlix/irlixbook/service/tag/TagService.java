@@ -1,5 +1,6 @@
 package com.irlix.irlixbook.service.tag;
 
+import com.irlix.irlixbook.dao.entity.Tag;
 import com.irlix.irlixbook.dao.model.tag.TagInput;
 import com.irlix.irlixbook.dao.model.tag.TagOutput;
 
@@ -11,4 +12,6 @@ public interface TagService {
     TagOutput findById(Long id);
 
     List<TagOutput> findAll();
+
+    Tag getByName(String name);
 }

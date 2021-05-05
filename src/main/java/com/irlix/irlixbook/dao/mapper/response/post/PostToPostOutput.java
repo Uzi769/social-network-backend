@@ -12,7 +12,6 @@ public class PostToPostOutput implements Converter<Post, PostOutput> {
                 .id(post.getId())
                 .topic(post.getTopic())
                 .content(post.getContent())
-                .author(post.getAuthor())
                 .date(post.getDate())
                 .build();
     }

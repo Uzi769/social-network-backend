@@ -20,5 +20,4 @@ public class PostOutput {
     private LocalDate date;
     private String topic;
     private String content;
-    private UserEntity author;
 }
