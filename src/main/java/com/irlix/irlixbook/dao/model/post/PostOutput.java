@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -23,5 +24,5 @@ public class PostOutput {
     private String content;
     private Long userId;
     private Integer commentCount;
-    private List<Tag> tagList;
+    private Tag[] tagList;
 }

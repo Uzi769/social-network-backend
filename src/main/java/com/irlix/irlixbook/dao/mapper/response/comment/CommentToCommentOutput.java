@@ -13,8 +13,8 @@ public class CommentToCommentOutput implements Converter<Comment, CommentOutput>
         return CommentOutput.builder()
                 .body(comment.getBody())
                 .date(comment.getDate())
-                .user(comment.getUser())
-                .post(comment.getPost())
+                .userId(comment.getUser().getId())
+                .postId(comment.getPost().getId())
                 .build();
     }
 }
