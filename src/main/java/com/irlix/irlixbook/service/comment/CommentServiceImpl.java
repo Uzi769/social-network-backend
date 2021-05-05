@@ -2,10 +2,15 @@ package com.irlix.irlixbook.service.comment;
 
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
 import com.irlix.irlixbook.dao.entity.Comment;
+import com.irlix.irlixbook.dao.entity.Post;
+import com.irlix.irlixbook.dao.model.PageableInput;
 import com.irlix.irlixbook.dao.model.comment.CommentInput;
 import com.irlix.irlixbook.dao.model.comment.CommentOutput;
+import com.irlix.irlixbook.dao.model.comment.CommentSearch;
+import com.irlix.irlixbook.dao.model.post.PostOutput;
 import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.CommentRepository;
+import com.irlix.irlixbook.repository.summary.CommentRepositorySummary;
 import com.irlix.irlixbook.service.post.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -24,6 +29,7 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final PostService postService;
     private final ConversionService conversionService;
+    private final CommentRepositorySummary commentRepositorySummary;
 
     private static final String COMMENT_NOT_FOUND = "Comment not found";
 
@@ -59,4 +65,17 @@ public class CommentServiceImpl implements CommentService {
                 .map(comment -> conversionService.convert(comment, CommentOutput.class)).collect(Collectors.toList());
     }
 
+    @Override
+    public void delete(Long id) {
+        commentRepository.findById(id);
+        log.info("Comment deleted. Class PostServiceImpl, method delete");
+    }
+
+    @Override
+    public List<CommentOutput> search(CommentSearch dto, PageableInput pageable) {
+        List<Comment> comments = commentRepositorySummary.search(dto, pageable);
+        return comments.stream()
+                .map(comment -> conversionService.convert(comment, CommentOutput.class))
+                .collect(Collectors.toList());
+    }
 }

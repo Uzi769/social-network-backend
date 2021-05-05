@@ -13,8 +13,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CommentOutput {
-    private String body;
+public class CommentSearch {
+
     private LocalDate date;
     private Long userId;
     private Long postId;
