@@ -1,8 +1,11 @@
 package com.irlix.irlixbook.controller;
 
 import com.irlix.irlixbook.dao.model.PageableInput;
+import com.irlix.irlixbook.dao.model.user.UserCreateInput;
 import com.irlix.irlixbook.dao.model.user.UserEntityOutput;
 import com.irlix.irlixbook.dao.model.user.UserInputSearch;
+import com.irlix.irlixbook.dao.model.user.UserPasswordInput;
+import com.irlix.irlixbook.dao.model.user.UserUpdateInput;
 import com.irlix.irlixbook.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -15,10 +18,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -102,6 +109,56 @@ public class UserController {
                     schema = @Schema(implementation = UserInputSearch.class))
                     UserInputSearch dto, PageableInput pageable) {
         return userService.searchWithPagination(dto, pageable);
+    }
+
+    @Operation(summary = "Add new User", tags = {"user"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "User created"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "403", description = "Forbidden. You can't add new user"),
+            @ApiResponse(responseCode = "409", description = "User already exists")
+    })
+//    @PreAuthorize("hasAuthority('ADMIN')")
+    @PostMapping(value = "/create", consumes = {"application/json"}, produces = {"application/json"})
+    @ResponseStatus(HttpStatus.CREATED)
+    public void createUser(
+            @Parameter(description = "User to add. Cannot be null or empty.", required = true,
+                    schema = @Schema(implementation = UserCreateInput.class))
+            @RequestBody @Valid UserCreateInput create) {
+        userService.createUser(create);
+    }
+
+    @Operation(summary = "Update an existing user", tags = {"user"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "User updated"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "403", description = "Forbidden. You can't update existing users"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+//    @PreAuthorize("hasAuthority('ADMIN')")
+    @PutMapping(value = "/", consumes = {"application/json"}, produces = {"application/json"})
+    public void updateUser(
+            @Parameter(description = "User to update. Cannot be null or empty.", required = true,
+                    schema = @Schema(implementation = UserUpdateInput.class))
+            @RequestBody @Valid UserUpdateInput update) {
+        userService.updateUser(update);
+    }
+
+    @Operation(summary = "Update password for user", tags = {"user"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Successful operation"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "403", description = "Forbidden. You can't update password"),
+            @ApiResponse(responseCode = "404", description = "User information not found")
+    })
+    @ResponseStatus(HttpStatus.CREATED)
+//    @PreAuthorize("hasAuthority('USER')")
+    @PutMapping("/update-password")
+    public void updatePassword(
+            @Parameter(description = "Cannot be null or empty.")
+            @RequestBody @Valid UserPasswordInput userPasswordInput) {
+        userService.updatePassword(userPasswordInput);
     }
 
 }

@@ -23,7 +23,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
 import java.util.Collection;
@@ -41,7 +40,6 @@ public class UserEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull
     private Long id;
 
     @NotEmpty
@@ -101,7 +99,6 @@ public class UserEntity implements UserDetails {
 
     @OneToMany(mappedBy = "author")
     private List<Post> posts;
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
