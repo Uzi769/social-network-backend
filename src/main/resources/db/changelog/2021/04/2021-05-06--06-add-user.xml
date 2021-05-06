@@ -4,7 +4,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
     <changeSet author="Gelnaz" id="06052021-8">
         <insert tableName="user_entity">
-            <column name="password" value="$2y$12$hsWA325CErc6IUuX7VuM5.PfhWfXdx.yXkWEkG2K7mWEiyGRrCcha"/>
+            <column name="password" value="$2y$10$cbYEOpYjch/jkKda/P9GXeQpmDokjzvU.NSMXL/HfiWoA4Sle0clG"/>
             <column name="full_name" value="full_name_user_3"/>
             <column name="city" value="cityTest"/>
             <column name="technologies" value="technoTest"/>
@@ -14,7 +14,7 @@
             <column name="birth_date" value="2002-05-08"/>
         </insert>
         <insert tableName="user_entity">
-            <column name="password" value="$2y$12$hsWA325CErc6IUuX7VuM5.PfhWfXdx.yXkWEkG2K7mWEiyGRrCcha"/>
+            <column name="password" value="$2y$10$cbYEOpYjch/jkKda/P9GXeQpmDokjzvU.NSMXL/HfiWoA4Sle0clG"/>
             <column name="full_name" value="full_name_user_4"/>
             <column name="city" value="cityTest"/>
             <column name="technologies" value="technoTest"/>

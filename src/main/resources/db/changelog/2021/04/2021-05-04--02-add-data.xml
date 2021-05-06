@@ -13,7 +13,7 @@
     </changeSet>
     <changeSet author="Gelnaz" id="04052021-8">
         <insert tableName="user_entity">
-            <column name="password" value="$2y$12$hsWA325CErc6IUuX7VuM5.PfhWfXdx.yXkWEkG2K7mWEiyGRrCcha"/>
+            <column name="password" value="$2y$10$ri/ODgQx3N9DZle6/ZMyhuziclDJP/X4V0bdKxXFdNd.RUEcQgOxO"/>
             <column name="full_name" value="full_name_user_1"/>
             <column name="city" value="cityTest"/>
             <column name="technologies" value="technoTest"/>
@@ -23,7 +23,7 @@
             <column name="birth_date" value="2002-04-08"/>
         </insert>
         <insert tableName="user_entity">
-            <column name="password" value="$2y$12$hsWA325CErc6IUuX7VuM5.PfhWfXdx.yXkWEkG2K7mWEiyGRrCcha"/>
+            <column name="password" value="$2y$10$ri/ODgQx3N9DZle6/ZMyhuziclDJP/X4V0bdKxXFdNd.RUEcQgOxO"/>
             <column name="full_name" value="full_name_user_2"/>
             <column name="city" value="cityTest"/>
             <column name="technologies" value="technoTest"/>
