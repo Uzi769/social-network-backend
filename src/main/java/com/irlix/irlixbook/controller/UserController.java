@@ -98,7 +98,7 @@ public class UserController {
     })
 //    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER', 'MODERATOR'})")
     @CrossOrigin
-    @GetMapping(value = "/birthdays/")
+    @GetMapping(value = "/birthdays")
     public List<UserBirthdaysOutput> getUserWithBirthdays() {
         return userService.findUserWithBirthDays();
     }
