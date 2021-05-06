@@ -5,13 +5,14 @@ import com.irlix.irlixbook.dao.entity.Role;
 import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.model.PageableInput;
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
-import com.irlix.irlixbook.dao.model.user.input.UserPasswordThrow;
-import com.irlix.irlixbook.dao.model.user.output.UserBirthdaysOutput;
 import com.irlix.irlixbook.dao.model.user.input.UserCreateInput;
-import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
-import com.irlix.irlixbook.dao.model.user.input.UserSearchInput;
 import com.irlix.irlixbook.dao.model.user.input.UserPasswordInput;
+import com.irlix.irlixbook.dao.model.user.input.UserPasswordThrow;
+import com.irlix.irlixbook.dao.model.user.input.UserSearchInput;
+import com.irlix.irlixbook.dao.model.user.input.UserUpdateByAdminInput;
 import com.irlix.irlixbook.dao.model.user.input.UserUpdateInput;
+import com.irlix.irlixbook.dao.model.user.output.UserBirthdaysOutput;
+import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
 import com.irlix.irlixbook.exception.BadRequestException;
 import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.RoleRepository;
@@ -204,12 +205,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     @Transactional
-    public void updateUser(UserUpdateInput userUpdateInput) {
-        if (userUpdateInput == null) {
+    public void updateUserByAdmin(UserUpdateByAdminInput userUpdateByAdminInput) {
+        if (userUpdateByAdminInput == null) {
             throw new NotFoundException("Error input data. Class UserServiceImpl, method updateUser");
         }
-        UserEntity userEntity = SecurityContextUtils.getUserFromContext();
-        UserEntity userEntityForUpdate = conversionService.convert(userUpdateInput, UserEntity.class);
+        UserEntity userEntity = findById(userUpdateByAdminInput.getId());
+        UserEntity userEntityForUpdate = conversionService.convert(userUpdateByAdminInput, UserEntity.class);
         if (userEntityForUpdate == null) {
             throw new NotFoundException("Error conversion user. Class UserServiceImpl, method updateUser");
         }
@@ -239,6 +240,38 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
         if (userEntityForUpdate.getAnotherPhone() != null) {
             checkingAnotherPhoneForUniqueness(userEntity, userEntityForUpdate.getAnotherPhone());
+        }
+        userRepository.save(userEntity);
+        log.info("Update user. Class UserServiceImpl, method updateUser");
+    }
+
+    @Override
+    @Transactional
+    public void updateUserByUser(UserUpdateInput userUpdateInput) {
+        if (userUpdateInput == null) {
+            throw new NotFoundException("Error input data. Class UserServiceImpl, method updateUser");
+        }
+        UserEntity userEntity = SecurityContextUtils.getUserFromContext();
+        UserEntity userEntityForUpdate = conversionService.convert(userUpdateInput, UserEntity.class);
+        if (userEntityForUpdate == null) {
+            throw new NotFoundException("Error conversion user. Class UserServiceImpl, method updateUser");
+        }
+        if (userEntityForUpdate.getPhone() != null && !userEntityForUpdate.getPhone().equals(userEntity.getPhone())) {
+            checkingPhoneForUniqueness(userEntity, userEntityForUpdate.getPhone());
+        }
+        if (userEntityForUpdate.getSkype() != null) {
+            userEntity.setSkype(userEntityForUpdate.getSkype());
+        }
+        if (userEntityForUpdate.getAnotherPhone() != null) {
+            checkingAnotherPhoneForUniqueness(userEntity, userEntityForUpdate.getAnotherPhone());
+        }
+        if (userUpdateInput.getPhoto() != null) {
+            userEntity.setPhotos(userEntity.getPhotos().stream().map(photo -> {
+                if (userUpdateInput.getPhoto().getId().equals(photo.getId())) {
+                    photo.setUrl(userUpdateInput.getPhoto().getUrl());
+                }
+                return photo;
+            }).collect(Collectors.toList()));
         }
         userRepository.save(userEntity);
         log.info("Update user. Class UserServiceImpl, method updateUser");

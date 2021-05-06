@@ -1,6 +1,7 @@
 package com.irlix.irlixbook.dao.model.user.input;
 
 
+import com.irlix.irlixbook.dao.entity.Photo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,4 +38,5 @@ public class UserUpdateInput {
     private String anotherPhone;
     private String skype;
     private String telegram;
+    private Photo photo;
 }
