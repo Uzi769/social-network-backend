@@ -20,5 +20,4 @@ public class UserCreateOutput {
     private String fullName;
     private List<DirectionOutput> directionList;
     private List<String> photos;
-    private String token;
 }
