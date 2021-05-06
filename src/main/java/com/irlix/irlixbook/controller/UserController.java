@@ -48,7 +48,6 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found")
     })
 //    @PreAuthorize("hasAuthority('ADMIN')")
-    @CrossOrigin
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(
@@ -66,7 +65,6 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User information not found")
     })
 //    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER', 'MODERATOR'})")
-    @CrossOrigin
     @GetMapping(value = "/info")
     public UserEntityOutput getUserInfo() {
         return userService.findUserInfo();
@@ -80,7 +78,6 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User information not found")
     })
 //    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER', 'MODERATOR'})")
-    @CrossOrigin
     @GetMapping(value = "/info/{id}")
     public UserEntityOutput getUserEntity(
             @Parameter(description = "User to get all info. Cannot be null or empty.", required = true,
@@ -97,7 +94,6 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User information not found")
     })
 //    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER', 'MODERATOR'})")
-    @CrossOrigin
     @GetMapping(value = "/birthdays")
     public List<UserBirthdaysOutput> getUserWithBirthdays() {
         return userService.findUserWithBirthDays();
@@ -112,7 +108,6 @@ public class UserController {
     })
 //    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER', 'MODERATOR'})")
     @GetMapping(value = "/all")
-    @CrossOrigin
     public List<UserEntityOutput> getUserEntityList() {
         return userService.findUserEntityList();
     }
@@ -125,7 +120,6 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Users not found")
     })
 //    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER', 'MODERATOR'})")
-    @CrossOrigin
     @GetMapping(value = "/search")
     public List<UserEntityOutput> searchUser(
             @Parameter(description = "User search parameters. Cannot be null or empty.", required = true,
@@ -142,7 +136,6 @@ public class UserController {
             @ApiResponse(responseCode = "409", description = "User already exists")
     })
 //    @PreAuthorize("hasAuthority('ADMIN')")
-    @CrossOrigin
     @PostMapping(value = "/create", consumes = {"application/json"}, produces = {"application/json"})
     @ResponseStatus(HttpStatus.CREATED)
     public void createUser(
@@ -160,7 +153,6 @@ public class UserController {
             @ApiResponse(responseCode = "409", description = "User already exists")
     })
 //    @PreAuthorize("hasAuthority('ADMIN')")
-    @CrossOrigin
     @PostMapping(value = "/create-moderator", consumes = {"application/json"}, produces = {"application/json"})
     @ResponseStatus(HttpStatus.CREATED)
     public void createModerator(
@@ -179,7 +171,6 @@ public class UserController {
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
 //    @PreAuthorize("hasAuthority('USER', 'MODERATOR')")
-    @CrossOrigin
     @PutMapping(value = "/", consumes = {"application/json"}, produces = {"application/json"})
     public void updateUserByUser(
             @Parameter(description = "User to update. Cannot be null or empty.", required = true,
@@ -197,7 +188,6 @@ public class UserController {
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
 //    @PreAuthorize("hasAuthority('ADMIN')")
-    @CrossOrigin
     @PutMapping(value = "/update-user", consumes = {"application/json"}, produces = {"application/json"})
     public void updateUserByAdmin(
             @Parameter(description = "User to update. Cannot be null or empty.", required = true,
@@ -215,7 +205,6 @@ public class UserController {
     })
     @ResponseStatus(HttpStatus.CREATED)
 //    @PreAuthorize("hasAuthority('USER', 'MODERATOR')")
-    @CrossOrigin
     @PutMapping("/update-password")
     public void updatePassword(
             @Parameter(description = "Cannot be null or empty.")
@@ -232,7 +221,6 @@ public class UserController {
     })
     @ResponseStatus(HttpStatus.CREATED)
 //    @PreAuthorize("hasAuthority('ADMIN')")
-    @CrossOrigin
     @PutMapping("/update-user-password")
     public void updatePasswordByAdmin(
             @Parameter(description = "Cannot be null or empty.")

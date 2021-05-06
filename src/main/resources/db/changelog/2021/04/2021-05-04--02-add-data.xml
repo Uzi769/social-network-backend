@@ -10,27 +10,57 @@
         <insert tableName="role">
             <column name="name" value="ADMIN"/>
         </insert>
+        <insert tableName="role">
+            <column name="name" value="MODERATOR"/>
+        </insert>
     </changeSet>
+
     <changeSet author="Gelnaz" id="04052021-8">
         <insert tableName="user_entity">
             <column name="password" value="$2y$10$ri/ODgQx3N9DZle6/ZMyhuziclDJP/X4V0bdKxXFdNd.RUEcQgOxO"/>
-            <column name="full_name" value="full_name_user_1"/>
-            <column name="city" value="cityTest"/>
-            <column name="technologies" value="technoTest"/>
-            <column name="phone" value="89999999901"/>
-            <column name="email" value="user1@mail.ru"/>
+            <column name="full_name" value="Петров Иван Максимович"/>
+            <column name="city" value="Ульяновск"/>
+            <column name="technologies" value="Spring, Postgres"/>
+            <column name="phone" value="79999999901"/>
+            <column name="skype" value="Petrov"/>
+            <column name="telegram" value="@Petrov"/>
+            <column name="email" value="Petrov@mail.ru"/>
             <column name="is_delete" value="false"/>
             <column name="birth_date" value="2002-04-08"/>
         </insert>
         <insert tableName="user_entity">
             <column name="password" value="$2y$10$ri/ODgQx3N9DZle6/ZMyhuziclDJP/X4V0bdKxXFdNd.RUEcQgOxO"/>
-            <column name="full_name" value="full_name_user_2"/>
-            <column name="city" value="cityTest"/>
-            <column name="technologies" value="technoTest"/>
-            <column name="phone" value="89999999901"/>
-            <column name="email" value="user2@mail.ru"/>
+            <column name="full_name" value="Тимошина Анна Евгеньевна"/>
+            <column name="city" value="Ульяновск"/>
+            <column name="technologies" value="Spring, Postgres"/>
+            <column name="phone" value="79999999902"/>
+            <column name="skype" value="Timoshina"/>
+            <column name="telegram" value="@Timoshina"/>
+            <column name="email" value="Timoshina@mail.ru"/>
             <column name="is_delete" value="false"/>
-            <column name="birth_date" value="2001-04-05"/>
+            <column name="birth_date" value="2000-04-18"/>
+        </insert>
+        <insert tableName="user_entity">
+            <column name="password" value="$2y$10$ri/ODgQx3N9DZle6/ZMyhuziclDJP/X4V0bdKxXFdNd.RUEcQgOxO"/>
+            <column name="full_name" value="Михайлов Андрей Сергеевич"/>
+            <column name="city" value="Казань"/>
+            <column name="phone" value="79999999903"/>
+            <column name="skype" value="Mikhailov"/>
+            <column name="telegram" value="@Mikhailov"/>
+            <column name="email" value="Mikhailov@mail.ru"/>
+            <column name="is_delete" value="false"/>
+            <column name="birth_date" value="2000-05-18"/>
+        </insert>
+        <insert tableName="user_entity">
+            <column name="password" value="$2y$10$ri/ODgQx3N9DZle6/ZMyhuziclDJP/X4V0bdKxXFdNd.RUEcQgOxO"/>
+            <column name="full_name" value="Шмакина Анна Сергеевна"/>
+            <column name="city" value="Казань"/>
+            <column name="phone" value="79999999904"/>
+            <column name="skype" value="Shmakina"/>
+            <column name="telegram" value="@Shmakina"/>
+            <column name="email" value="Shmakina@mail.ru"/>
+            <column name="is_delete" value="false"/>
+            <column name="birth_date" value="2000-05-10"/>
         </insert>
     </changeSet>
     <changeSet author="Gelnaz" id="04052021-12">
@@ -40,10 +70,17 @@
         </insert>
         <insert tableName="user_role">
             <column name="user_id" value="2"/>
+            <column name="role_id" value="1"/>
+        </insert>
+        <insert tableName="user_role">
+            <column name="user_id" value="3"/>
             <column name="role_id" value="2"/>
         </insert>
+        <insert tableName="user_role">
+            <column name="user_id" value="4"/>
+            <column name="role_id" value="3"/>
+        </insert>
     </changeSet>
-
 </databaseChangeLog>
 
 

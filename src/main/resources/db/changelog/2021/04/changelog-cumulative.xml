@@ -13,6 +13,5 @@
     <include file="2021-05-06--03-create-table-token.xml" relativeToChangelogFile="true"/>
     <include file="2021-05-06--04-unique-tag-field.xml" relativeToChangelogFile="true"/>
     <include file="2021-05-06--05-add-new-role-to-table.xml" relativeToChangelogFile="true"/>
-    <include file="2021-05-06--06-add-user.xml" relativeToChangelogFile="true"/>
     <include file="2021-05-06--07-dir-list.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

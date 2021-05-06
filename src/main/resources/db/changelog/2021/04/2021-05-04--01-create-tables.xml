@@ -44,7 +44,7 @@
                 <constraints nullable="false" primaryKey="true" primaryKeyName="direction_pkey"/>
             </column>
             <column name="title" type="VARCHAR(255)">
-                <constraints nullable="false"/>
+                <constraints nullable="false" unique="true"/>
             </column>
             <column name="description" type="VARCHAR(255)"/>
         </createTable>
@@ -92,7 +92,9 @@
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="tag_pkey"/>
             </column>
-            <column name="name" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)">
+                <constraints unique="true"/>
+            </column>
         </createTable>
     </changeSet>
 

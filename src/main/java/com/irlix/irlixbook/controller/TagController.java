@@ -19,17 +19,16 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/tags")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class TagController {
 
     private final TagService tagService;
 
-    @CrossOrigin
     @GetMapping
     public List<TagOutput> findAll() {
         return tagService.findAll();
     }
 
-    @CrossOrigin
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void create(@RequestBody @Valid TagInput tagInput) {

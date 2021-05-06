@@ -5,12 +5,32 @@
 
     <changeSet author="Gelnaz" id="05052021-2">
         <insert tableName="photo">
-            <column name="url" value="http://192.168.88.11/photo1.jpg"/>
+            <column name="url" value="http://192.168.88.11/user11.jpg"/>
             <column name="user_id" value="1"/>
         </insert>
         <insert tableName="photo">
-            <column name="url" value="http://192.168.88.11/photo.jpg"/>
+            <column name="url" value="http://192.168.88.11/user12.jpg"/>
             <column name="user_id" value="1"/>
+        </insert>
+        <insert tableName="photo">
+            <column name="url" value="http://192.168.88.11/user13.jpg"/>
+            <column name="user_id" value="1"/>
+        </insert>
+        <insert tableName="photo">
+            <column name="url" value="http://192.168.88.11/user21.jpg"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="photo">
+            <column name="url" value="http://192.168.88.11/user22.jpg"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="photo">
+            <column name="url" value="http://192.168.88.11/user3.jpg"/>
+            <column name="user_id" value="3"/>
+        </insert>
+        <insert tableName="photo">
+            <column name="url" value="http://192.168.88.11/user4.jpg"/>
+            <column name="user_id" value="4"/>
         </insert>
     </changeSet>
 </databaseChangeLog>

@@ -24,23 +24,21 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/posts")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class PostController {
 
     private final PostService postService;
 
-    @CrossOrigin
     @GetMapping
     public List<PostOutput> findAll() {
         return postService.findAll();
     }
 
-    @CrossOrigin
     @GetMapping(value = "/{id}")
     public PostOutput findById(@PathVariable("id") Long id) {
         return postService.findById(id);
     }
 
-    @CrossOrigin
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public List<PostOutput> create(@RequestBody @Valid PostInput postInput) {
@@ -48,13 +46,11 @@ public class PostController {
         return postService.save(postInput);
     }
 
-    @CrossOrigin
     @GetMapping(value = "/search")
     public List<PostOutput> search(PostSearch dto, PageableInput pageable) {
         return postService.search(dto, pageable);
     }
 
-    @CrossOrigin
     @PutMapping(value = "/{id}}")
     public List<PostOutput> update(
             @PathVariable("id") Long id,
@@ -62,7 +58,6 @@ public class PostController {
         return postService.update(id, postInput);
     }
 
-    @CrossOrigin
     @DeleteMapping(value = "/{id}}")
     public List<PostOutput> delete(@PathVariable("id") Long id) {
 

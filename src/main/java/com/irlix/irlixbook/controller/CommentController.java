@@ -28,30 +28,27 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/comments")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class CommentController {
 
     private final CommentService commentService;
 
-    @CrossOrigin
     @GetMapping
     public List<CommentOutput> findAll() {
         return commentService.findAll();
     }
 
-    @CrossOrigin
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void create(@RequestBody @Valid CommentInput commentInput) {
         commentService.save(commentInput);
     }
 
-    @CrossOrigin
     @GetMapping(value = "/search")
     public List<CommentOutput> search(CommentSearch dto, PageableInput pageable) {
         return commentService.search(dto, pageable);
     }
 
-    @CrossOrigin
     @DeleteMapping(value = "/{id}}")
     public void delete(@PathVariable("id") Long id) {
         commentService.delete(id);
