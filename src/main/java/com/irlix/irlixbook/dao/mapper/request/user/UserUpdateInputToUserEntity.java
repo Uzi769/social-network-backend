@@ -1,7 +1,7 @@
 package com.irlix.irlixbook.dao.mapper.request.user;
 
 import com.irlix.irlixbook.dao.entity.UserEntity;
-import com.irlix.irlixbook.dao.model.user.UserUpdateInput;
+import com.irlix.irlixbook.dao.model.user.input.UserUpdateInput;
 import org.springframework.core.convert.converter.Converter;
 
 public class UserUpdateInputToUserEntity implements Converter<UserUpdateInput, UserEntity> {

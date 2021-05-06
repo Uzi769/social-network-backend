@@ -1,7 +1,7 @@
 package com.irlix.irlixbook.dao.mapper.response.user;
 
 import com.irlix.irlixbook.dao.entity.UserEntity;
-import com.irlix.irlixbook.dao.model.user.UserBirthdaysOutput;
+import com.irlix.irlixbook.dao.model.user.output.UserBirthdaysOutput;
 import org.springframework.core.convert.converter.Converter;
 
 public class UserEntityToUserBirthdaysOutput implements Converter<UserEntity, UserBirthdaysOutput> {

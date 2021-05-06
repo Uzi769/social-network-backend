@@ -3,12 +3,12 @@ package com.irlix.irlixbook.service.user;
 import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.model.PageableInput;
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
-import com.irlix.irlixbook.dao.model.user.UserBirthdaysOutput;
-import com.irlix.irlixbook.dao.model.user.UserCreateInput;
-import com.irlix.irlixbook.dao.model.user.UserEntityOutput;
-import com.irlix.irlixbook.dao.model.user.UserSearchInput;
-import com.irlix.irlixbook.dao.model.user.UserPasswordInput;
-import com.irlix.irlixbook.dao.model.user.UserUpdateInput;
+import com.irlix.irlixbook.dao.model.user.output.UserBirthdaysOutput;
+import com.irlix.irlixbook.dao.model.user.input.UserCreateInput;
+import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
+import com.irlix.irlixbook.dao.model.user.input.UserSearchInput;
+import com.irlix.irlixbook.dao.model.user.input.UserPasswordInput;
+import com.irlix.irlixbook.dao.model.user.input.UserUpdateInput;
 
 import java.util.List;
 

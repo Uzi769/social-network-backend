@@ -1,12 +1,12 @@
 package com.irlix.irlixbook.controller;
 
 import com.irlix.irlixbook.dao.model.PageableInput;
-import com.irlix.irlixbook.dao.model.user.UserBirthdaysOutput;
-import com.irlix.irlixbook.dao.model.user.UserCreateInput;
-import com.irlix.irlixbook.dao.model.user.UserEntityOutput;
-import com.irlix.irlixbook.dao.model.user.UserSearchInput;
-import com.irlix.irlixbook.dao.model.user.UserPasswordInput;
-import com.irlix.irlixbook.dao.model.user.UserUpdateInput;
+import com.irlix.irlixbook.dao.model.user.output.UserBirthdaysOutput;
+import com.irlix.irlixbook.dao.model.user.input.UserCreateInput;
+import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
+import com.irlix.irlixbook.dao.model.user.input.UserSearchInput;
+import com.irlix.irlixbook.dao.model.user.input.UserPasswordInput;
+import com.irlix.irlixbook.dao.model.user.input.UserUpdateInput;
 import com.irlix.irlixbook.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

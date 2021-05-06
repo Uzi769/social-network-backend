@@ -1,7 +1,6 @@
 package com.irlix.irlixbook.dao.model.auth;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

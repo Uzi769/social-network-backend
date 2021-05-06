@@ -1,4 +1,4 @@
-package com.irlix.irlixbook.dao.model.user;
+package com.irlix.irlixbook.dao.model.user.input;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,15 +6,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import javax.validation.constraints.NotNull;
+import java.util.UUID;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserBirthdaysOutput {
+public class UserPasswordThrow {
 
-    private String fullName;
-    private LocalDate birthDate;
+    @NotNull
+    private UUID userId;
 }
+

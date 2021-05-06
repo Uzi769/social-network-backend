@@ -1,4 +1,4 @@
-package com.irlix.irlixbook.dao.model.user;
+package com.irlix.irlixbook.dao.model.user.input;
 
 
 import lombok.AllArgsConstructor;
@@ -10,7 +10,6 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.Column;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
@@ -20,19 +19,22 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserCreateInput {
+public class UserUpdateInput {
 
-    @Length(min = 2, max = 128)
-    @NotEmpty
+    @Size(min = 2, max = 128)
     private String fullName;
     @Size(min = 11, max = 12)
     @Pattern(regexp = "(^\\+?[78][-\\(]?\\d{3}\\)?-?\\d{3}-?\\d{2}-?\\d{2}$)")
     private String phone;
-    @Length(min = 3, max = 128)
+    @Length(min = 2, max = 128)
     @Email
     private String email;
-    private String password;
+    @Column(name = "birth_date")
+    private LocalDate birthDate;
     private String city;
     private String technologies;
-    private LocalDate birthDate;
+    @Pattern(regexp = "(^\\+?[78][-\\(]?\\d{3}\\)?-?\\d{3}-?\\d{2}-?\\d{2}$)")
+    private String anotherPhone;
+    private String skype;
+    private String telegram;
 }

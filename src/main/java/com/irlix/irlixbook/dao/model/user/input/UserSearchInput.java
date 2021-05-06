@@ -1,4 +1,4 @@
-package com.irlix.irlixbook.dao.model.user;
+package com.irlix.irlixbook.dao.model.user.input;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,17 +6,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.constraints.NotNull;
-import java.util.UUID;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserPasswordThrow {
+public class UserSearchInput {
 
-    @NotNull
-    private UUID userId;
+    private String fullName;
+    private String phone;
+    private String email;
+    private boolean delete;
+
 }
-

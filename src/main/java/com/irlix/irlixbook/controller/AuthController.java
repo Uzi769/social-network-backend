@@ -2,6 +2,7 @@ package com.irlix.irlixbook.controller;
 
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
 import com.irlix.irlixbook.dao.model.auth.AuthResponse;
+import com.irlix.irlixbook.dao.model.user.output.UserCreateOutput;
 import com.irlix.irlixbook.service.auth.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -34,10 +35,10 @@ public class AuthController {
     })
     @CrossOrigin
     @PostMapping("/sign-in")
-    public ResponseEntity<String> auth(@RequestBody AuthRequest request) {
+    public ResponseEntity<UserCreateOutput> auth(@RequestBody AuthRequest request) {
         return ResponseEntity.ok()
-                .header("Authorization", authService.authUser(request))
-                .body("Auth");
+                .header("Authorization", authService.authUser(request).getToken())
+                .body(authService.authUser(request).getUserCreateOutput());
     }
 
     @Operation(summary = "Logout in POST request")
