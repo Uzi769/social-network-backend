@@ -28,5 +28,4 @@ public class UserEntityOutput {
     private String skype;
     private String telegram;
     private List<DirectionOutput> directionList;
-
 }
