@@ -43,7 +43,7 @@ public class Comment {
     @Column(name = "date")
     private LocalDate date;
 
-    @OneToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
     @JoinColumn(name = "user_id")
     private UserEntity user;
 

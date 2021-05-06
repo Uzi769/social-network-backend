@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface PostService {
-    List<PostOutput> save(PostInput postInput);
+    void save(PostInput postInput);
 
     PostOutput findById(Long id);
 
@@ -23,7 +23,7 @@ public interface PostService {
 
     List<PostOutput> search(PostSearch dto, PageableInput pageable);
 
-    List<PostOutput> update(Long id, @Valid PostInput postInput);
+    void update(Long id, @Valid PostInput postInput);
 
-    List<PostOutput> delete(Long id);
+    void delete(Long id);
 }

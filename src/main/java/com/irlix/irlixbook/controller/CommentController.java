@@ -27,7 +27,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/comment")
+@RequestMapping("/comments")
 public class CommentController {
 
     private final CommentService commentService;
@@ -41,8 +41,8 @@ public class CommentController {
     @CrossOrigin
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public List<CommentOutput> create(@RequestBody @Valid CommentInput commentInput) {
-        return commentService.save(commentInput);
+    public void create(@RequestBody @Valid CommentInput commentInput) {
+        commentService.save(commentInput);
     }
 
     @CrossOrigin

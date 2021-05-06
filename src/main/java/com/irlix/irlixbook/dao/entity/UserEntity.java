@@ -94,8 +94,8 @@ public class UserEntity implements UserDetails {
             inverseJoinColumns = {@JoinColumn(name = "direction_id", referencedColumnName = "id")})
     private List<Direction> directions;
 
-    @OneToOne(mappedBy = "user")
-    private Comment comment;
+    @OneToMany(mappedBy = "user")
+    private List<Comment> comments;
 
     @OneToMany(mappedBy = "author")
     private List<Post> posts;

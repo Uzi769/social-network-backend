@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/tag")
+@RequestMapping("/tags")
 public class TagController {
 
     private final TagService tagService;
@@ -32,7 +32,7 @@ public class TagController {
     @CrossOrigin
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public List<TagOutput> create(@RequestBody @Valid TagInput tagInput) {
-        return tagService.save(tagInput);
+    public void create(@RequestBody @Valid TagInput tagInput) {
+        tagService.save(tagInput);
     }
 }

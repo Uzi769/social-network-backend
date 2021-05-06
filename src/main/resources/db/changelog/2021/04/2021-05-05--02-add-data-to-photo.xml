@@ -5,11 +5,11 @@
 
     <changeSet author="Gelnaz" id="05052021-2">
         <insert tableName="photo">
-            <column name="url" value="..\..\..\img\photo.jpg"/>
+            <column name="url" value="..\..\img\photo.jpg"/>
             <column name="user_id" value="1"/>
         </insert>
         <insert tableName="photo">
-            <column name="url" value="..\..\..\img\photo1.jpg"/>
+            <column name="url" value="..\..\img\photo1.jpg"/>
             <column name="user_id" value="1"/>
         </insert>
     </changeSet>

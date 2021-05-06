@@ -44,8 +44,8 @@ public class PostController {
     @CrossOrigin
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public List<PostOutput> create(@RequestBody @Valid PostInput postInput) {
-        return postService.save(postInput);
+    public void create(@RequestBody @Valid PostInput postInput) {
+        postService.save(postInput);
     }
 
     @CrossOrigin
@@ -56,16 +56,15 @@ public class PostController {
 
     @CrossOrigin
     @PutMapping(value = "/{id}}")
-    public List<PostOutput> update(
+    public void update(
             @PathVariable("id") Long id,
             @RequestBody @Valid PostInput postInput) {
-        return postService.update(id, postInput);
+        postService.update(id, postInput);
     }
 
     @CrossOrigin
     @DeleteMapping(value = "/{id}}")
-    public List<PostOutput> delete(@PathVariable("id") Long id) {
-        return postService.delete(id);
+    public void delete(@PathVariable("id") Long id) {
+        postService.delete(id);
     }
-
 }
