@@ -17,6 +17,7 @@ import java.util.List;
 @Builder
 public class UserEntityOutput {
 
+    private Long id;
     private String fullName;
     private LocalDate birthDate;
     private String city;
