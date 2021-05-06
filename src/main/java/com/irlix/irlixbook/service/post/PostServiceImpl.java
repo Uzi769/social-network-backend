@@ -55,11 +55,13 @@ public class PostServiceImpl implements PostService {
             throw new NullPointerException("PostInput cannot be null");
         }
         post.setAuthor(SecurityContextUtils.getUserFromContext());
-        List<Tag> tags = postInput.getTags().stream()
-                .map(tagService::getByName)
-                .collect(Collectors.toList());
+        if (!postInput.getTags().isEmpty()) {
+            List<Tag> tags = postInput.getTags().stream()
+                    .map(tagService::getByName)
+                    .collect(Collectors.toList());
+            post.setTags(tags);
+        }
 
-        post.setTags(tags);
         postRepository.save(post);
         log.info("Post saved. Class PostServiceImpl, method save");
         return findAll();
