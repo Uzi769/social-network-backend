@@ -1,5 +1,6 @@
 package com.irlix.irlixbook.dao.model.user;
 
+import com.irlix.irlixbook.dao.entity.Photo;
 import com.irlix.irlixbook.dao.model.direction.DirectionOutput;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,4 +29,5 @@ public class UserEntityOutput {
     private String skype;
     private String telegram;
     private List<DirectionOutput> directionList;
+    private List<String> photos;
 }

@@ -7,6 +7,7 @@ import com.irlix.irlixbook.dao.model.comment.CommentSearch;
 import com.irlix.irlixbook.dao.model.post.PostInput;
 import com.irlix.irlixbook.dao.model.post.PostOutput;
 import com.irlix.irlixbook.dao.model.post.PostSearch;
+import com.irlix.irlixbook.dao.model.tag.TagOutput;
 import com.irlix.irlixbook.service.comment.CommentService;
 import com.irlix.irlixbook.service.post.PostService;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/comment")
+@RequestMapping("/comments")
 public class CommentController {
 
     private final CommentService commentService;
