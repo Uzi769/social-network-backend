@@ -22,5 +22,5 @@ public class PageableInput {
     private int size;
     @PositiveOrZero
     private int page;
-    private boolean sort = true;
+    private boolean sort;
 }
