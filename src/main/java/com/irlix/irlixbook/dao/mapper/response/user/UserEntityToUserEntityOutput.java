@@ -14,7 +14,6 @@ public class UserEntityToUserEntityOutput implements Converter<UserEntity, UserE
     @Override
     public UserEntityOutput convert(UserEntity userEntity) {
         return UserEntityOutput.builder()
-                .id(userEntity.getId())
                 .email(userEntity.getEmail())
                 .fullName(userEntity.getFullName())
                 .phone(userEntity.getPhone())

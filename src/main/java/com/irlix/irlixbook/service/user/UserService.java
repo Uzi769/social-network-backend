@@ -4,6 +4,7 @@ import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.model.PageableInput;
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
 import com.irlix.irlixbook.dao.model.user.input.UserPasswordThrow;
+import com.irlix.irlixbook.dao.model.user.input.UserUpdateByAdminInput;
 import com.irlix.irlixbook.dao.model.user.output.UserBirthdaysOutput;
 import com.irlix.irlixbook.dao.model.user.input.UserCreateInput;
 import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
@@ -32,10 +33,14 @@ public interface UserService {
     List<UserEntityOutput> findUserEntityList();
 
     void createUser(UserCreateInput userCreateInput);
+
     void createModerator(UserCreateInput userCreateInput);
+
     void updatePasswordByAdmin(UserPasswordThrow userPasswordThrow);
 
     void updatePasswordByUser(UserPasswordInput userPasswordInput);
 
-    void updateUser(UserUpdateInput userUpdateInput);
+    void updateUserByUser(UserUpdateInput userUpdateInput);
+
+    void updateUserByAdmin(UserUpdateByAdminInput userUpdateInput);
 }

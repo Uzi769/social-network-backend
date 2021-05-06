@@ -2,6 +2,7 @@ package com.irlix.irlixbook.controller;
 
 import com.irlix.irlixbook.dao.model.PageableInput;
 import com.irlix.irlixbook.dao.model.user.input.UserPasswordThrow;
+import com.irlix.irlixbook.dao.model.user.input.UserUpdateByAdminInput;
 import com.irlix.irlixbook.dao.model.user.output.UserBirthdaysOutput;
 import com.irlix.irlixbook.dao.model.user.input.UserCreateInput;
 import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
@@ -64,7 +65,7 @@ public class UserController {
             @ApiResponse(responseCode = "403", description = "Forbidden. You can't get users information"),
             @ApiResponse(responseCode = "404", description = "User information not found")
     })
-//    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER'})")
+//    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER', 'MODERATOR'})")
     @CrossOrigin
     @GetMapping(value = "/info")
     public UserEntityOutput getUserInfo() {
@@ -78,7 +79,7 @@ public class UserController {
             @ApiResponse(responseCode = "403", description = "Forbidden. You can't get users information"),
             @ApiResponse(responseCode = "404", description = "User information not found")
     })
-//    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER'})")
+//    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER', 'MODERATOR'})")
     @CrossOrigin
     @GetMapping(value = "/info/{id}")
     public UserEntityOutput getUserEntity(
@@ -95,7 +96,7 @@ public class UserController {
             @ApiResponse(responseCode = "403", description = "Forbidden. You can't get users information"),
             @ApiResponse(responseCode = "404", description = "User information not found")
     })
-//    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER'})")
+//    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER', 'MODERATOR'})")
     @CrossOrigin
     @GetMapping(value = "/birthdays/")
     public List<UserBirthdaysOutput> getUserWithBirthdays() {
@@ -109,7 +110,7 @@ public class UserController {
             @ApiResponse(responseCode = "403", description = "Forbidden. You can't get users information"),
             @ApiResponse(responseCode = "404", description = "User information not found")
     })
-//    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER'})")
+//    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER', 'MODERATOR'})")
     @GetMapping(value = "/all")
     @CrossOrigin
     public List<UserEntityOutput> getUserEntityList() {
@@ -123,7 +124,7 @@ public class UserController {
             @ApiResponse(responseCode = "403", description = "Forbidden. You can't get users via search"),
             @ApiResponse(responseCode = "404", description = "Users not found")
     })
-//    @PreAuthorize("hasAuthority('ADMIN')")
+//    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER', 'MODERATOR'})")
     @CrossOrigin
     @GetMapping(value = "/search")
     public List<UserEntityOutput> searchUser(
@@ -177,14 +178,32 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found")
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
-//    @PreAuthorize("hasAuthority('ADMIN')")
+//    @PreAuthorize("hasAuthority('USER', 'MODERATOR')")
     @CrossOrigin
     @PutMapping(value = "/", consumes = {"application/json"}, produces = {"application/json"})
-    public void updateUser(
+    public void updateUserByUser(
             @Parameter(description = "User to update. Cannot be null or empty.", required = true,
                     schema = @Schema(implementation = UserUpdateInput.class))
             @RequestBody @Valid UserUpdateInput update) {
-        userService.updateUser(update);
+        userService.updateUserByUser(update);
+    }
+
+    @Operation(summary = "Update an existing user", tags = {"user"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "User updated"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "403", description = "Forbidden. You can't update existing users"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+//    @PreAuthorize("hasAuthority('ADMIN')")
+    @CrossOrigin
+    @PutMapping(value = "/update-user", consumes = {"application/json"}, produces = {"application/json"})
+    public void updateUserByAdmin(
+            @Parameter(description = "User to update. Cannot be null or empty.", required = true,
+                    schema = @Schema(implementation = UserUpdateByAdminInput.class))
+            @RequestBody @Valid UserUpdateByAdminInput update) {
+        userService.updateUserByAdmin(update);
     }
 
     @Operation(summary = "Update password for user", tags = {"user"})
@@ -195,7 +214,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User information not found")
     })
     @ResponseStatus(HttpStatus.CREATED)
-//    @PreAuthorize("hasAuthority('USER')")
+//    @PreAuthorize("hasAuthority('USER', 'MODERATOR')")
     @CrossOrigin
     @PutMapping("/update-password")
     public void updatePassword(
