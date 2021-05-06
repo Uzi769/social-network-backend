@@ -5,7 +5,7 @@ import com.irlix.irlixbook.dao.entity.Token;
 import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
 import com.irlix.irlixbook.dao.model.auth.AuthResponse;
-import com.irlix.irlixbook.dao.model.user.output.UserCreateOutput;
+import com.irlix.irlixbook.dao.model.user.output.UserAuthOutput;
 import com.irlix.irlixbook.exception.BadRequestException;
 import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.TokenRepository;
@@ -34,7 +34,7 @@ public class AuthServiceImpl implements AuthService {
             if (tokenRepository.findByValue(value).isPresent()) {
                 return AuthResponse.builder()
                         .token(value)
-                        .userCreateOutput(conversionService.convert(userEntity, UserCreateOutput.class))
+                        .userAuthOutput(conversionService.convert(userEntity, UserAuthOutput.class))
                         .build();
             }
             Token token = Token.builder()
@@ -43,7 +43,7 @@ public class AuthServiceImpl implements AuthService {
             tokenRepository.save(token);
             return AuthResponse.builder()
                     .token(token.getValue())
-                    .userCreateOutput(conversionService.convert(userEntity, UserCreateOutput.class))
+                    .userAuthOutput(conversionService.convert(userEntity, UserAuthOutput.class))
                     .build();
         } else throw new BadRequestException("User not active or Wrong Password");
     }

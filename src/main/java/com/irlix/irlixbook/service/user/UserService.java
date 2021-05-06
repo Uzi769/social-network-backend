@@ -3,6 +3,7 @@ package com.irlix.irlixbook.service.user;
 import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.model.PageableInput;
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
+import com.irlix.irlixbook.dao.model.user.input.UserPasswordThrow;
 import com.irlix.irlixbook.dao.model.user.output.UserBirthdaysOutput;
 import com.irlix.irlixbook.dao.model.user.input.UserCreateInput;
 import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
@@ -14,23 +15,27 @@ import java.util.List;
 
 public interface UserService {
 
-    List<UserBirthdaysOutput> getUserWithBirthDays();
+    List<UserBirthdaysOutput> findUserWithBirthDays();
 
-    UserEntityOutput getUserById(Long id);
+    UserEntity findById(Long id);
+
+    UserEntityOutput findUserOutputById(Long id);
 
     void deleteUser(Long id);
 
     UserEntity findUserForAuth(AuthRequest request);
 
-    UserEntityOutput getUserInfo();
+    UserEntityOutput findUserInfo();
 
-    List<UserEntityOutput> searchWithPagination(UserSearchInput userSearchInputo, PageableInput pageable);
+    List<UserEntityOutput> searchWithPagination(UserSearchInput userSearchInput, PageableInput pageable);
 
-    List<UserEntityOutput> getUserEntityList();
+    List<UserEntityOutput> findUserEntityList();
 
-    void createUser(UserCreateInput dto);
+    void createUser(UserCreateInput userCreateInput);
+    void createModerator(UserCreateInput userCreateInput);
+    void updatePasswordByAdmin(UserPasswordThrow userPasswordThrow);
 
-    void updatePassword(UserPasswordInput userPasswordInput);
+    void updatePasswordByUser(UserPasswordInput userPasswordInput);
 
     void updateUser(UserUpdateInput userUpdateInput);
 }

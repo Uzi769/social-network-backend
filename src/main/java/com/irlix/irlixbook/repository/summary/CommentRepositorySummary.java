@@ -45,7 +45,7 @@ public class CommentRepositorySummary {
             predicates.add(builder.equal(root.get("post"), postService.getById(dto.getPostId())));
         }
         if (dto.getUserId() != null) {
-            predicates.add(builder.equal(root.get("user"), userService.getUserById(dto.getUserId())));
+            predicates.add(builder.equal(root.get("user"), userService.findById(dto.getUserId())));
         }
         if (dto.getDate() != null) {
             predicates.add(builder.equal(root.get("date"), dto.getDate()));

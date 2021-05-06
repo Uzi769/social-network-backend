@@ -1,6 +1,6 @@
 package com.irlix.irlixbook.dao.model.auth;
 
-import com.irlix.irlixbook.dao.model.user.output.UserCreateOutput;
+import com.irlix.irlixbook.dao.model.user.output.UserAuthOutput;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,5 +14,5 @@ import lombok.Setter;
 @Builder
 public class AuthResponse {
     private String token;
-    private UserCreateOutput userCreateOutput;
+    private UserAuthOutput userAuthOutput;
 }

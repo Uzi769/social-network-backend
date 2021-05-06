@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserCreateOutput {
+public class UserAuthOutput {
 
     private Long id;
     private String fullName;

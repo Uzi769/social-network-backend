@@ -5,6 +5,7 @@ import com.irlix.irlixbook.dao.entity.Role;
 import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.model.PageableInput;
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
+import com.irlix.irlixbook.dao.model.user.input.UserPasswordThrow;
 import com.irlix.irlixbook.dao.model.user.output.UserBirthdaysOutput;
 import com.irlix.irlixbook.dao.model.user.input.UserCreateInput;
 import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
@@ -42,10 +43,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final PasswordEncoder passwordEncoder;
 
     private static final String USER_ROLE = "USER";
+    private static final String MODERATOR_ROLE = "MODERATOR";
     private static final String USER_NOT_FOUND = "User not found";
 
     @Override
-    public List<UserBirthdaysOutput> getUserWithBirthDays() {
+    public List<UserBirthdaysOutput> findUserWithBirthDays() {
         return userRepository.findByBirthDate()
                 .stream()
                 .map(user -> conversionService.convert(user, UserBirthdaysOutput.class))
@@ -53,8 +55,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public UserEntity findById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> {
+            log.error(USER_NOT_FOUND);
+            return new NotFoundException(USER_NOT_FOUND);
+        });
+    }
+
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public UserEntityOutput getUserById(Long id) {
+    public UserEntityOutput findUserOutputById(Long id) {
         return userRepository.findById(id)
                 .map(userEntity -> conversionService.convert(userEntity, UserEntityOutput.class))
                 .orElseThrow(() -> {
@@ -90,10 +100,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public UserEntityOutput getUserInfo() {
+    public UserEntityOutput findUserInfo() {
         Long id = SecurityContextUtils.getUserFromContext().getId();
-        UserEntity userEntity = userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
+        UserEntity userEntity = findById(id);
         return conversionService.convert(userEntity, UserEntityOutput.class);
     }
 
@@ -106,7 +115,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public List<UserEntityOutput> getUserEntityList() {
+    public List<UserEntityOutput> findUserEntityList() {
         return userRepository.findAll().stream()
                 .map(userEntity -> conversionService.convert(userEntity, UserEntityOutput.class))
                 .collect(Collectors.toList());
@@ -126,11 +135,21 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     @Transactional
     public void createUser(UserCreateInput userCreateInput) {
+        create(userCreateInput, USER_ROLE);
+    }
+
+    @Override
+    @Transactional
+    public void createModerator(UserCreateInput userCreateInput) {
+        create(userCreateInput, MODERATOR_ROLE);
+    }
+
+    private void create(UserCreateInput userCreateInput, String role) {
         UserEntity userEntity = conversionService.convert(userCreateInput, UserEntity.class);
         if (userEntity == null) {
             throw new NotFoundException("Error conversion user. Class UserServiceImpl, method createUser");
         }
-        List<Role> roles = Collections.singletonList(roleRepository.findByName(USER_ROLE)
+        List<Role> roles = Collections.singletonList(roleRepository.findByName(role)
                 .orElseThrow(() -> {
                     log.error("Role not found by name. Class UserServiceImpl, method createUser");
                     return new NotFoundException("Role not found by name");
@@ -153,21 +172,32 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     @Transactional
-    public void updatePassword(UserPasswordInput userPasswordInput) {
+    public void updatePasswordByUser(UserPasswordInput userPasswordInput) {
         UserEntity user = SecurityContextUtils.getUserFromContext();
-        validPassword(userPasswordInput, user);
-        user.setPassword(passwordEncoder.encode(userPasswordInput.getPassword()));
+        updatePassword(userPasswordInput, user);
+    }
+
+    @Override
+    @Transactional
+    public void updatePasswordByAdmin(UserPasswordThrow userPasswordThrow) {
+        UserEntity user = findById(userPasswordThrow.getUserId());
+        updatePassword(userPasswordThrow, user);
+    }
+
+    private void updatePassword(UserPasswordInput userPasswordThrow, UserEntity user) {
+        validPassword(userPasswordThrow);
+        user.setPassword(passwordEncoder.encode(userPasswordThrow.getPassword()));
         userRepository.save(user);
         log.info("Create new password for user by id " + user.getId());
     }
 
-    private void validPassword(UserPasswordInput userPasswordInput, UserEntity user) {
+    private void validPassword(UserPasswordInput userPasswordInput) {
         if (userPasswordInput == null) {
-            log.error("Incorrect password for user by id " + user.getId());
+            log.error("Incorrect password for user");
             throw new BadRequestException("Incorrect password");
         }
         if (!userPasswordInput.getPassword().equals(userPasswordInput.getVerificationPassword())) {
-            log.error("Passwords mismatch for user by id " + user.getId());
+            log.error("Passwords mismatch for user");
             throw new BadRequestException("Passwords mismatch");
         }
     }
@@ -214,19 +244,19 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         log.info("Update user. Class UserServiceImpl, method updateUser");
     }
 
-    private void checkingAnotherPhoneForUniqueness(UserEntity userEntity, String phone) {
-        if (userRepository.findByAnotherPhone(phone).orElse(null) != null) {
-            throw new BadRequestException("User with this phone already exists");
-        } else {
-            userEntity.setAnotherPhone(phone);
-        }
-    }
-
     private void checkingPhoneForUniqueness(UserEntity userEntity, String phone) {
         if (userRepository.findByPhone(phone).orElse(null) != null) {
             throw new BadRequestException("User with this phone already exists");
         } else {
             userEntity.setPhone(phone);
+        }
+    }
+
+    private void checkingAnotherPhoneForUniqueness(UserEntity userEntity, String phone) {
+        if (userRepository.findByAnotherPhone(phone).orElse(null) != null) {
+            throw new BadRequestException("User with this phone already exists");
+        } else {
+            userEntity.setAnotherPhone(phone);
         }
     }
 }
