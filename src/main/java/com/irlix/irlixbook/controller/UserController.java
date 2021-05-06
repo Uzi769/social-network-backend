@@ -36,6 +36,7 @@ import java.util.List;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 @Tag(name = "user", description = "User CRUD controller")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class UserController {
 
     private final UserService userService;
