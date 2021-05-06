@@ -11,7 +11,6 @@ import com.irlix.irlixbook.dao.model.user.UserPasswordInput;
 import com.irlix.irlixbook.dao.model.user.UserUpdateInput;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface UserService {
 
@@ -22,8 +21,6 @@ public interface UserService {
     void deleteUser(Long id);
 
     UserEntity findUserForAuth(AuthRequest request);
-
-    Optional<UserEntity> findByEmail(String email);
 
     UserEntityOutput getUserInfo();
 
@@ -36,6 +33,4 @@ public interface UserService {
     void updatePassword(UserPasswordInput userPasswordInput);
 
     void updateUser(UserUpdateInput userUpdateInput);
-
-    UserEntity findUserById(Long id);
 }

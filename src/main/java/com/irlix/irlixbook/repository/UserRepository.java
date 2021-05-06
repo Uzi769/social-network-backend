@@ -12,7 +12,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Query(nativeQuery=true, value = "SELECT *\n" +
             "FROM user_entity\n" +
             "WHERE DATE(DATE_PART('year', CURRENT_DATE)||'-'||DATE_PART('month', birth_date)||'-'||DATE_PART('day', birth_date))\n" +
-            "          BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '30 days';")
+            "          BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '30 days' ORDER BY birth_date;")
     List<UserEntity> findByBirthDate();
 
     Optional<UserEntity> findByEmail(String email);

@@ -9,12 +9,10 @@ import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.TokenRepository;
 import com.irlix.irlixbook.service.user.UserService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Log4j2
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -22,7 +20,6 @@ public class AuthServiceImpl implements AuthService {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final TokenRepository tokenRepository;
-
 
     @Override
     public String authUser(AuthRequest request) {
