@@ -21,7 +21,7 @@ public interface UserService {
 
     void deleteUser(Long id);
 
-    String generateToken(AuthRequest request);
+    UserEntity findUserForAuth(AuthRequest request);
 
     Optional<UserEntity> findByEmail(String email);
 

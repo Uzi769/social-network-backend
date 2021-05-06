@@ -1,6 +1,7 @@
 package com.irlix.irlixbook.config.security;
 
 import com.irlix.irlixbook.config.security.utils.JwtProvider;
+import com.irlix.irlixbook.repository.TokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,13 +25,14 @@ public class JwtFilter extends GenericFilterBean {
 
     public static final String AUTHORIZATION = "Authorization";
 
+    private final TokenRepository tokenRepository;
     private final UserDetailsService userDetailsService;
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         logger.info("Do filter...");
         String token = getTokenFromRequest((HttpServletRequest) servletRequest);
-        if (token != null && JwtProvider.validateToken(token)) {
+        if (token != null && JwtProvider.validateToken(token) && tokenRepository.findByValue(token).isPresent()) {
             String userEmail = JwtProvider.getLoginFromToken(token);
             UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

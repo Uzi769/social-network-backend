@@ -1,6 +1,5 @@
 package com.irlix.irlixbook.service.user;
 
-import com.irlix.irlixbook.config.security.utils.JwtProvider;
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
 import com.irlix.irlixbook.dao.entity.Role;
 import com.irlix.irlixbook.dao.entity.UserEntity;
@@ -68,7 +67,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 });
     }
 
-
     @Override
     public UserEntity findUserById(Long id) {
         return userRepository.findById(id)
@@ -92,23 +90,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public String generateToken(AuthRequest request) {
+    public UserEntity findUserForAuth(AuthRequest request) {
         String email = request.getEmail();
         String phone = request.getPhone();
-        String password = request.getPassword();
 
-        UserEntity userEntity = new UserEntity();
         if (email != null) {
-            userEntity = findByEmail(email).orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
+            return findByEmail(email).orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
         }
         if (phone != null) {
-            userEntity = userRepository.findByPhone(phone).orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
-        }
-        if (passwordEncoder.matches(password, userEntity.getPassword()) && !userEntity.isDelete()) {
-            return JwtProvider.generateToken(userEntity.getEmail());
-        } else {
-            throw new NotFoundException("Wrong password");
-        }
+            return userRepository.findByPhone(phone).orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
+        } else throw new NotFoundException(USER_NOT_FOUND);
     }
 
     @Override
