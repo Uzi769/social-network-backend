@@ -48,7 +48,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void save(PostInput postInput) {
+    public List<PostOutput> save(PostInput postInput) {
         Post post = conversionService.convert(postInput, Post.class);
         if (post == null) {
             log.error("PostInput cannot be null");
@@ -62,6 +62,7 @@ public class PostServiceImpl implements PostService {
         post.setTags(tags);
         postRepository.save(post);
         log.info("Post saved. Class PostServiceImpl, method save");
+        return findAll();
     }
 
     @Override

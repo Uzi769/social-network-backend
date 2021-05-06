@@ -10,7 +10,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 public interface PostService {
-    void save(PostInput postInput);
+    List<PostOutput> save(PostInput postInput);
 
     PostOutput findById(Long id);
 
