@@ -7,16 +7,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
-import java.util.UUID;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserPasswordThrow {
+public class UserPasswordThrow extends UserPasswordInput{
 
     @NotNull
-    private UUID userId;
+    private Long userId;
 }
 

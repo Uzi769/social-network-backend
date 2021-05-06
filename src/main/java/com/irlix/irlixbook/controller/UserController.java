@@ -67,7 +67,7 @@ public class UserController {
     @CrossOrigin
     @GetMapping(value = "/info")
     public UserEntityOutput getUserInfo() {
-        return userService.getUserInfo();
+        return userService.findUserInfo();
     }
 
     @Operation(summary = "Get user information", description = "Returns single user information", tags = {"user"})
@@ -84,7 +84,7 @@ public class UserController {
             @Parameter(description = "User to get all info. Cannot be null or empty.", required = true,
                     schema = @Schema(implementation = Long.class))
             @PathVariable("id") Long id) {
-        return userService.getUserById(id);
+        return userService.findUserOutputById(id);
     }
 
     @Operation(summary = "Get user information", description = "Returns single user information", tags = {"user"})
@@ -98,7 +98,7 @@ public class UserController {
     @CrossOrigin
     @GetMapping(value = "/birthdays/")
     public List<UserBirthdaysOutput> getUserWithBirthdays() {
-        return userService.getUserWithBirthDays();
+        return userService.findUserWithBirthDays();
     }
 
     @Operation(summary = "Get user information", description = "Returns single user information", tags = {"user"})
@@ -112,7 +112,7 @@ public class UserController {
     @GetMapping(value = "/all")
     @CrossOrigin
     public List<UserEntityOutput> getUserEntityList() {
-        return userService.getUserEntityList();
+        return userService.findUserEntityList();
     }
 
     @Operation(summary = "Find users", tags = {"user"})
@@ -150,6 +150,24 @@ public class UserController {
         userService.createUser(create);
     }
 
+    @Operation(summary = "Add new Moderator", tags = {"user"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "User created"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "403", description = "Forbidden. You can't add new user"),
+            @ApiResponse(responseCode = "409", description = "User already exists")
+    })
+//    @PreAuthorize("hasAuthority('ADMIN')")
+    @CrossOrigin
+    @PostMapping(value = "/create-moderator", consumes = {"application/json"}, produces = {"application/json"})
+    @ResponseStatus(HttpStatus.CREATED)
+    public void createModerator(
+            @Parameter(description = "User to add. Cannot be null or empty.", required = true,
+                    schema = @Schema(implementation = UserCreateInput.class))
+            @RequestBody @Valid UserCreateInput create) {
+        userService.createModerator(create);
+    }
+
     @Operation(summary = "Update an existing user", tags = {"user"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "User updated"),
@@ -182,7 +200,7 @@ public class UserController {
     public void updatePassword(
             @Parameter(description = "Cannot be null or empty.")
             @RequestBody @Valid UserPasswordInput userPasswordInput) {
-        userService.updatePassword(userPasswordInput);
+        userService.updatePasswordByUser(userPasswordInput);
     }
 
 }
