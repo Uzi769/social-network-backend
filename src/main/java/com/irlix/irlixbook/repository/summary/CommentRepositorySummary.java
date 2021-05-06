@@ -1,7 +1,6 @@
 package com.irlix.irlixbook.repository.summary;
 
 import com.irlix.irlixbook.dao.entity.Comment;
-import com.irlix.irlixbook.dao.entity.Post;
 import com.irlix.irlixbook.dao.model.PageableInput;
 import com.irlix.irlixbook.dao.model.comment.CommentSearch;
 import com.irlix.irlixbook.exception.BadRequestException;
@@ -46,7 +45,7 @@ public class CommentRepositorySummary {
             predicates.add(builder.equal(root.get("post"), postService.getById(dto.getPostId())));
         }
         if (dto.getUserId() != null) {
-            predicates.add(builder.equal(root.get("user"), userService.findUserById(dto.getUserId())));
+            predicates.add(builder.equal(root.get("user"), userService.getUserById(dto.getUserId())));
         }
         if (dto.getDate() != null) {
             predicates.add(builder.equal(root.get("date"), dto.getDate()));
