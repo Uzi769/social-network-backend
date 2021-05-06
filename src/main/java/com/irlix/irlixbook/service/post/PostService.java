@@ -20,7 +20,7 @@ public interface PostService {
 
     List<PostOutput> search(PostSearch dto, PageableInput pageable);
 
-    void update(Long id, @Valid PostInput postInput);
+    List<PostOutput>  update(Long id, @Valid PostInput postInput);
 
-    void delete(Long id);
+    List<PostOutput>  delete(Long id);
 }
