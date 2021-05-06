@@ -1,4 +1,4 @@
-package com.irlix.irlixbook.dao.model.user;
+package com.irlix.irlixbook.dao.model.user.output;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

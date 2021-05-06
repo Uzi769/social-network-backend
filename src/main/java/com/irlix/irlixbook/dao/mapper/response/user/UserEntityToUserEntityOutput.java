@@ -1,14 +1,15 @@
 package com.irlix.irlixbook.dao.mapper.response.user;
 
 
+import com.irlix.irlixbook.dao.entity.Photo;
 import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.model.direction.DirectionOutput;
-import com.irlix.irlixbook.dao.model.user.UserEntityOutput;
+import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
 import org.springframework.core.convert.converter.Converter;
 
 import java.util.stream.Collectors;
 
-public class UserEntityConverterToOutputForUser implements Converter<UserEntity, UserEntityOutput> {
+public class UserEntityToUserEntityOutput implements Converter<UserEntity, UserEntityOutput> {
 
     @Override
     public UserEntityOutput convert(UserEntity userEntity) {
@@ -24,7 +25,7 @@ public class UserEntityConverterToOutputForUser implements Converter<UserEntity,
                 .technologies(userEntity.getTechnologies())
                 .telegram(userEntity.getTelegram())
                 .photos(userEntity.getPhotos().stream()
-                        .map(photo -> photo.getUrl())
+                        .map(Photo::getUrl)
                         .collect(Collectors.toList()))
                 .directionList(userEntity.getDirections().stream().map(direction -> DirectionOutput.builder()
                         .title(direction.getTitle())

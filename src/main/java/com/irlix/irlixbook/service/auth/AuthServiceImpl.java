@@ -4,11 +4,13 @@ import com.irlix.irlixbook.config.security.utils.JwtProvider;
 import com.irlix.irlixbook.dao.entity.Token;
 import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
+import com.irlix.irlixbook.dao.model.user.output.UserCreateOutput;
 import com.irlix.irlixbook.exception.BadRequestException;
 import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.TokenRepository;
 import com.irlix.irlixbook.service.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final TokenRepository tokenRepository;
+    private final ConversionService conversionService;
 
     @Override
     public String authUser(AuthRequest request) {
@@ -35,6 +38,15 @@ public class AuthServiceImpl implements AuthService {
                     .build();
             tokenRepository.save(token);
             return token.getValue();
+        } else throw new BadRequestException("User not active or Wrong Password");
+    }
+
+    @Override
+    public UserCreateOutput getAuthUser(AuthRequest request) {
+        String password = request.getPassword();
+        UserEntity userEntity = userService.findUserForAuth(request);
+        if (passwordEncoder.matches(password, userEntity.getPassword()) && !userEntity.isDelete()) {
+            return conversionService.convert(userEntity, UserCreateOutput.class);
         } else throw new BadRequestException("User not active or Wrong Password");
     }
 
