@@ -55,11 +55,13 @@ public class PostServiceImpl implements PostService {
             throw new NullPointerException("PostInput cannot be null");
         }
         post.setAuthor(SecurityContextUtils.getUserFromContext());
-        List<Tag> tags = postInput.getTags().stream()
-                .map(tagService::getByName)
-                .collect(Collectors.toList());
+        if (!postInput.getTags().isEmpty()) {
+            List<Tag> tags = postInput.getTags().stream()
+                    .map(tagService::getByName)
+                    .collect(Collectors.toList());
+            post.setTags(tags);
+        }
 
-        post.setTags(tags);
         postRepository.save(post);
         log.info("Post saved. Class PostServiceImpl, method save");
         return findAll();
@@ -90,16 +92,18 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void delete(Long id) {
+    public List<PostOutput>  delete(Long id) {
         List<Comment> commentRepositories = commentRepository.findAllByPostId(id);
         commentRepositories.stream().forEach(comment -> commentRepository.deleteById(comment.getId()));
         postRepository.deleteById(id);
 
         log.info("Post deleted. Class PostServiceImpl, method delete");
+
+        return findAll();
     }
 
     @Override
-    public void update(Long id, @Valid PostInput postInput) {
+    public List<PostOutput>  update(Long id, @Valid PostInput postInput) {
         Post post = getById(id);
         if (postInput == null) {
             log.error("Post cannot be null, Class PostServiceImpl, method update");
@@ -110,6 +114,8 @@ public class PostServiceImpl implements PostService {
         updatePost(post, newPost);
         postRepository.save(post);
         log.info("Update office by id: " + id + ". Class OfficeServiceImpl, method update");
+
+        return findAll();
     }
     private void updatePost(Post post, Post newPost) {
         if (newPost.getTopic() != null) {

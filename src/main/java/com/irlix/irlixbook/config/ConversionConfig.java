@@ -1,6 +1,7 @@
 package com.irlix.irlixbook.config;
 
 import com.irlix.irlixbook.dao.mapper.request.comment.CommentInputToComment;
+import com.irlix.irlixbook.dao.mapper.request.direction.DirectionInputToDirection;
 import com.irlix.irlixbook.dao.mapper.request.post.PostInputToPost;
 import com.irlix.irlixbook.dao.mapper.request.tag.TagInputToTag;
 import com.irlix.irlixbook.dao.mapper.request.user.UserCreateInputToUserEntity;
@@ -31,6 +32,7 @@ public class ConversionConfig implements WebMvcConfigurer {
         registry.addConverter(new PostToPostOutput());
         registry.addConverter(new CommentInputToComment());
         registry.addConverter(new CommentToCommentOutput());
+        registry.addConverter(new DirectionInputToDirection());
 
     }
 }

@@ -56,15 +56,16 @@ public class PostController {
 
     @CrossOrigin
     @PutMapping(value = "/{id}}")
-    public void update(
+    public List<PostOutput> update(
             @PathVariable("id") Long id,
             @RequestBody @Valid PostInput postInput) {
-        postService.update(id, postInput);
+        return postService.update(id, postInput);
     }
 
     @CrossOrigin
     @DeleteMapping(value = "/{id}}")
-    public void delete(@PathVariable("id") Long id) {
-        postService.delete(id);
+    public List<PostOutput> delete(@PathVariable("id") Long id) {
+
+        return postService.delete(id);
     }
 }
