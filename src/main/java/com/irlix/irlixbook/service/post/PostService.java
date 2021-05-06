@@ -5,12 +5,9 @@ import com.irlix.irlixbook.dao.model.PageableInput;
 import com.irlix.irlixbook.dao.model.post.PostInput;
 import com.irlix.irlixbook.dao.model.post.PostOutput;
 import com.irlix.irlixbook.dao.model.post.PostSearch;
-import com.irlix.irlixbook.dao.model.user.UserEntityOutput;
-import com.irlix.irlixbook.dao.model.user.UserInputSearch;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.UUID;
 
 public interface PostService {
     void save(PostInput postInput);

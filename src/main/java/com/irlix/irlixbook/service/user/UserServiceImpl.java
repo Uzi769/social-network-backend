@@ -8,7 +8,7 @@ import com.irlix.irlixbook.dao.model.auth.AuthRequest;
 import com.irlix.irlixbook.dao.model.user.UserBirthdaysOutput;
 import com.irlix.irlixbook.dao.model.user.UserCreateInput;
 import com.irlix.irlixbook.dao.model.user.UserEntityOutput;
-import com.irlix.irlixbook.dao.model.user.UserInputSearch;
+import com.irlix.irlixbook.dao.model.user.UserSearchInput;
 import com.irlix.irlixbook.dao.model.user.UserPasswordInput;
 import com.irlix.irlixbook.dao.model.user.UserUpdateInput;
 import com.irlix.irlixbook.exception.BadRequestException;
@@ -98,8 +98,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public List<UserEntityOutput> searchWithPagination(UserInputSearch dto, PageableInput pageable) {
-        List<UserEntity> userEntityList = userRepositorySummary.search(dto, pageable);
+    public List<UserEntityOutput> searchWithPagination(UserSearchInput userSearchInput, PageableInput pageable) {
+        List<UserEntity> userEntityList = userRepositorySummary.search(userSearchInput, pageable);
         return userEntityList.stream()
                 .map(userEntity -> conversionService.convert(userEntity, UserEntityOutput.class))
                 .collect(Collectors.toList());

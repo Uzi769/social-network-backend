@@ -1,10 +1,8 @@
 package com.irlix.irlixbook.repository.summary;
 
 import com.irlix.irlixbook.dao.entity.Post;
-import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.model.PageableInput;
 import com.irlix.irlixbook.dao.model.post.PostSearch;
-import com.irlix.irlixbook.dao.model.user.UserInputSearch;
 import com.irlix.irlixbook.exception.BadRequestException;
 import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.service.tag.TagService;

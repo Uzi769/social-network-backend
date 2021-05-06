@@ -4,7 +4,7 @@ import com.irlix.irlixbook.dao.model.PageableInput;
 import com.irlix.irlixbook.dao.model.user.UserBirthdaysOutput;
 import com.irlix.irlixbook.dao.model.user.UserCreateInput;
 import com.irlix.irlixbook.dao.model.user.UserEntityOutput;
-import com.irlix.irlixbook.dao.model.user.UserInputSearch;
+import com.irlix.irlixbook.dao.model.user.UserSearchInput;
 import com.irlix.irlixbook.dao.model.user.UserPasswordInput;
 import com.irlix.irlixbook.dao.model.user.UserUpdateInput;
 import com.irlix.irlixbook.service.user.UserService;
@@ -127,8 +127,8 @@ public class UserController {
     @GetMapping(value = "/search")
     public List<UserEntityOutput> searchUser(
             @Parameter(description = "User search parameters. Cannot be null or empty.", required = true,
-                    schema = @Schema(implementation = UserInputSearch.class))
-                    UserInputSearch dto, PageableInput pageable) {
+                    schema = @Schema(implementation = UserSearchInput.class))
+                    UserSearchInput dto, PageableInput pageable) {
         return userService.searchWithPagination(dto, pageable);
     }
 
