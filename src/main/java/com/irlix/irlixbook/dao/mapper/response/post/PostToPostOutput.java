@@ -15,7 +15,7 @@ public class PostToPostOutput implements Converter<Post, PostOutput> {
                 .id(post.getId())
                 .topic(post.getTopic())
                 .userId(post.getAuthor().getId())
-                .commentCount(post.getComments().size())
+                .commentCount(post.getComments() != null ? post.getComments().size() : 0)
                 .content(post.getContent())
                 .date(post.getDate())
                 .tagOutput(post.getTags().stream()

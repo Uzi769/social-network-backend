@@ -43,8 +43,9 @@ public class PostController {
     @CrossOrigin
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void create(@RequestBody @Valid PostInput postInput) {
-        postService.save(postInput);
+    public List<PostOutput> create(@RequestBody @Valid PostInput postInput) {
+
+        return postService.save(postInput);
     }
 
     @CrossOrigin
