@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserInputSearch {
+public class UserSearchInput {
 
     private String fullName = "";
     private String phone = "";

@@ -2,7 +2,7 @@ package com.irlix.irlixbook.repository.summary;
 
 import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.model.PageableInput;
-import com.irlix.irlixbook.dao.model.user.UserInputSearch;
+import com.irlix.irlixbook.dao.model.user.UserSearchInput;
 import com.irlix.irlixbook.exception.BadRequestException;
 import com.irlix.irlixbook.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class UserRepositorySummary {
 
     private final EntityManager entityManager;
 
-    public List<UserEntity> search(UserInputSearch dto, PageableInput pageable) {
+    public List<UserEntity> search(UserSearchInput userSearchInput, PageableInput pageable) {
 
         if (pageable.getPage() < 0 || pageable.getSize() < 0) {
             log.error("Pageable was negative. Class UserServiceImpl, method searchWithPagination");
@@ -37,17 +37,17 @@ public class UserRepositorySummary {
         Root<UserEntity> root = query.from(UserEntity.class);
         List<Predicate> predicates = new ArrayList<>();
 
-        if (dto.isDelete()) {
-            predicates.add(builder.equal(root.get("delete"), dto.isDelete()));
+        if (userSearchInput.isDelete()) {
+            predicates.add(builder.equal(root.get("delete"), userSearchInput.isDelete()));
         }
-        if (!dto.getEmail().isEmpty()) {
-            predicates.add(builder.equal(root.get("email"), dto.getEmail()));
+        if (!userSearchInput.getEmail().isEmpty()) {
+            predicates.add(builder.equal(root.get("email"), userSearchInput.getEmail()));
         }
-        if (!dto.getPhone().isEmpty()) {
-            predicates.add(builder.equal(root.get("phone"), dto.getPhone()));
+        if (!userSearchInput.getPhone().isEmpty()) {
+            predicates.add(builder.equal(root.get("phone"), userSearchInput.getPhone()));
         }
-        if (!dto.getFullName().isEmpty()) {
-            predicates.add(builder.like(root.get("fullName"), "%" + dto.getFullName() + "%"));
+        if (!userSearchInput.getFullName().isEmpty()) {
+            predicates.add(builder.like(root.get("fullName"), "%" + userSearchInput.getFullName() + "%"));
         }
         if (!pageable.isSort()) {
             query.orderBy(builder.desc(root.get("fullName")));

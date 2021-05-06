@@ -8,7 +8,7 @@ import com.irlix.irlixbook.dao.model.auth.AuthRequest;
 import com.irlix.irlixbook.dao.model.user.UserBirthdaysOutput;
 import com.irlix.irlixbook.dao.model.user.UserCreateInput;
 import com.irlix.irlixbook.dao.model.user.UserEntityOutput;
-import com.irlix.irlixbook.dao.model.user.UserInputSearch;
+import com.irlix.irlixbook.dao.model.user.UserSearchInput;
 import com.irlix.irlixbook.dao.model.user.UserPasswordInput;
 import com.irlix.irlixbook.dao.model.user.UserUpdateInput;
 import com.irlix.irlixbook.exception.BadRequestException;
@@ -17,12 +17,10 @@ import com.irlix.irlixbook.repository.RoleRepository;
 import com.irlix.irlixbook.repository.UserRepository;
 import com.irlix.irlixbook.repository.summary.UserRepositorySummary;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -30,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -47,12 +44,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private static final String USER_ROLE = "USER";
     private static final String USER_NOT_FOUND = "User not found";
 
-    @SneakyThrows
     @Override
     public List<UserBirthdaysOutput> getUserWithBirthDays() {
         return userRepository.findByBirthDate()
                 .stream()
-                .map(i -> conversionService.convert(i, UserBirthdaysOutput.class))
+                .map(user -> conversionService.convert(user, UserBirthdaysOutput.class))
                 .collect(Collectors.toList());
     }
 
@@ -61,15 +57,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public UserEntityOutput getUserById(Long id) {
         return userRepository.findById(id)
                 .map(userEntity -> conversionService.convert(userEntity, UserEntityOutput.class))
-                .orElseThrow(() -> {
-                    log.error(USER_NOT_FOUND);
-                    return new NotFoundException(USER_NOT_FOUND);
-                });
-    }
-
-    @Override
-    public UserEntity findUserById(Long id) {
-        return userRepository.findById(id)
                 .orElseThrow(() -> {
                     log.error(USER_NOT_FOUND);
                     return new NotFoundException(USER_NOT_FOUND);
@@ -95,23 +82,24 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         String phone = request.getPhone();
 
         if (email != null) {
-            return findByEmail(email).orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
+            return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
         }
         if (phone != null) {
             return userRepository.findByPhone(phone).orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
-        } else throw new NotFoundException(USER_NOT_FOUND);
+        } else throw new BadRequestException("Email and Phone are null");
     }
 
     @Override
     public UserEntityOutput getUserInfo() {
         Long id = SecurityContextUtils.getUserFromContext().getId();
-        UserEntity userEntity = findUserById(id);
+        UserEntity userEntity = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
         return conversionService.convert(userEntity, UserEntityOutput.class);
     }
 
     @Override
-    public List<UserEntityOutput> searchWithPagination(UserInputSearch dto, PageableInput pageable) {
-        List<UserEntity> userEntityList = userRepositorySummary.search(dto, pageable);
+    public List<UserEntityOutput> searchWithPagination(UserSearchInput userSearchInput, PageableInput pageable) {
+        List<UserEntity> userEntityList = userRepositorySummary.search(userSearchInput, pageable);
         return userEntityList.stream()
                 .map(userEntity -> conversionService.convert(userEntity, UserEntityOutput.class))
                 .collect(Collectors.toList());
@@ -125,16 +113,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public Optional<UserEntity> findByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
-
-    @Override
     @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email) {
         UserDetails userDetails = userRepository.findByEmail(email).orElseThrow(() -> {
             log.error(USER_NOT_FOUND);
-            return new UsernameNotFoundException(USER_NOT_FOUND);
+            return new NotFoundException(USER_NOT_FOUND);
         });
         userDetails.getAuthorities();
         return userDetails;
