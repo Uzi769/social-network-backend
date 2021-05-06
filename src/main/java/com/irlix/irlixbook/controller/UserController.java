@@ -1,6 +1,7 @@
 package com.irlix.irlixbook.controller;
 
 import com.irlix.irlixbook.dao.model.PageableInput;
+import com.irlix.irlixbook.dao.model.user.input.UserPasswordThrow;
 import com.irlix.irlixbook.dao.model.user.output.UserBirthdaysOutput;
 import com.irlix.irlixbook.dao.model.user.input.UserCreateInput;
 import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
@@ -201,6 +202,23 @@ public class UserController {
             @Parameter(description = "Cannot be null or empty.")
             @RequestBody @Valid UserPasswordInput userPasswordInput) {
         userService.updatePasswordByUser(userPasswordInput);
+    }
+
+    @Operation(summary = "Update password for user", tags = {"user"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Successful operation"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "403", description = "Forbidden. You can't update password"),
+            @ApiResponse(responseCode = "404", description = "User information not found")
+    })
+    @ResponseStatus(HttpStatus.CREATED)
+//    @PreAuthorize("hasAuthority('ADMIN')")
+    @CrossOrigin
+    @PutMapping("/update-user-password")
+    public void updatePasswordByAdmin(
+            @Parameter(description = "Cannot be null or empty.")
+            @RequestBody @Valid UserPasswordThrow userPasswordThrow) {
+        userService.updatePasswordByAdmin(userPasswordThrow);
     }
 
 }
