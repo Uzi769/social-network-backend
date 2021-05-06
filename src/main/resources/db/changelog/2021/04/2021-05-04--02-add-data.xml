@@ -53,12 +53,12 @@
         </insert>
         <insert tableName="user_entity">
             <column name="password" value="$2y$10$ri/ODgQx3N9DZle6/ZMyhuziclDJP/X4V0bdKxXFdNd.RUEcQgOxO"/>
-            <column name="full_name" value="Шмакина Анна Сергеевна"/>
+            <column name="full_name" value="Иванова Анна Сергеевна"/>
             <column name="city" value="Казань"/>
             <column name="phone" value="79999999904"/>
-            <column name="skype" value="Shmakina"/>
-            <column name="telegram" value="@Shmakina"/>
-            <column name="email" value="Shmakina@mail.ru"/>
+            <column name="skype" value="Ivanova"/>
+            <column name="telegram" value="@Ivanova"/>
+            <column name="email" value="Ivanova@mail.ru"/>
             <column name="is_delete" value="false"/>
             <column name="birth_date" value="2000-05-10"/>
         </insert>
