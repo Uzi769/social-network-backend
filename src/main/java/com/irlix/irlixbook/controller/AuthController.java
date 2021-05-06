@@ -37,8 +37,8 @@ public class AuthController {
     @PostMapping("/sign-in")
     public ResponseEntity<UserCreateOutput> auth(@RequestBody AuthRequest request) {
         return ResponseEntity.ok()
-                .header("Authorization", authService.authUser(request))
-                .body(authService.getAuthUser(request));
+                .header("Authorization", authService.authUser(request).getToken())
+                .body(authService.authUser(request).getUserCreateOutput());
     }
 
     @Operation(summary = "Logout in POST request")
