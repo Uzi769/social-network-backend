@@ -39,14 +39,16 @@ public class UserRepositorySummary {
 
         if (userSearchInput.isDelete()) {
             predicates.add(builder.equal(root.get("delete"), userSearchInput.isDelete()));
+        } else {
+            predicates.add(builder.equal(root.get("delete"), userSearchInput.isDelete()));
         }
-        if (!userSearchInput.getEmail().isEmpty()) {
+        if (userSearchInput.getEmail() != null) {
             predicates.add(builder.equal(root.get("email"), userSearchInput.getEmail()));
         }
-        if (!userSearchInput.getPhone().isEmpty()) {
+        if (userSearchInput.getPhone() != null) {
             predicates.add(builder.equal(root.get("phone"), userSearchInput.getPhone()));
         }
-        if (!userSearchInput.getFullName().isEmpty()) {
+        if (userSearchInput.getFullName() != null) {
             predicates.add(builder.like(root.get("fullName"), "%" + userSearchInput.getFullName() + "%"));
         }
         if (!pageable.isSort()) {
@@ -63,10 +65,6 @@ public class UserRepositorySummary {
         typedQuery.setMaxResults(pageable.getSize());
 
         List<UserEntity> list = typedQuery.getResultList();
-
-        if (list.isEmpty()) {
-            throw new NotFoundException("Empty list. Class UserRepositorySummary, method search");
-        }
 
         log.info("Create users list for searchWithPagination. Class UserRepositorySummary, method search");
         return list;

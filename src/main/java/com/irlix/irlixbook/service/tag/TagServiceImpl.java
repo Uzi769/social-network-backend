@@ -3,6 +3,7 @@ package com.irlix.irlixbook.service.tag;
 import com.irlix.irlixbook.dao.entity.Tag;
 import com.irlix.irlixbook.dao.model.tag.TagInput;
 import com.irlix.irlixbook.dao.model.tag.TagOutput;
+import com.irlix.irlixbook.exception.BadRequestException;
 import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
@@ -44,11 +45,17 @@ public class TagServiceImpl implements TagService {
     @Override
     @Transactional
     public void save(TagInput tagInput) {
-        Tag tag = conversionService.convert(tagInput, Tag.class);
-        if (tag == null) {
+        if (tagInput == null) {
             log.error("TagInput cannot be null");
             throw new NullPointerException("TagInput cannot be null");
         }
+        if (!tagRepository.findByName(tagInput.getName()).isEmpty()) {
+            log.error("This tag already exist");
+            throw new BadRequestException("This tag already exist");
+        }
+
+        Tag tag = conversionService.convert(tagInput, Tag.class);
+
         tagRepository.save(tag);
         log.info("Tag saved. Class TagServiceImpl, method save");
     }
