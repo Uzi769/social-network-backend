@@ -11,6 +11,9 @@ public class UserEntityToUserBirthdaysOutput implements Converter<UserEntity, Us
         return UserBirthdaysOutput.builder()
                 .fullName(userEntity.getFullName())
                 .birthDate(userEntity.getBirthDate())
+                .photo(userEntity.getPhotos() != null ?
+                        userEntity.getPhotos().get(0).getUrl() :
+                        "")
                 .build();
     }
 }

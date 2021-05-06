@@ -17,4 +17,5 @@ public class UserBirthdaysOutput {
 
     private String fullName;
     private LocalDate birthDate;
+    private String photo;
 }
