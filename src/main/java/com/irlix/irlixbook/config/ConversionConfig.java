@@ -33,6 +33,5 @@ public class ConversionConfig implements WebMvcConfigurer {
         registry.addConverter(new CommentInputToComment());
         registry.addConverter(new CommentToCommentOutput());
         registry.addConverter(new DirectionInputToDirection());
-
     }
 }
