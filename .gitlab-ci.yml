@@ -1,34 +1,50 @@
 stages:
     - build jar
-    - deploy
+    - build image
+    - push image
 
 build:
   stage: build jar
-  before_script:
-    - source .${CI_COMMIT_REF_NAME}.env
+  tags:
+    - maven
   script:
-    - mvn clean install -DskipTests=true
+    - mvn package -DskipTests
   artifacts:
     paths:
       - target/*.jar
     expire_in: 1 week
   only:
-    - master
+    - develop
 
-deploy:
-  stage: deploy
+docker:
+  stage: build image
+  services:
+    - docker:19.03.12-dind
+  tags:
+    - docker-builder
   before_script:
-    - which ssh-agent
-    - eval $(ssh-agent -s)
-    - ssh-add - <<< "${SSH_PRIVATE_KEY}"
-    - '[[ -f /.dockerenv ]] && mkdir -p ~/.ssh && ssh-keyscan -H "$SSH_KNOWN_HOST" >> ~/.ssh/known_hosts'
-    - cat ~/.ssh/known_hosts
-    - mvn clean install -DskipTests=true
-    - pwd
-    - ls /builds/irlix/social-network/backend/target/
-    - scp /builds/irlix/social-network/backend/target/*.jar "$SSH_LOGIN"@"$SSH_KNOWN_HOST":/opt/irlix/social-network/back/
+    - update-ca-certificates
+    - echo "$CI_REGISTRY_USER/$CI_REGISTRY_PASSWORD/$CI_REGISTRY"
+    - docker login -u 'robot$social-network+gitlab-social-network' -p 'E2TLuCeTctGdozznqmdplOJO9UieZS83' harbor.lan
   script:
-    - ssh "$SSH_LOGIN"@"$SSH_KNOWN_HOST" "cd /opt/irlix/social-network/; docker-compose down; docker-compose build; docker-compose up -d; exit"
+    - docker pull $CI_REGISTRY_IMAGE:latest || true
+    - docker build --cache-from $CI_REGISTRY_IMAGE:latest --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE:latest .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker push $CI_REGISTRY_IMAGE:latest
   only:
     - develop
+
+deploy:
+  stage: push image
+  tags:
+    - ssh
+  before_script:
+    - eval $(ssh-agent -s)
+    - ssh-add - <<< "${SSH_PRIVATE_KEY}"
+    - 'mkdir -p ~/.ssh && ssh-keyscan -H "$SSH_KNOWN_HOST" >> ~/.ssh/known_hosts'
+  script:
+    - ssh "$SSH_LOGIN"@"$SSH_KNOWN_HOST" "cd $LOCATION; docker-compose down; docker-compose pull; docker-compose up -d; exit"
+  only:
+    - develop
+
 
