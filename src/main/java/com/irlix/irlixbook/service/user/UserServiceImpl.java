@@ -5,15 +5,10 @@ import com.irlix.irlixbook.dao.entity.Role;
 import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.model.PageableInput;
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
-import com.irlix.irlixbook.dao.model.user.input.UserCreateInput;
-import com.irlix.irlixbook.dao.model.user.input.UserPasswordInput;
-import com.irlix.irlixbook.dao.model.user.input.UserPasswordThrow;
-import com.irlix.irlixbook.dao.model.user.input.UserSearchInput;
-import com.irlix.irlixbook.dao.model.user.input.UserUpdateByAdminInput;
-import com.irlix.irlixbook.dao.model.user.input.UserUpdateInput;
-import com.irlix.irlixbook.dao.model.user.output.UserBirthdaysOutput;
+import com.irlix.irlixbook.dao.model.user.input.*;
 import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
 import com.irlix.irlixbook.exception.BadRequestException;
+import com.irlix.irlixbook.exception.ConflictException;
 import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.RoleRepository;
 import com.irlix.irlixbook.repository.UserRepository;
@@ -28,9 +23,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static com.irlix.irlixbook.utils.Consts.*;
 
 @Log4j2
 @Service
@@ -45,67 +45,204 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     private static final String USER_ROLE = "USER";
     private static final String MODERATOR_ROLE = "MODERATOR";
-    private static final String USER_NOT_FOUND = "User not found";
+
 
     @Override
-    public List<UserBirthdaysOutput> findUserWithBirthDays() {
-        return userRepository.findByBirthDate()
-                .stream()
-                .map(user -> conversionService.convert(user, UserBirthdaysOutput.class))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public UserEntity findById(Long id) {
+    public UserEntity findById(UUID id) {
         return userRepository.findById(id).orElseThrow(() -> {
             log.error(USER_NOT_FOUND);
-            return new NotFoundException(USER_NOT_FOUND);
+            return new ConflictException(USER_NOT_FOUND);
         });
     }
 
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public UserEntityOutput findUserOutputById(Long id) {
+    public UserEntityOutput findUserOutputById(UUID id) {
         return userRepository.findById(id)
-                .map(userEntity -> conversionService.convert(userEntity, UserEntityOutput.class))
+                .map(user -> conversionService.convert(user, UserEntityOutput.class))
                 .orElseThrow(() -> {
                     log.error(USER_NOT_FOUND);
-                    return new NotFoundException(USER_NOT_FOUND);
+                    return new ConflictException(USER_NOT_FOUND);
                 });
     }
 
     @Override
-    @Transactional
-    public void deleteUser(Long id) {
-        UserEntity userEntity = userRepository.findById(id).orElseThrow(() -> {
-            log.error(USER_NOT_FOUND);
-            return new NotFoundException(USER_NOT_FOUND);
-        });
-
-        userEntity.setDelete(true);
-        userRepository.save(userEntity);
-        log.info("Soft delete user. Class UserServiceImpl, method deleteUser");
+    public UserEntityOutput findUserFromContext() {
+        UUID id = SecurityContextUtils.getUserFromContext().getId();
+        UserEntity user = findById(id);
+        return conversionService.convert(user, UserEntityOutput.class);
     }
+
+    @Override
+    @Transactional
+    public UserEntityOutput createUser(UserCreateInput userCreateInput) {
+        return create(userCreateInput, USER_ROLE);
+    }
+
+    private UserEntityOutput create(UserCreateInput userCreateInput, String role) {
+        UserEntity userEntity = conversionService.convert(userCreateInput, UserEntity.class);
+        if (userEntity == null) {
+            throw new ConflictException("Error conversion user. Class UserServiceImpl, method createUser");
+        }
+        List<Role> roles = Collections.singletonList(roleRepository.findByName(role)
+                .orElseThrow(() -> {
+                    log.error(ROLE_NOT_FOUND);
+                    return new NotFoundException(ROLE_NOT_FOUND);
+                }));
+        checkingMailForUniqueness(userEntity, userCreateInput.getEmail());
+        userEntity.setPassword(passwordEncoder.encode(createPassword()));
+
+        userEntity.setRoles(roles);
+        UserEntity savedUser = userRepository.save(userEntity);
+        log.info(USER_SAVED);
+        return conversionService.convert(savedUser, UserEntityOutput.class);
+
+    }
+
+    private void checkingMailForUniqueness(UserEntity userEntity, String email) {
+        if (userRepository.findByEmail(email).orElse(null) != null) {
+            throw new BadRequestException(USER_WITH_EMAIL_ALREADY_EXISTS);
+        } else {
+            userEntity.setEmail(email);
+        }
+    }
+
+    private String createPassword() {
+        return new Random().ints(8, 48, 57)
+                .mapToObj(i -> String.valueOf((char) i)).collect(Collectors.joining());
+    }
+
+    @Override
+    public List<UserEntityOutput> findUsers() {
+        return userRepository.findAll().stream()
+                .filter(userEntity -> userEntity.getBlocked() == null)
+                .map(user -> conversionService.convert(user, UserEntityOutput.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public UserEntityOutput updateUser(UserUpdateInput userUpdateInput, UUID id) {
+        UserEntity userEntity;
+        if (id == null) {
+            userEntity = SecurityContextUtils.getUserFromContext();
+        } else {
+            userEntity = findById(id);
+        }
+
+        UserEntity userEntityForUpdate = conversionService.convert(userUpdateInput, UserEntity.class);
+        if (userEntityForUpdate == null) {
+            throw new BadRequestException(CONVERSION_ERROR);
+        }
+
+        checkingUpdatedData(userEntity, userEntityForUpdate);
+
+        UserEntity user = userRepository.save(userEntity);
+        log.info(USER_UPDATED);
+        return conversionService.convert(user, UserEntityOutput.class);
+    }
+
+    private void checkingPhoneForUniqueness(UserEntity userEntity, String phone) {
+        if (userRepository.findByPhone(phone).orElse(null) != null) {
+            throw new BadRequestException(USER_WITH_PHONE_ALREADY_EXISTS);
+        } else {
+            userEntity.setPhone(phone);
+        }
+    }
+
+    private void checkingUpdatedData(UserEntity userEntity, UserEntity userEntityForUpdate) {
+        if (userEntityForUpdate.getSurname() != null && !userEntityForUpdate.getSurname().equals(userEntity.getSurname())) {
+            userEntity.setSurname(userEntityForUpdate.getSurname());
+        }
+        if (userEntityForUpdate.getName() != null && !userEntityForUpdate.getName().equals(userEntity.getName())) {
+            userEntity.setName(userEntityForUpdate.getName());
+        }
+        if (userEntityForUpdate.getPhone() != null && !userEntityForUpdate.getPhone().equals(userEntity.getPhone())) {
+            checkingPhoneForUniqueness(userEntity, userEntityForUpdate.getPhone());
+        }
+        if (userEntityForUpdate.getSkype() != null && !userEntityForUpdate.getSkype().equals(userEntity.getSkype())) {
+            userEntity.setSkype(userEntityForUpdate.getSkype());
+        }
+        if (userEntityForUpdate.getBirthDate() != null && !userEntityForUpdate.getBirthDate().equals(userEntity.getBirthDate())) {
+            userEntity.setBirthDate(userEntityForUpdate.getBirthDate());
+        }
+        if (userEntityForUpdate.getEmail() != null && !userEntityForUpdate.getEmail().equals(userEntity.getEmail())) {
+            checkingMailForUniqueness(userEntity, userEntityForUpdate.getEmail());
+        }
+        if (userEntityForUpdate.getGender() != null && !userEntityForUpdate.getGender().equals(userEntity.getGender())) {
+            userEntity.setGender(userEntityForUpdate.getGender());
+        }
+        if (userEntityForUpdate.getDescription() != null && !userEntityForUpdate.getDescription().equals(userEntity.getDescription())) {
+            userEntity.setDescription(userEntityForUpdate.getDescription());
+        }
+
+        if (userEntityForUpdate.getVk() != null && !userEntityForUpdate.getVk().equals(userEntity.getVk())) {
+            userEntity.setVk(userEntityForUpdate.getVk());
+        }
+        if (userEntityForUpdate.getFaceBook() != null && !userEntityForUpdate.getFaceBook().equals(userEntity.getFaceBook())) {
+            userEntity.setFaceBook(userEntityForUpdate.getFaceBook());
+        }
+        if (userEntityForUpdate.getSkype() != null && !userEntityForUpdate.getSkype().equals(userEntity.getSkype())) {
+            userEntity.setSkype(userEntityForUpdate.getSkype());
+        }
+        if (userEntityForUpdate.getTelegram() != null && !userEntityForUpdate.getTelegram().equals(userEntity.getTelegram())) {
+            userEntity.setTelegram(userEntityForUpdate.getTelegram());
+        }
+        if (userEntityForUpdate.getInstagram() != null && !userEntityForUpdate.getInstagram().equals(userEntity.getInstagram())) {
+            userEntity.setInstagram(userEntityForUpdate.getInstagram());
+        }
+        if (userEntityForUpdate.getLinkedIn() != null && !userEntityForUpdate.getLinkedIn().equals(userEntity.getLinkedIn())) {
+            userEntity.setLinkedIn(userEntityForUpdate.getLinkedIn());
+        }
+    }
+
+    @Override
+    @Transactional
+    public UserEntityOutput blockedUser(UUID id) {
+        UserEntity userEntity = findById(id);
+        userEntity.setBlocked(LocalDateTime.now());
+        UserEntity savedUser = userRepository.save(userEntity);
+        log.info(USER_BLOCKED);
+        return conversionService.convert(savedUser, UserEntityOutput.class);
+    }
+
+
+    @Override
+    @Transactional
+    public UserEntityOutput deletedUser(UUID id) {
+        UserEntity userEntity = findById(id);
+
+        log.info(USER_DELETED);
+        userRepository.delete(userEntity);
+        return conversionService.convert(userEntity, UserEntityOutput.class);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public UserEntity findUserForAuth(AuthRequest request) {
         String email = request.getEmail();
-        String phone = request.getPhone();
 
         if (email != null) {
             return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
         }
-        if (phone != null) {
-            return userRepository.findByPhone(phone).orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
-        } else throw new BadRequestException("Email and Phone are null");
     }
 
-    @Override
-    public UserEntityOutput findUserInfo() {
-        Long id = SecurityContextUtils.getUserFromContext().getId();
-        UserEntity userEntity = findById(id);
-        return conversionService.convert(userEntity, UserEntityOutput.class);
-    }
 
     @Override
     public List<UserEntityOutput> searchWithPagination(UserSearchInput userSearchInput, PageableInput pageable) {
@@ -115,12 +252,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public List<UserEntityOutput> findUserEntityList() {
-        return userRepository.findAll().stream()
-                .map(userEntity -> conversionService.convert(userEntity, UserEntityOutput.class))
-                .collect(Collectors.toList());
-    }
 
     @Override
     @Transactional(readOnly = true)
@@ -133,11 +264,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userDetails;
     }
 
-    @Override
-    @Transactional
-    public void createUser(UserCreateInput userCreateInput) {
-        create(userCreateInput, USER_ROLE);
-    }
 
     @Override
     @Transactional
@@ -145,31 +271,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         create(userCreateInput, MODERATOR_ROLE);
     }
 
-    private void create(UserCreateInput userCreateInput, String role) {
-        UserEntity userEntity = conversionService.convert(userCreateInput, UserEntity.class);
-        if (userEntity == null) {
-            throw new NotFoundException("Error conversion user. Class UserServiceImpl, method createUser");
-        }
-        List<Role> roles = Collections.singletonList(roleRepository.findByName(role)
-                .orElseThrow(() -> {
-                    log.error("Role not found by name. Class UserServiceImpl, method createUser");
-                    return new NotFoundException("Role not found by name");
-                }));
-        checkingMailForUniqueness(userEntity, userCreateInput.getEmail());
-        userEntity.setPassword(passwordEncoder.encode(userCreateInput.getPassword()));
-        userEntity.setDelete(false);
-        userEntity.setRoles(roles);
-        userRepository.save(userEntity);
-        log.info("Save user. Class UserServiceImpl, method createUser");
-    }
-
-    private void checkingMailForUniqueness(UserEntity userEntity, String email) {
-        if (userRepository.findByEmail(email).orElse(null) != null) {
-            throw new BadRequestException("User with this email already exists");
-        } else {
-            userEntity.setEmail(email);
-        }
-    }
 
     @Override
     @Transactional
@@ -203,93 +304,5 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
     }
 
-    @Override
-    @Transactional
-    public void updateUserByAdmin(UserUpdateByAdminInput userUpdateByAdminInput) {
-        if (userUpdateByAdminInput == null) {
-            throw new NotFoundException("Error input data. Class UserServiceImpl, method updateUser");
-        }
-        UserEntity userEntity = findById(userUpdateByAdminInput.getId());
-        UserEntity userEntityForUpdate = conversionService.convert(userUpdateByAdminInput, UserEntity.class);
-        if (userEntityForUpdate == null) {
-            throw new NotFoundException("Error conversion user. Class UserServiceImpl, method updateUser");
-        }
-        if (userEntityForUpdate.getEmail() != null && !userEntityForUpdate.getEmail().equals(userEntity.getEmail())) {
-            checkingMailForUniqueness(userEntity, userEntityForUpdate.getEmail());
-        }
-        if (userEntityForUpdate.getPhone() != null && !userEntityForUpdate.getPhone().equals(userEntity.getPhone())) {
-            checkingPhoneForUniqueness(userEntity, userEntityForUpdate.getPhone());
-        }
-        if (userEntityForUpdate.getFullName() != null) {
-            userEntity.setFullName(userEntityForUpdate.getFullName());
-        }
-        if (userEntityForUpdate.getBirthDate() != null) {
-            userEntity.setBirthDate(userEntityForUpdate.getBirthDate());
-        }
-        if (userEntityForUpdate.getCity() != null) {
-            userEntity.setCity(userEntityForUpdate.getCity());
-        }
-        if (userEntityForUpdate.getSkype() != null) {
-            userEntity.setSkype(userEntityForUpdate.getSkype());
-        }
-        if (userEntityForUpdate.getTechnologies() != null) {
-            userEntity.setTechnologies(userEntityForUpdate.getTechnologies());
-        }
-        if (userEntityForUpdate.getTelegram() != null) {
-            userEntity.setTelegram(userEntityForUpdate.getTelegram());
-        }
-        if (userEntityForUpdate.getAnotherPhone() != null) {
-            checkingAnotherPhoneForUniqueness(userEntity, userEntityForUpdate.getAnotherPhone());
-        }
-        userRepository.save(userEntity);
-        log.info("Update user. Class UserServiceImpl, method updateUser");
-    }
 
-    @Override
-    @Transactional
-    public void updateUserByUser(UserUpdateInput userUpdateInput) {
-        if (userUpdateInput == null) {
-            throw new NotFoundException("Error input data. Class UserServiceImpl, method updateUser");
-        }
-        UserEntity userEntity = SecurityContextUtils.getUserFromContext();
-        UserEntity userEntityForUpdate = conversionService.convert(userUpdateInput, UserEntity.class);
-        if (userEntityForUpdate == null) {
-            throw new NotFoundException("Error conversion user. Class UserServiceImpl, method updateUser");
-        }
-        if (userEntityForUpdate.getPhone() != null && !userEntityForUpdate.getPhone().equals(userEntity.getPhone())) {
-            checkingPhoneForUniqueness(userEntity, userEntityForUpdate.getPhone());
-        }
-        if (userEntityForUpdate.getSkype() != null) {
-            userEntity.setSkype(userEntityForUpdate.getSkype());
-        }
-        if (userEntityForUpdate.getAnotherPhone() != null) {
-            checkingAnotherPhoneForUniqueness(userEntity, userEntityForUpdate.getAnotherPhone());
-        }
-        if (userUpdateInput.getPhoto() != null) {
-            userEntity.setPhotos(userEntity.getPhotos().stream().map(photo -> {
-                if (userUpdateInput.getPhoto().getId().equals(photo.getId())) {
-                    photo.setUrl(userUpdateInput.getPhoto().getUrl());
-                }
-                return photo;
-            }).collect(Collectors.toList()));
-        }
-        userRepository.save(userEntity);
-        log.info("Update user. Class UserServiceImpl, method updateUser");
-    }
-
-    private void checkingPhoneForUniqueness(UserEntity userEntity, String phone) {
-        if (userRepository.findByPhone(phone).orElse(null) != null) {
-            throw new BadRequestException("User with this phone already exists");
-        } else {
-            userEntity.setPhone(phone);
-        }
-    }
-
-    private void checkingAnotherPhoneForUniqueness(UserEntity userEntity, String phone) {
-        if (userRepository.findByAnotherPhone(phone).orElse(null) != null) {
-            throw new BadRequestException("User with this phone already exists");
-        } else {
-            userEntity.setAnotherPhone(phone);
-        }
-    }
 }

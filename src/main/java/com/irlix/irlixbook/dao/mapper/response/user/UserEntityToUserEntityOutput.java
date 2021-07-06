@@ -1,13 +1,9 @@
 package com.irlix.irlixbook.dao.mapper.response.user;
 
 
-import com.irlix.irlixbook.dao.entity.Photo;
 import com.irlix.irlixbook.dao.entity.UserEntity;
-import com.irlix.irlixbook.dao.model.direction.DirectionOutput;
 import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
 import org.springframework.core.convert.converter.Converter;
-
-import java.util.stream.Collectors;
 
 public class UserEntityToUserEntityOutput implements Converter<UserEntity, UserEntityOutput> {
 
@@ -15,24 +11,20 @@ public class UserEntityToUserEntityOutput implements Converter<UserEntity, UserE
     public UserEntityOutput convert(UserEntity userEntity) {
         return UserEntityOutput.builder()
                 .id(userEntity.getId())
-                .email(userEntity.getEmail())
-                .fullName(userEntity.getFullName())
-                .phone(userEntity.getPhone())
-                .anotherPhone(userEntity.getAnotherPhone())
+                .surname(userEntity.getSurname())
+                .name(userEntity.getName())
                 .birthDate(userEntity.getBirthDate())
-                .city(userEntity.getCity())
+                .gender(userEntity.getGender())
+                .phone(userEntity.getPhone())
+                .description(userEntity.getDescription())
                 .skype(userEntity.getSkype())
-                .technologies(userEntity.getTechnologies())
                 .telegram(userEntity.getTelegram())
-                .photos(userEntity.getPhotos().stream()
-                        .map(Photo::getUrl)
-                        .collect(Collectors.toList()))
-                .directionList(userEntity.getDirections().stream().map(direction -> DirectionOutput.builder()
-                        .title(direction.getTitle())
-                        .description(direction.getDescription())
-                        .build())
-                        .collect(Collectors.toList())
-                )
+                .avatar(userEntity.getAvatar())
+                .email(userEntity.getEmail())
+                .faceBook(userEntity.getFaceBook())
+                .vk(userEntity.getVk())
+                .instagram(userEntity.getInstagram())
+                .linkedIn(userEntity.getLinkedIn())
                 .build();
     }
 }

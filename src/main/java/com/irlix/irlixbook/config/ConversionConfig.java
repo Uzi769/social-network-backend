@@ -1,15 +1,9 @@
 package com.irlix.irlixbook.config;
 
-import com.irlix.irlixbook.dao.mapper.request.comment.CommentInputToComment;
-import com.irlix.irlixbook.dao.mapper.request.direction.DirectionInputToDirection;
 import com.irlix.irlixbook.dao.mapper.request.post.PostInputToPost;
-import com.irlix.irlixbook.dao.mapper.request.tag.TagInputToTag;
 import com.irlix.irlixbook.dao.mapper.request.user.UserCreateInputToUserEntity;
 import com.irlix.irlixbook.dao.mapper.request.user.UserUpdateInputToUserEntity;
-import com.irlix.irlixbook.dao.mapper.response.comment.CommentToCommentOutput;
 import com.irlix.irlixbook.dao.mapper.response.post.PostToPostOutput;
-import com.irlix.irlixbook.dao.mapper.response.tag.TagToTagOutput;
-import com.irlix.irlixbook.dao.mapper.response.user.UserEntityToUserBirthdaysOutput;
 import com.irlix.irlixbook.dao.mapper.response.user.UserEntityToUserCreateOutput;
 import com.irlix.irlixbook.dao.mapper.response.user.UserEntityToUserEntityOutput;
 import org.springframework.context.annotation.Configuration;
@@ -25,13 +19,8 @@ public class ConversionConfig implements WebMvcConfigurer {
         registry.addConverter(new UserCreateInputToUserEntity());
         registry.addConverter(new UserEntityToUserCreateOutput());
         registry.addConverter(new UserUpdateInputToUserEntity());
-        registry.addConverter(new TagInputToTag());
-        registry.addConverter(new TagToTagOutput());
         registry.addConverter(new UserEntityToUserBirthdaysOutput());
         registry.addConverter(new PostInputToPost());
         registry.addConverter(new PostToPostOutput());
-        registry.addConverter(new CommentInputToComment());
-        registry.addConverter(new CommentToCommentOutput());
-        registry.addConverter(new DirectionInputToDirection());
     }
 }

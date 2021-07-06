@@ -1,32 +1,19 @@
 package com.irlix.irlixbook.dao.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Getter
@@ -39,12 +26,20 @@ import java.util.stream.Collectors;
 public class UserEntity implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(generator = "UUID")
+    @ToString.Include
+    private UUID id;
 
     @NotEmpty
-    @Column(name = "full_name")
-    private String fullName;
+    @Column(name = "surname")
+    private String surname;
+
+    @NotEmpty
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "gender")
+    private String gender;
 
     @Column(name = "birth_date")
     private LocalDate birthDate;
@@ -53,55 +48,49 @@ public class UserEntity implements UserDetails {
     @Column(name = "password")
     private String password;
 
-    @NotEmpty
-    @Column(name = "city")
-    private String city;
-
-    @NotEmpty
-    @Column(name = "technologies")
-    private String technologies;
-
     @Column(name = "phone")
     @Pattern(regexp = "(^\\+?[78][-\\(]?\\d{3}\\)?-?\\d{3}-?\\d{2}-?\\d{2}$)")
     private String phone;
 
-    @Column(name = "another_phone")
-    @Pattern(regexp = "(^\\+?[78][-\\(]?\\d{3}\\)?-?\\d{3}-?\\d{2}-?\\d{2}$)")
-    private String anotherPhone;
+    @Column(name = "description")
+    private String description;
 
     @Email
     @Column(name = "email")
     private String email;
 
+    @Column(name = "vk")
+    private String vk;
+
+    @Column(name = "faceBook")
+    private String faceBook;
+
     @Column(name = "skype")
     private String skype;
+
+    @Column(name = "instagram")
+    private String instagram;
+
+    @Column(name = "linked_in ")
+    private String linkedIn;
 
     @Column(name = "telegram")
     private String telegram;
 
-    @Column(name = "is_delete")
-    private boolean delete;
+    @Column(name = "blocked")
+    private LocalDateTime blocked;
+
+    @Column(name = "avatar")
+    private String avatar;
+
+    @OneToMany(mappedBy = "author")
+    private List<Post> posts;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_role",
             joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
     private List<Role> roles;
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "user_direction",
-            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "direction_id", referencedColumnName = "id")})
-    private List<Direction> directions;
-
-    @OneToMany(mappedBy = "user")
-    private List<Comment> comments;
-
-    @OneToMany(mappedBy = "author")
-    private List<Post> posts;
-
-    @OneToMany(mappedBy = "user")
-    private List<Photo> photos;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

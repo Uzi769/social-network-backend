@@ -5,7 +5,6 @@ import com.irlix.irlixbook.dao.model.PageableInput;
 import com.irlix.irlixbook.dao.model.post.PostSearch;
 import com.irlix.irlixbook.exception.BadRequestException;
 import com.irlix.irlixbook.exception.NotFoundException;
-import com.irlix.irlixbook.service.tag.TagService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Repository;
@@ -25,7 +24,6 @@ import java.util.List;
 public class PostRepositorySummary {
 
     private final EntityManager entityManager;
-    private final TagService tagService;
 
     public List<Post> search(PostSearch dto, PageableInput pageable) {
 
@@ -48,9 +46,7 @@ public class PostRepositorySummary {
         if (dto.getDate() != null) {
             predicates.add(builder.equal(root.get("date"), dto.getDate()));
         }
-        if (dto.getTag() != null) {
-            predicates.add(builder.isMember(tagService.getByName(dto.getTag()), root.get("tags")));
-        }
+
         if (!pageable.isSort()) {
             query.orderBy(builder.desc(root.get("date")));
         }

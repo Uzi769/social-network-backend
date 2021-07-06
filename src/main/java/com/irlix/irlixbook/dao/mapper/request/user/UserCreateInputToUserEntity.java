@@ -9,13 +9,11 @@ public class UserCreateInputToUserEntity implements Converter<UserCreateInput, U
     @Override
     public UserEntity convert(UserCreateInput userCreateInput) {
         return UserEntity.builder()
-                .fullName(userCreateInput.getFullName())
-                .email(userCreateInput.getEmail())
-                .phone(userCreateInput.getPhone())
-                .password(userCreateInput.getPassword())
+                .surname(userCreateInput.getSurname())
+                .name(userCreateInput.getName())
                 .birthDate(userCreateInput.getBirthDate())
-                .city(userCreateInput.getCity())
-                .technologies(userCreateInput.getTechnologies())
+                .email(userCreateInput.getEmail())
+                .telegram(userCreateInput.getGender())
                 .build();
     }
 }

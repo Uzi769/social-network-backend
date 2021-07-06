@@ -9,15 +9,18 @@ public class UserUpdateInputToUserEntity implements Converter<UserUpdateInput, U
     @Override
     public UserEntity convert(UserUpdateInput userUpdateInput) {
         return UserEntity.builder()
-                .fullName(userUpdateInput.getFullName())
+                .surname(userUpdateInput.getSurname())
+                .name(userUpdateInput.getName())
                 .phone(userUpdateInput.getPhone())
                 .email(userUpdateInput.getEmail())
-                .technologies(userUpdateInput.getTechnologies())
-                .anotherPhone(userUpdateInput.getAnotherPhone())
-                .city(userUpdateInput.getCity())
                 .birthDate(userUpdateInput.getBirthDate())
                 .skype(userUpdateInput.getSkype())
                 .telegram(userUpdateInput.getTelegram())
+                .faceBook(userUpdateInput.getFaceBook())
+                .instagram(userUpdateInput.getInstagram())
+                .linkedIn(userUpdateInput.getLinkedIn())
+                .vk(userUpdateInput.getVk())
+                .description(userUpdateInput.getDescription())
                 .build();
     }
 }
