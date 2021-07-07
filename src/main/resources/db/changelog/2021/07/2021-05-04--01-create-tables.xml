@@ -16,7 +16,9 @@
             <column name="password" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
-            <column name="phone" type="VARCHAR(12)"/>
+            <column name="phone" type="VARCHAR(12)">
+                <constraints unique="true" nullable="false"/>
+            </column>
             <column name="avatar" type="VARCHAR(100)"/>
             <column name="description" type="VARCHAR(300)"/>
             <column name="vk" type="VARCHAR(100)"/>
@@ -26,7 +28,7 @@
             <column name="linked_in" type="VARCHAR(100)"/>
             <column name="telegram" type="VARCHAR(100)"/>
             <column name="email" type="VARCHAR(100)">
-                <constraints nullable="false"/>
+                <constraints unique="true" nullable="false"/>
             </column>
             <column name="blocked" type="timestamp"/>
         </createTable>
