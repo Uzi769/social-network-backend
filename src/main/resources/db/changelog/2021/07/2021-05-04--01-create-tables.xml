@@ -22,7 +22,7 @@
             <column name="avatar" type="VARCHAR(100)"/>
             <column name="description" type="VARCHAR(300)"/>
             <column name="vk" type="VARCHAR(100)"/>
-            <column name="faceBook" type="VARCHAR(100)"/>
+            <column name="facebook" type="VARCHAR(100)"/>
             <column name="skype" type="VARCHAR(100)"/>
             <column name="instagram" type="VARCHAR(100)"/>
             <column name="linked_in" type="VARCHAR(100)"/>

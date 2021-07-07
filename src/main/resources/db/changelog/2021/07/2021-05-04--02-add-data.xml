@@ -23,7 +23,7 @@
             <column name="phone" value="79999999901"/>
             <column name="description" value="Я ..."/>
             <column name="vk" value="мой vk"/>
-            <column name="faceBook" value="мой faceBook"/>
+            <column name="facebook" value="мой faceBook"/>
             <column name="skype" value="Petrov"/>
             <column name="instagram" value="Мой instagram"/>
             <column name="telegram" value="@Petrov"/>
@@ -39,7 +39,7 @@
             <column name="phone" value="79999999902"/>
             <column name="description" value="Я ..."/>
             <column name="vk" value="мой vk"/>
-            <column name="faceBook" value="мой faceBook"/>
+            <column name="facebook" value="мой faceBook"/>
             <column name="skype" value="Timoshina"/>
             <column name="instagram" value="Мой instagram"/>
             <column name="telegram" value="@Timoshina"/>
