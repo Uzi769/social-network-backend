@@ -48,11 +48,11 @@
     </changeSet>
     <changeSet author="Gelnaz" id="04052021-12">
         <insert tableName="user_role">
-            <column name="user_id" value="1"/>
+            <column name="user_id" value="ee1cc674-90fb-4cba-801e-5d13174a8085"/>
             <column name="role_id" value="1"/>
         </insert>
         <insert tableName="user_role">
-            <column name="user_id" value="2"/>
+            <column name="user_id" value="ee1cc674-90fb-4cba-801e-5d13174a8075"/>
             <column name="role_id" value="2"/>
         </insert>
     </changeSet>
