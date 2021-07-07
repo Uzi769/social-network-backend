@@ -12,10 +12,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class UserSearchInput {
-
-    private String fullName;
-    private String phone;
-    private String email;
-    private boolean delete;
-
+    private String surname;
+    private String name;
 }

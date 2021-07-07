@@ -3,7 +3,6 @@ package com.irlix.irlixbook.service.user;
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
 import com.irlix.irlixbook.dao.entity.Role;
 import com.irlix.irlixbook.dao.entity.UserEntity;
-import com.irlix.irlixbook.dao.model.PageableInput;
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
 import com.irlix.irlixbook.dao.model.user.input.*;
 import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
@@ -44,7 +43,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final PasswordEncoder passwordEncoder;
 
     private static final String USER_ROLE = "USER";
-    private static final String MODERATOR_ROLE = "MODERATOR";
+    private static final String ADMIN_ROLE = "ADMIN";
 
 
     @Override
@@ -76,27 +75,31 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     @Transactional
     public UserEntityOutput createUser(UserCreateInput userCreateInput) {
-        return create(userCreateInput, USER_ROLE);
+        return create(userCreateInput);
     }
 
-    private UserEntityOutput create(UserCreateInput userCreateInput, String role) {
+    private UserEntityOutput create(UserCreateInput userCreateInput) {
         UserEntity userEntity = conversionService.convert(userCreateInput, UserEntity.class);
         if (userEntity == null) {
             throw new ConflictException("Error conversion user. Class UserServiceImpl, method createUser");
         }
-        List<Role> roles = Collections.singletonList(roleRepository.findByName(role)
-                .orElseThrow(() -> {
-                    log.error(ROLE_NOT_FOUND);
-                    return new NotFoundException(ROLE_NOT_FOUND);
-                }));
+
         checkingMailForUniqueness(userEntity, userCreateInput.getEmail());
         userEntity.setPassword(passwordEncoder.encode(createPassword()));
 
-        userEntity.setRoles(roles);
+        userEntity.setRoles(fetchRole(USER_ROLE));
         UserEntity savedUser = userRepository.save(userEntity);
         log.info(USER_SAVED);
         return conversionService.convert(savedUser, UserEntityOutput.class);
 
+    }
+
+    private List<Role> fetchRole(String role) {
+        return Collections.singletonList(roleRepository.findByName(role)
+                .orElseThrow(() -> {
+                    log.error(ROLE_NOT_FOUND);
+                    return new NotFoundException(ROLE_NOT_FOUND);
+                }));
     }
 
     private void checkingMailForUniqueness(UserEntity userEntity, String email) {
@@ -206,6 +209,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return conversionService.convert(savedUser, UserEntityOutput.class);
     }
 
+    @Override
+    @Transactional
+    public UserEntityOutput unblockedUser(UUID id) {
+        UserEntity userEntity = findById(id);
+        userEntity.setBlocked(null);
+        UserEntity savedUser = userRepository.save(userEntity);
+        log.info(USER_UNBLOCKED);
+        return conversionService.convert(savedUser, UserEntityOutput.class);
+    }
 
     @Override
     @Transactional
@@ -217,39 +229,26 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return conversionService.convert(userEntity, UserEntityOutput.class);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Override
-    public UserEntity findUserForAuth(AuthRequest request) {
-        String email = request.getEmail();
-
-        if (email != null) {
-            return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
-        }
-    }
-
-
-    @Override
-    public List<UserEntityOutput> searchWithPagination(UserSearchInput userSearchInput, PageableInput pageable) {
-        List<UserEntity> userEntityList = userRepositorySummary.search(userSearchInput, pageable);
+    public List<UserEntityOutput> search(UserSearchInput userSearchInput) {
+        List<UserEntity> userEntityList = userRepositorySummary.search(userSearchInput);
         return userEntityList.stream()
                 .map(userEntity -> conversionService.convert(userEntity, UserEntityOutput.class))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public UserEntityOutput assignRole(UUID id) {
+        UserEntity user = findById(id);
+        List<Role> roleList = user.getRoles();
+        if (!roleList.contains(ADMIN_ROLE)) {
+            roleList.add(fetchRole(ADMIN_ROLE).get(0));
+            user.setRoles(roleList);
+        }
+        userRepository.save(user);
+        log.info(ASSIGN_ROLE_USER);
+        return conversionService.convert(user, UserEntityOutput.class);
     }
 
 
@@ -264,45 +263,50 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userDetails;
     }
 
-
     @Override
     @Transactional
-    public void createModerator(UserCreateInput userCreateInput) {
-        create(userCreateInput, MODERATOR_ROLE);
+    public UserEntityOutput updatePasswordByAdmin(UUID id, UserPasswordInput userPasswordInput) {
+        UserEntity user = findById(id);
+        updatePassword(userPasswordInput, user);
+        log.info(PASSWORD_RESET);
+        return conversionService.convert(user, UserEntityOutput.class);
     }
 
 
     @Override
     @Transactional
-    public void updatePasswordByUser(UserPasswordInput userPasswordInput) {
+    public UserEntityOutput updatePasswordByUser(UserPasswordInput userPasswordInput) {
         UserEntity user = SecurityContextUtils.getUserFromContext();
         updatePassword(userPasswordInput, user);
-    }
-
-    @Override
-    @Transactional
-    public void updatePasswordByAdmin(UserPasswordThrow userPasswordThrow) {
-        UserEntity user = findById(userPasswordThrow.getUserId());
-        updatePassword(userPasswordThrow, user);
+        log.info(PASSWORD_CHANGED);
+        return conversionService.convert(user, UserEntityOutput.class);
     }
 
     private void updatePassword(UserPasswordInput userPasswordThrow, UserEntity user) {
         validPassword(userPasswordThrow);
         user.setPassword(passwordEncoder.encode(userPasswordThrow.getPassword()));
         userRepository.save(user);
-        log.info("Create new password for user by id " + user.getId());
     }
 
     private void validPassword(UserPasswordInput userPasswordInput) {
-        if (userPasswordInput == null) {
-            log.error("Incorrect password for user");
-            throw new BadRequestException("Incorrect password");
+        if (userPasswordInput.getPassword() == null || userPasswordInput.getVerificationPassword() == null) {
+            log.error(INCORRECT_PASSWORD);
+            throw new BadRequestException(INCORRECT_PASSWORD);
         }
         if (!userPasswordInput.getPassword().equals(userPasswordInput.getVerificationPassword())) {
-            log.error("Passwords mismatch for user");
-            throw new BadRequestException("Passwords mismatch");
+            log.error(MISMATCH_PASSWORDS);
+            throw new BadRequestException(MISMATCH_PASSWORDS);
         }
     }
 
 
+
+    @Override
+    public UserEntity findUserForAuth(AuthRequest request) {
+        String email = request.getEmail();
+        if (email != null) {
+            return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
+        }
+        return null;
+    }
 }

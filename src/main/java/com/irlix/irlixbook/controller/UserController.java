@@ -1,11 +1,11 @@
 package com.irlix.irlixbook.controller;
 
-import com.irlix.irlixbook.dao.model.PageableInput;
-import com.irlix.irlixbook.dao.model.user.input.*;
+import com.irlix.irlixbook.dao.model.user.input.UserCreateInput;
+import com.irlix.irlixbook.dao.model.user.input.UserPasswordInput;
+import com.irlix.irlixbook.dao.model.user.input.UserSearchInput;
+import com.irlix.irlixbook.dao.model.user.input.UserUpdateInput;
 import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
 import com.irlix.irlixbook.service.user.UserService;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -68,56 +68,45 @@ public class UserController {
     }
 
     //    @PreAuthorize("hasAuthority('ADMIN')")
+    @PutMapping(value = "/user-unblocked/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public UserEntityOutput unblockedUser(@PathVariable("id") UUID id) {
+        return userService.unblockedUser(id);
+    }
+
+    //    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping(value = "/user/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public UserEntityOutput deletedUser(@PathVariable("id") UUID id) {
         return userService.deletedUser(id);
     }
 
-
-
-
-
-
-
-
-
-
-
     //    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER', 'MODERATOR'})")
-    @GetMapping(value = "/search")
-    public List<UserEntityOutput> searchUser(
-            @Parameter(description = "User search parameters. Cannot be null or empty.", required = true,
-                    schema = @Schema(implementation = UserSearchInput.class))
-                    UserSearchInput dto, PageableInput pageable) {
-        return userService.searchWithPagination(dto, pageable);
+    @GetMapping(value = "/user/search")
+    public List<UserEntityOutput> searchUser(UserSearchInput dto) {
+        return userService.search(dto);
+    }
+
+    //    @PreAuthorize("hasAuthority('ADMIN')")
+    @PutMapping(value = "/assign-role/{id}}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserEntityOutput assignRole(@PathVariable UUID id) {
+
+        return userService.assignRole(id);
     }
 
 
     //    @PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping(value = "/create-moderator", consumes = {"application/json"}, produces = {"application/json"})
     @ResponseStatus(HttpStatus.CREATED)
-    public void createModerator(@RequestBody @Valid UserCreateInput create) {
-        userService.createModerator(create);
+    @PutMapping("user/update-password/{id}")
+    public UserEntityOutput updatePasswordByAdmin(@PathVariable("id") UUID id, @RequestBody @Valid UserPasswordInput userPasswordInput) {
+        return userService.updatePasswordByAdmin(id, userPasswordInput);
     }
 
-
+    //    @PreAuthorize("hasAuthority('USER', 'MODERATOR')")
     @ResponseStatus(HttpStatus.CREATED)
-//    @PreAuthorize("hasAuthority('USER', 'MODERATOR')")
-    @PutMapping("/update-password")
-    public void updatePassword(
-            @Parameter(description = "Cannot be null or empty.")
-            @RequestBody @Valid UserPasswordInput userPasswordInput) {
-        userService.updatePasswordByUser(userPasswordInput);
+    @PutMapping("user/update-password")
+    public UserEntityOutput updatePassword(@RequestBody @Valid UserPasswordInput userPasswordInput) {
+        return userService.updatePasswordByUser(userPasswordInput);
     }
-
-    @ResponseStatus(HttpStatus.CREATED)
-//    @PreAuthorize("hasAuthority('ADMIN')")
-    @PutMapping("/update-user-password")
-    public void updatePasswordByAdmin(
-            @Parameter(description = "Cannot be null or empty.")
-            @RequestBody @Valid UserPasswordThrow userPasswordThrow) {
-        userService.updatePasswordByAdmin(userPasswordThrow);
-    }
-
 }

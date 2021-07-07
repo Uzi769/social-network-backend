@@ -19,7 +19,6 @@ public class ConversionConfig implements WebMvcConfigurer {
         registry.addConverter(new UserCreateInputToUserEntity());
         registry.addConverter(new UserEntityToUserCreateOutput());
         registry.addConverter(new UserUpdateInputToUserEntity());
-        registry.addConverter(new UserEntityToUserBirthdaysOutput());
         registry.addConverter(new PostInputToPost());
         registry.addConverter(new PostToPostOutput());
     }

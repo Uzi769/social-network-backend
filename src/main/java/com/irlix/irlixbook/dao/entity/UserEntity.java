@@ -62,7 +62,7 @@ public class UserEntity implements UserDetails {
     @Column(name = "vk")
     private String vk;
 
-    @Column(name = "faceBook")
+    @Column(name = "facebook")
     private String faceBook;
 
     @Column(name = "skype")

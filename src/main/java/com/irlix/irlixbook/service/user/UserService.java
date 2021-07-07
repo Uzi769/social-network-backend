@@ -25,23 +25,20 @@ public interface UserService {
 
     UserEntityOutput blockedUser(UUID id);
 
+    UserEntityOutput unblockedUser(UUID id);
+
     UserEntityOutput deletedUser(UUID id);
 
+    List<UserEntityOutput> search(UserSearchInput userSearchInput);
 
+    UserEntityOutput assignRole(UUID id);
 
+    UserEntityOutput updatePasswordByAdmin(UUID id, UserPasswordInput userPasswordInput);
+
+    UserEntityOutput updatePasswordByUser(UserPasswordInput userPasswordInput);
 
 
 
 
     UserEntity findUserForAuth(AuthRequest request);
-
-
-    List<UserEntityOutput> searchWithPagination(UserSearchInput userSearchInput, PageableInput pageable);
-
-
-    void createModerator(UserCreateInput userCreateInput);
-
-    void updatePasswordByAdmin(UserPasswordThrow userPasswordThrow);
-
-    void updatePasswordByUser(UserPasswordInput userPasswordInput);
 }
