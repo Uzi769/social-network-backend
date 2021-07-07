@@ -1,232 +1,112 @@
 package com.irlix.irlixbook.controller;
 
-import com.irlix.irlixbook.dao.model.PageableInput;
-import com.irlix.irlixbook.dao.model.user.input.UserPasswordThrow;
-import com.irlix.irlixbook.dao.model.user.input.UserUpdateByAdminInput;
-import com.irlix.irlixbook.dao.model.user.output.UserBirthdaysOutput;
 import com.irlix.irlixbook.dao.model.user.input.UserCreateInput;
-import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
-import com.irlix.irlixbook.dao.model.user.input.UserSearchInput;
 import com.irlix.irlixbook.dao.model.user.input.UserPasswordInput;
+import com.irlix.irlixbook.dao.model.user.input.UserSearchInput;
 import com.irlix.irlixbook.dao.model.user.input.UserUpdateInput;
+import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
 import com.irlix.irlixbook.service.user.UserService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api")
 @RequiredArgsConstructor
-@Tag(name = "user", description = "User CRUD controller")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class UserController {
 
     private final UserService userService;
 
-    @Operation(summary = "Delete an existing user", tags = {"user"})
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User deleted"),
-            @ApiResponse(responseCode = "400", description = "Bad request"),
-            @ApiResponse(responseCode = "403", description = "Forbidden. You can't delete users"),
-            @ApiResponse(responseCode = "404", description = "User not found")
-    })
-//    @PreAuthorize("hasAuthority('ADMIN')")
-    @DeleteMapping(value = "/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(
-            @Parameter(description = "User to change status. Cannot be null or empty.", required = true,
-                    schema = @Schema(implementation = Long.class))
-            @PathVariable("id") Long id) {
-        userService.deleteUser(id);
-    }
-
-    @Operation(summary = "Get user information", description = "Returns single user information", tags = {"user"})
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful operation"),
-            @ApiResponse(responseCode = "400", description = "Bad request"),
-            @ApiResponse(responseCode = "403", description = "Forbidden. You can't get users information"),
-            @ApiResponse(responseCode = "404", description = "User information not found")
-    })
-//    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER', 'MODERATOR'})")
-    @GetMapping(value = "/info")
-    public UserEntityOutput getUserInfo() {
-        return userService.findUserInfo();
-    }
-
-    @Operation(summary = "Get user information", description = "Returns single user information", tags = {"user"})
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful operation"),
-            @ApiResponse(responseCode = "400", description = "Bad request"),
-            @ApiResponse(responseCode = "403", description = "Forbidden. You can't get users information"),
-            @ApiResponse(responseCode = "404", description = "User information not found")
-    })
-//    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER', 'MODERATOR'})")
-    @GetMapping(value = "/info/{id}")
-    public UserEntityOutput getUserEntity(
-            @Parameter(description = "User to get all info. Cannot be null or empty.", required = true,
-                    schema = @Schema(implementation = Long.class))
-            @PathVariable("id") Long id) {
+    //    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER', 'MODERATOR'})")
+    @GetMapping(value = "/user/{id}")
+    public UserEntityOutput getUserEntity(@PathVariable("id") UUID id) {
         return userService.findUserOutputById(id);
     }
 
-    @Operation(summary = "Get user information", description = "Returns single user information", tags = {"user"})
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful operation"),
-            @ApiResponse(responseCode = "400", description = "Bad request"),
-            @ApiResponse(responseCode = "403", description = "Forbidden. You can't get users information"),
-            @ApiResponse(responseCode = "404", description = "User information not found")
-    })
-//    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER', 'MODERATOR'})")
-    @GetMapping(value = "/birthdays")
-    public List<UserBirthdaysOutput> getUserWithBirthdays() {
-        return userService.findUserWithBirthDays();
+    //    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER', 'MODERATOR'})")
+    @GetMapping(value = "/user")
+    public UserEntityOutput getUserFromContext() {
+        return userService.findUserFromContext();
     }
 
-    @Operation(summary = "Get user information", description = "Returns single user information", tags = {"user"})
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful operation"),
-            @ApiResponse(responseCode = "400", description = "Bad request"),
-            @ApiResponse(responseCode = "403", description = "Forbidden. You can't get users information"),
-            @ApiResponse(responseCode = "404", description = "User information not found")
-    })
-//    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER', 'MODERATOR'})")
-    @GetMapping(value = "/all")
-    public List<UserEntityOutput> getUserEntityList() {
-        return userService.findUserEntityList();
-    }
-
-    @Operation(summary = "Find users", tags = {"user"})
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful operation"),
-            @ApiResponse(responseCode = "400", description = "Bad request"),
-            @ApiResponse(responseCode = "403", description = "Forbidden. You can't get users via search"),
-            @ApiResponse(responseCode = "404", description = "Users not found")
-    })
-//    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER', 'MODERATOR'})")
-    @GetMapping(value = "/search")
-    public List<UserEntityOutput> searchUser(
-            @Parameter(description = "User search parameters. Cannot be null or empty.", required = true,
-                    schema = @Schema(implementation = UserSearchInput.class))
-                    UserSearchInput dto, PageableInput pageable) {
-        return userService.searchWithPagination(dto, pageable);
-    }
-
-    @Operation(summary = "Add new User", tags = {"user"})
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "User created"),
-            @ApiResponse(responseCode = "400", description = "Bad request"),
-            @ApiResponse(responseCode = "403", description = "Forbidden. You can't add new user"),
-            @ApiResponse(responseCode = "409", description = "User already exists")
-    })
-//    @PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping(value = "/create", consumes = {"application/json"}, produces = {"application/json"})
+    //    @PreAuthorize("hasAuthority('ADMIN')")
+    @PostMapping(value = "/user/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public void createUser(
-            @Parameter(description = "User to add. Cannot be null or empty.", required = true,
-                    schema = @Schema(implementation = UserCreateInput.class))
-            @RequestBody @Valid UserCreateInput create) {
-        userService.createUser(create);
+    public UserEntityOutput createUser(@RequestBody @Valid UserCreateInput create) {
+        return userService.createUser(create);
     }
 
-    @Operation(summary = "Add new Moderator", tags = {"user"})
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "User created"),
-            @ApiResponse(responseCode = "400", description = "Bad request"),
-            @ApiResponse(responseCode = "403", description = "Forbidden. You can't add new user"),
-            @ApiResponse(responseCode = "409", description = "User already exists")
-    })
-//    @PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping(value = "/create-moderator", consumes = {"application/json"}, produces = {"application/json"})
-    @ResponseStatus(HttpStatus.CREATED)
-    public void createModerator(
-            @Parameter(description = "User to add. Cannot be null or empty.", required = true,
-                    schema = @Schema(implementation = UserCreateInput.class))
-            @RequestBody @Valid UserCreateInput create) {
-        userService.createModerator(create);
+    //    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER', 'MODERATOR'})")
+    @GetMapping(value = "/users")
+    public List<UserEntityOutput> getUsers() {
+        return userService.findUsers();
     }
 
-    @Operation(summary = "Update an existing user", tags = {"user"})
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "User updated"),
-            @ApiResponse(responseCode = "400", description = "Bad request"),
-            @ApiResponse(responseCode = "403", description = "Forbidden. You can't update existing users"),
-            @ApiResponse(responseCode = "404", description = "User not found")
-    })
+    //    @PreAuthorize("hasAuthority('ADMIN')")
+    @PutMapping(value = "/user")
+    public UserEntityOutput updateUser(@RequestBody @Valid UserUpdateInput update) {
+        return userService.updateUser(update, null);
+    }
+
+
+    //    @PreAuthorize("hasAuthority('USER', 'MODERATOR')")
+    @PutMapping(value = "/user/{id}", consumes = {"application/json"}, produces = {"application/json"})
+    public UserEntityOutput updateUserByAdmin(@RequestBody @Valid UserUpdateInput update, @PathVariable("id") UUID id) {
+        return userService.updateUser(update, id);
+    }
+
+    //    @PreAuthorize("hasAuthority('ADMIN')")
+    @PutMapping(value = "/user-blocked/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-//    @PreAuthorize("hasAuthority('USER', 'MODERATOR')")
-    @PutMapping(value = "/", consumes = {"application/json"}, produces = {"application/json"})
-    public void updateUserByUser(
-            @Parameter(description = "User to update. Cannot be null or empty.", required = true,
-                    schema = @Schema(implementation = UserUpdateInput.class))
-            @RequestBody @Valid UserUpdateInput update) {
-        userService.updateUserByUser(update);
+    public UserEntityOutput blockedUser(@PathVariable("id") UUID id) {
+        return userService.blockedUser(id);
     }
 
-    @Operation(summary = "Update an existing user", tags = {"user"})
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "User updated"),
-            @ApiResponse(responseCode = "400", description = "Bad request"),
-            @ApiResponse(responseCode = "403", description = "Forbidden. You can't update existing users"),
-            @ApiResponse(responseCode = "404", description = "User not found")
-    })
+    //    @PreAuthorize("hasAuthority('ADMIN')")
+    @PutMapping(value = "/user-unblocked/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-//    @PreAuthorize("hasAuthority('ADMIN')")
-    @PutMapping(value = "/update-user", consumes = {"application/json"}, produces = {"application/json"})
-    public void updateUserByAdmin(
-            @Parameter(description = "User to update. Cannot be null or empty.", required = true,
-                    schema = @Schema(implementation = UserUpdateByAdminInput.class))
-            @RequestBody @Valid UserUpdateByAdminInput update) {
-        userService.updateUserByAdmin(update);
+    public UserEntityOutput unblockedUser(@PathVariable("id") UUID id) {
+        return userService.unblockedUser(id);
     }
 
-    @Operation(summary = "Update password for user", tags = {"user"})
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Successful operation"),
-            @ApiResponse(responseCode = "400", description = "Bad request"),
-            @ApiResponse(responseCode = "403", description = "Forbidden. You can't update password"),
-            @ApiResponse(responseCode = "404", description = "User information not found")
-    })
+    //    @PreAuthorize("hasAuthority('ADMIN')")
+    @DeleteMapping(value = "/user/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public UserEntityOutput deletedUser(@PathVariable("id") UUID id) {
+        return userService.deletedUser(id);
+    }
+
+    //    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER', 'MODERATOR'})")
+    @GetMapping(value = "/user/search")
+    public List<UserEntityOutput> searchUser(UserSearchInput dto) {
+        return userService.search(dto);
+    }
+
+    //    @PreAuthorize("hasAuthority('ADMIN')")
+    @PutMapping(value = "/assign-role/{id}}")
     @ResponseStatus(HttpStatus.CREATED)
-//    @PreAuthorize("hasAuthority('USER', 'MODERATOR')")
-    @PutMapping("/update-password")
-    public void updatePassword(
-            @Parameter(description = "Cannot be null or empty.")
-            @RequestBody @Valid UserPasswordInput userPasswordInput) {
-        userService.updatePasswordByUser(userPasswordInput);
+    public UserEntityOutput assignRole(@PathVariable UUID id) {
+
+        return userService.assignRole(id);
     }
 
-    @Operation(summary = "Update password for user", tags = {"user"})
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Successful operation"),
-            @ApiResponse(responseCode = "400", description = "Bad request"),
-            @ApiResponse(responseCode = "403", description = "Forbidden. You can't update password"),
-            @ApiResponse(responseCode = "404", description = "User information not found")
-    })
+
+    //    @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
-//    @PreAuthorize("hasAuthority('ADMIN')")
-    @PutMapping("/update-user-password")
-    public void updatePasswordByAdmin(
-            @Parameter(description = "Cannot be null or empty.")
-            @RequestBody @Valid UserPasswordThrow userPasswordThrow) {
-        userService.updatePasswordByAdmin(userPasswordThrow);
+    @PutMapping("user/update-password/{id}")
+    public UserEntityOutput updatePasswordByAdmin(@PathVariable("id") UUID id, @RequestBody @Valid UserPasswordInput userPasswordInput) {
+        return userService.updatePasswordByAdmin(id, userPasswordInput);
     }
 
+    //    @PreAuthorize("hasAuthority('USER', 'MODERATOR')")
+    @ResponseStatus(HttpStatus.CREATED)
+    @PutMapping("user/update-password")
+    public UserEntityOutput updatePassword(@RequestBody @Valid UserPasswordInput userPasswordInput) {
+        return userService.updatePasswordByUser(userPasswordInput);
+    }
 }

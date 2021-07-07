@@ -1,0 +1,72 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+    <changeSet author="Gelnaz" id="04052021-1">
+        <createTable tableName="user_entity">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="entity_user_pkey"/>
+            </column>
+            <column name="surname" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="gender" type="VARCHAR(10)"/>
+            <column name="birth_date" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="phone" type="VARCHAR(12)"/>
+            <column name="avatar" type="VARCHAR(100)"/>
+            <column name="description" type="VARCHAR(300)"/>
+            <column name="vk" type="VARCHAR(100)"/>
+            <column name="faceBook" type="VARCHAR(100)"/>
+            <column name="skype" type="VARCHAR(100)"/>
+            <column name="instagram" type="VARCHAR(100)"/>
+            <column name="linked_in" type="VARCHAR(100)"/>
+            <column name="telegram" type="VARCHAR(100)"/>
+            <column name="email" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="blocked" type="timestamp"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="Gelnaz" id="04052021-2">
+        <createTable tableName="role">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="role_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+      <changeSet author="Gelnaz" id="04052021-4">
+        <createTable tableName="post">
+            <column autoIncrement="true" name="id" type="BIGINT" >
+                <constraints unique="true" nullable="false" primaryKey="true" primaryKeyName="post_pkey"/>
+            </column>
+            <column name="date" type="DATE"/>
+            <column name="user_id" type="UUID"/>
+            <column name="topic" type="VARCHAR(255)"/>
+            <column name="content" type="VARCHAR(255)"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="post" baseColumnNames="user_id"
+                                 constraintName="post_user_id"
+                                 referencedTableName="user_entity" referencedColumnNames="id"/>
+    </changeSet>
+
+
+    <changeSet author="Gelnaz" id="04052021-9">
+        <createTable tableName="user_role">
+            <column name="user_id" type="UUID"/>
+            <column name="role_id" type="INT"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="user_role" baseColumnNames="user_id"
+                                 constraintName="user_role_user_id"
+                                 referencedTableName="user_entity" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="user_role" baseColumnNames="role_id"
+                                 constraintName="user_role_role_id"
+                                 referencedTableName="role" referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

@@ -23,15 +23,14 @@ public class UserCreateInput {
 
     @Length(min = 2, max = 128)
     @NotEmpty
-    private String fullName;
-    @Size(min = 11, max = 12)
-    @Pattern(regexp = "(^\\+?[78][-\\(]?\\d{3}\\)?-?\\d{3}-?\\d{2}-?\\d{2}$)")
-    private String phone;
+    private String surname;
+    @Length(min = 2, max = 128)
+    @NotEmpty
+    private String name;
+    private LocalDate birthDate;
+    private String gender;
     @Length(min = 3, max = 128)
     @Email
     private String email;
-    private String password;
-    private String city;
-    private String technologies;
-    private LocalDate birthDate;
+
 }

@@ -1,13 +1,9 @@
 package com.irlix.irlixbook.dao.model.user.output;
 
-import com.irlix.irlixbook.dao.model.direction.DirectionOutput;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -15,9 +11,8 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class UserAuthOutput {
-
-    private Long id;
-    private String fullName;
-    private List<DirectionOutput> directionList;
-    private List<String> photos;
+    private UUID id;
+    private String surname;
+    private String name;
+    private String avatar;
 }

@@ -11,5 +11,4 @@ public class SecurityContextUtils {
     public static UserEntity getUserFromContext() {
         return ((UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
     }
-
 }

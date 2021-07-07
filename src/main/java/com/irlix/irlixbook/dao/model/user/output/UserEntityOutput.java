@@ -1,14 +1,10 @@
 package com.irlix.irlixbook.dao.model.user.output;
 
-import com.irlix.irlixbook.dao.model.direction.DirectionOutput;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -17,16 +13,20 @@ import java.util.List;
 @Builder
 public class UserEntityOutput {
 
-    private Long id;
-    private String fullName;
+    private UUID id;
+    private String surname;
+    private String name;
+    private String gender;
     private LocalDate birthDate;
-    private String city;
-    private String technologies;
+    private String description;
+    private String vk;
     private String phone;
-    private String anotherPhone;
+    private String faceBook;
     private String email;
     private String skype;
     private String telegram;
-    private List<DirectionOutput> directionList;
-    private List<String> photos;
+    private String linkedIn;
+    private String avatar;
+    private String instagram;
+
 }

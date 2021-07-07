@@ -1,0 +1,83 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet author="Gelnaz" id="04052021-7">
+        <insert tableName="role">
+            <column name="name" value="USER"/>
+        </insert>
+        <insert tableName="role">
+            <column name="name" value="ADMIN"/>
+        </insert>
+    </changeSet>
+
+<!--    <changeSet author="Gelnaz" id="04052021-8">-->
+<!--        <insert tableName="user_entity">-->
+<!--            <column name="password" value="$2y$10$ri/ODgQx3N9DZle6/ZMyhuziclDJP/X4V0bdKxXFdNd.RUEcQgOxO"/>-->
+<!--            <column name="full_name" value="Петров Иван Максимович"/>-->
+<!--            <column name="city" value="Ульяновск"/>-->
+<!--            <column name="technologies" value="Spring, Postgres"/>-->
+<!--            <column name="phone" value="79999999901"/>-->
+<!--            <column name="skype" value="Petrov"/>-->
+<!--            <column name="telegram" value="@Petrov"/>-->
+<!--            <column name="email" value="Petrov@mail.ru"/>-->
+<!--            <column name="is_delete" value="false"/>-->
+<!--            <column name="birth_date" value="2002-04-08"/>-->
+<!--        </insert>-->
+<!--        <insert tableName="user_entity">-->
+<!--            <column name="password" value="$2y$10$ri/ODgQx3N9DZle6/ZMyhuziclDJP/X4V0bdKxXFdNd.RUEcQgOxO"/>-->
+<!--            <column name="full_name" value="Тимошина Анна Евгеньевна"/>-->
+<!--            <column name="city" value="Ульяновск"/>-->
+<!--            <column name="technologies" value="Spring, Postgres"/>-->
+<!--            <column name="phone" value="79999999902"/>-->
+<!--            <column name="skype" value="Timoshina"/>-->
+<!--            <column name="telegram" value="@Timoshina"/>-->
+<!--            <column name="email" value="Timoshina@mail.ru"/>-->
+<!--            <column name="is_delete" value="false"/>-->
+<!--            <column name="birth_date" value="2000-04-18"/>-->
+<!--        </insert>-->
+<!--        <insert tableName="user_entity">-->
+<!--            <column name="password" value="$2y$10$ri/ODgQx3N9DZle6/ZMyhuziclDJP/X4V0bdKxXFdNd.RUEcQgOxO"/>-->
+<!--            <column name="full_name" value="Михайлов Андрей Сергеевич"/>-->
+<!--            <column name="city" value="Казань"/>-->
+<!--            <column name="phone" value="79999999903"/>-->
+<!--            <column name="skype" value="Mikhailov"/>-->
+<!--            <column name="telegram" value="@Mikhailov"/>-->
+<!--            <column name="email" value="Mikhailov@mail.ru"/>-->
+<!--            <column name="is_delete" value="false"/>-->
+<!--            <column name="birth_date" value="2000-05-18"/>-->
+<!--        </insert>-->
+<!--        <insert tableName="user_entity">-->
+<!--            <column name="password" value="$2y$10$ri/ODgQx3N9DZle6/ZMyhuziclDJP/X4V0bdKxXFdNd.RUEcQgOxO"/>-->
+<!--            <column name="full_name" value="Иванова Анна Сергеевна"/>-->
+<!--            <column name="city" value="Казань"/>-->
+<!--            <column name="phone" value="79999999904"/>-->
+<!--            <column name="skype" value="Ivanova"/>-->
+<!--            <column name="telegram" value="@Ivanova"/>-->
+<!--            <column name="email" value="Ivanova@mail.ru"/>-->
+<!--            <column name="is_delete" value="false"/>-->
+<!--            <column name="birth_date" value="2000-05-10"/>-->
+<!--        </insert>-->
+<!--    </changeSet>-->
+<!--    <changeSet author="Gelnaz" id="04052021-12">-->
+<!--        <insert tableName="user_role">-->
+<!--            <column name="user_id" value="1"/>-->
+<!--            <column name="role_id" value="1"/>-->
+<!--        </insert>-->
+<!--        <insert tableName="user_role">-->
+<!--            <column name="user_id" value="2"/>-->
+<!--            <column name="role_id" value="1"/>-->
+<!--        </insert>-->
+<!--        <insert tableName="user_role">-->
+<!--            <column name="user_id" value="3"/>-->
+<!--            <column name="role_id" value="2"/>-->
+<!--        </insert>-->
+<!--        <insert tableName="user_role">-->
+<!--            <column name="user_id" value="4"/>-->
+<!--            <column name="role_id" value="2"/>-->
+<!--        </insert>-->
+<!--    </changeSet>-->
+</databaseChangeLog>
+
+

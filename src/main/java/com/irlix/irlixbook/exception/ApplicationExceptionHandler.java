@@ -22,6 +22,12 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
         return new ResponseEntity<>(apiError, HttpStatus.TEMPORARY_REDIRECT);
     }
 
+    @ExceptionHandler({ConflictException.class})
+    protected ResponseEntity<ApiError> handlePasswordActiveException(ConflictException ex) {
+        ApiError apiError = new ApiError("Exception", ex.getMessage());
+        return new ResponseEntity<>(apiError, HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler({BadRequestException.class})
     protected ResponseEntity<ApiError> handleNotFoundException(BadRequestException ex) {
         ApiError apiError = new ApiError("Exception", ex.getMessage());

@@ -29,7 +29,7 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponse authUser(AuthRequest request) {
         String password = request.getPassword();
         UserEntity userEntity = userService.findUserForAuth(request);
-        if (passwordEncoder.matches(password, userEntity.getPassword()) && !userEntity.isDelete()) {
+        if (passwordEncoder.matches(password, userEntity.getPassword()) && userEntity.getBlocked() == null) {
             String value = JwtProvider.generateToken(userEntity.getEmail());
             if (tokenRepository.findByValue(value).isPresent()) {
                 return AuthResponse.builder()

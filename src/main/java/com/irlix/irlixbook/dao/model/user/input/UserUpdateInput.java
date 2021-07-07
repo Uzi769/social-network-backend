@@ -1,13 +1,13 @@
 package com.irlix.irlixbook.dao.model.user.input;
 
 
-import com.irlix.irlixbook.dao.entity.Photo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
 import javax.validation.constraints.Email;
@@ -23,20 +23,23 @@ import java.time.LocalDate;
 public class UserUpdateInput {
 
     @Size(min = 2, max = 128)
-    private String fullName;
+    private String surname;
+    @Size(min = 2, max = 128)
+    private String name;
     @Size(min = 11, max = 12)
     @Pattern(regexp = "(^\\+?[78][-\\(]?\\d{3}\\)?-?\\d{3}-?\\d{2}-?\\d{2}$)")
     private String phone;
     @Length(min = 2, max = 128)
     @Email
     private String email;
-    @Column(name = "birth_date")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDate birthDate;
-    private String city;
-    private String technologies;
-    @Pattern(regexp = "(^\\+?[78][-\\(]?\\d{3}\\)?-?\\d{3}-?\\d{2}-?\\d{2}$)")
-    private String anotherPhone;
+    private String gender;
+    private String description;
+    private String vk;
+    private String faceBook;
     private String skype;
     private String telegram;
-    private Photo photo;
+    private String linkedIn;
+    private String instagram;
 }
