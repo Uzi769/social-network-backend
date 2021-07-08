@@ -17,7 +17,8 @@ public class Consts {
     public static final String INCORRECT_PASSWORD = "Incorrect password";
     public static final String MISMATCH_PASSWORDS = "Passwords mismatch";
     public static final String ASSIGN_ROLE_USER = "User has been assigned the admin role";
-
+    public static final String PHOTO_UPLOADED = "Photo was uploaded";
+    public static final String PHOTO_DELETED = "Photo deleted";
 
     public static final String POST_NOT_FOUND = "Post not found";
     public static final String NOT_NULL_POST_INPUT = "PostInput cannot be null";

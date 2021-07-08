@@ -5,6 +5,7 @@ import com.irlix.irlixbook.dao.model.PageableInput;
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
 import com.irlix.irlixbook.dao.model.user.input.*;
 import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -36,6 +37,10 @@ public interface UserService {
     UserEntityOutput updatePasswordByAdmin(UUID id, UserPasswordInput userPasswordInput);
 
     UserEntityOutput updatePasswordByUser(UserPasswordInput userPasswordInput);
+
+    String uploading(MultipartFile file);
+
+    void deletePicture(UUID id);
 
 
 

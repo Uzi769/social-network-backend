@@ -34,6 +34,12 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler({MultipartException.class})
+    protected ResponseEntity<ApiError> handlePasswordActiveException(MultipartException ex) {
+        ApiError apiError = new ApiError("Exception", ex.getMessage());
+        return new ResponseEntity<>(apiError, HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
+    }
+
     @ExceptionHandler({NotFoundException.class})
     protected ResponseEntity<ApiError> handleNotFoundException(NotFoundException ex) {
         ApiError apiError = new ApiError("Exception", ex.getMessage());

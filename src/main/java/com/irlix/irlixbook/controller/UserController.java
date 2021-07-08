@@ -9,6 +9,7 @@ import com.irlix.irlixbook.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -108,5 +109,16 @@ public class UserController {
     @PutMapping("user/update-password")
     public UserEntityOutput updatePassword(@RequestBody @Valid UserPasswordInput userPasswordInput) {
         return userService.updatePasswordByUser(userPasswordInput);
+    }
+
+
+    @PostMapping(value = "user/upload-photo", consumes = "multipart/form-data")
+    public String pictureUpload(@RequestParam("file") MultipartFile file) {
+        return userService.uploading(file);
+    }
+
+    @DeleteMapping("user/delete-photo/{id}")
+    public void deletePicture(@PathVariable("id") UUID id) {
+        userService.deletePicture(id);
     }
 }
