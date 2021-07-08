@@ -1,14 +1,14 @@
-package com.irlix.irlixbook.service.post;
+package com.irlix.irlixbook.service.content;
 
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
-import com.irlix.irlixbook.dao.entity.Post;
+import com.irlix.irlixbook.dao.entity.Content;
 import com.irlix.irlixbook.dao.model.PageableInput;
 import com.irlix.irlixbook.dao.model.post.PostInput;
 import com.irlix.irlixbook.dao.model.post.PostOutput;
 import com.irlix.irlixbook.dao.model.post.PostSearch;
 import com.irlix.irlixbook.exception.NotFoundException;
-import com.irlix.irlixbook.repository.PostRepository;
-import com.irlix.irlixbook.repository.summary.PostRepositorySummary;
+import com.irlix.irlixbook.repository.ContentRepository;
+import com.irlix.irlixbook.repository.summary.ContentRepositorySummary;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.convert.ConversionService;
@@ -22,15 +22,15 @@ import java.util.stream.Collectors;
 @Log4j2
 @Service
 @RequiredArgsConstructor
-public class PostServiceImpl implements PostService {
+public class ContentServiceImpl implements ContentService {
 
-    private final PostRepository postRepository;
+    private final ContentRepository contentRepository;
     private final ConversionService conversionService;
-    private final PostRepositorySummary repositorySummary;
+    private final ContentRepositorySummary repositorySummary;
 
     @Override
-    public Post getById(Long id) {
-        return postRepository.findById(id)
+    public Content getById(Long id) {
+        return contentRepository.findById(id)
                 .orElseThrow(() -> {
                     log.error("Post not found");
                     return new NotFoundException("Post not found");
@@ -40,14 +40,14 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public List<PostOutput> save(PostInput postInput) {
-        Post post = conversionService.convert(postInput, Post.class);
-        if (post == null) {
+        Content content = conversionService.convert(postInput, Content.class);
+        if (content == null) {
             log.error("PostInput cannot be null");
             throw new NullPointerException("PostInput cannot be null");
         }
-        post.setAuthor(SecurityContextUtils.getUserFromContext());
+        content.setAuthor(SecurityContextUtils.getUserFromContext());
 
-        postRepository.save(post);
+        contentRepository.save(content);
         log.info("Post saved. Class PostServiceImpl, method save");
         return findAll();
     }
@@ -61,7 +61,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostOutput> findAll() {
-        return postRepository.findAll().stream()
+        return contentRepository.findAll().stream()
                 .map(post -> conversionService.convert(post, PostOutput.class))
                 .collect(Collectors.toList());
     }
@@ -69,8 +69,8 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public List<PostOutput> search(PostSearch dto, PageableInput pageable) {
-        List<Post> posts = repositorySummary.search(dto, pageable);
-        return posts.stream()
+        List<Content> contents = repositorySummary.search(dto, pageable);
+        return contents.stream()
                 .map(post -> conversionService.convert(post, PostOutput.class))
                 .collect(Collectors.toList());
     }
@@ -78,7 +78,7 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public List<PostOutput>  delete(Long id) {
-       postRepository.deleteById(id);
+       contentRepository.deleteById(id);
 
         log.info("Post deleted. Class PostServiceImpl, method delete");
 
@@ -87,26 +87,26 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostOutput>  update(Long id, @Valid PostInput postInput) {
-        Post post = getById(id);
+        Content content = getById(id);
         if (postInput == null) {
             log.error("Post cannot be null, Class PostServiceImpl, method update");
             throw new NullPointerException("Post cannot be null");
         }
-        Post newPost = conversionService.convert(postInput, Post.class);
+        Content newContent = conversionService.convert(postInput, Content.class);
 
-        updatePost(post, newPost);
-        postRepository.save(post);
+        updatePost(content, newContent);
+        contentRepository.save(content);
         log.info("Update office by id: " + id + ". Class OfficeServiceImpl, method update");
 
         return findAll();
     }
-    private void updatePost(Post post, Post newPost) {
-        if (newPost.getTopic() != null) {
-            post.setTopic(newPost.getTopic());
-        }
-        if (newPost.getContent() != null) {
-            post.setContent(newPost.getContent());
-        }
+    private void updatePost(Content content, Content newContent) {
+//        if (newContent.getTopic() != null) {
+//            content.setTopic(newContent.getTopic());
+//        }
+//        if (newContent.getContent() != null) {
+//            content.setContent(newContent.getContent());
+//        }
     }
 
 }

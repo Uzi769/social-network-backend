@@ -5,13 +5,13 @@
 
 
 <!--    <changeSet author="Gelnaz" id="04052021-14">-->
-<!--        <insert tableName="post">-->
+<!--        <insert tableName="content">-->
 <!--            <column name="date" value="2021-04-05"/>-->
 <!--            <column name="user_id" value="1"/>-->
 <!--            <column name="topic" value="Хакатон"/>-->
 <!--            <column name="content" value="С 4 по 7 мая проходит Хакатон"/>-->
 <!--        </insert>-->
-<!--        <insert tableName="post">-->
+<!--        <insert tableName="content">-->
 <!--            <column name="date" value="2021-04-05"/>-->
 <!--            <column name="user_id" value="1"/>-->
 <!--            <column name="topic" value="Важно"/>-->

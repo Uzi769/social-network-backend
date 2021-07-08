@@ -34,6 +34,6 @@ public class Picture {
     private String url;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "post_id")
-    private Post post;
+    @JoinColumn(name = "content_id")
+    private Content content;
 }

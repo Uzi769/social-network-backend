@@ -84,13 +84,19 @@ public class UserEntity implements UserDetails {
     private String avatar;
 
     @OneToMany(mappedBy = "author")
-    private List<Post> posts;
+    private List<Content> contents;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_role",
             joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
     private List<Role> roles;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_content",
+            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "content_id", referencedColumnName = "id")})
+    private List<Content> favoritesContents;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

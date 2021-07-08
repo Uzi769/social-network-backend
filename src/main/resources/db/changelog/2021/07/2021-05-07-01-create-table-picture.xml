@@ -12,6 +12,6 @@
         </createTable>
         <addForeignKeyConstraint baseTableName="picture" baseColumnNames="post_id"
                                  constraintName="picture_post_id"
-                                 referencedTableName="post" referencedColumnNames="id"/>
+                                 referencedTableName="content" referencedColumnNames="id"/>
     </changeSet>
 </databaseChangeLog>

@@ -1,6 +1,6 @@
 package com.irlix.irlixbook.repository.summary;
 
-import com.irlix.irlixbook.dao.entity.Post;
+import com.irlix.irlixbook.dao.entity.Content;
 import com.irlix.irlixbook.dao.model.PageableInput;
 import com.irlix.irlixbook.dao.model.post.PostSearch;
 import com.irlix.irlixbook.exception.BadRequestException;
@@ -21,11 +21,11 @@ import java.util.List;
 @Log4j2
 @Repository
 @RequiredArgsConstructor
-public class PostRepositorySummary {
+public class ContentRepositorySummary {
 
     private final EntityManager entityManager;
 
-    public List<Post> search(PostSearch dto, PageableInput pageable) {
+    public List<Content> search(PostSearch dto, PageableInput pageable) {
 
         if (pageable.getPage() < 0 || pageable.getSize() < 0) {
             log.error("Pageable was negative.");
@@ -33,8 +33,8 @@ public class PostRepositorySummary {
         }
 
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Post> query = builder.createQuery(Post.class);
-        Root<Post> root = query.from(Post.class);
+        CriteriaQuery<Content> query = builder.createQuery(Content.class);
+        Root<Content> root = query.from(Content.class);
         List<Predicate> predicates = new ArrayList<>();
 
         if (dto.getTopic() != null) {
@@ -56,11 +56,11 @@ public class PostRepositorySummary {
 
         query.where(builder.and(predicates.toArray(new Predicate[0])));
 
-        TypedQuery<Post> typedQuery = entityManager.createQuery(query);
+        TypedQuery<Content> typedQuery = entityManager.createQuery(query);
         typedQuery.setFirstResult(((pageable.getPage() + 1) * pageable.getSize()) - pageable.getSize());
         typedQuery.setMaxResults(pageable.getSize());
 
-        List<Post> list = typedQuery.getResultList();
+        List<Content> list = typedQuery.getResultList();
 
         if (list.isEmpty()) {
             throw new NotFoundException("Empty list. Class UserRepositorySummary, method search");

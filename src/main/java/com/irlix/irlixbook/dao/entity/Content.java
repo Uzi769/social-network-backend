@@ -30,26 +30,39 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "post")
+@Table(name = "content")
 @Builder
-public class Post {
+public class Content {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @CreationTimestamp
-    @Column(name = "date")
-    private LocalDate date;
-
-    @Column(name = "topic")
-    private String topic;
+    @NotEmpty
+    @Column(name = "name")
+    private String name;
 
     @NotEmpty
-    @Column(name = "content")
-    private String content;
+    @Column(name = "type")
+    private String type;
+
+    @Column(name = "short_description")
+    private String shortDescription;
+
+    @Column(name = "description")
+    private String description;
+
+    @Column(name = "registration_link")
+    private String registrationLink;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
     @JoinColumn(name = "user_id")
     private UserEntity author;
+
+    @ManyToMany(mappedBy = "favoritesContents", fetch = FetchType.LAZY)
+    private List<UserEntity> users;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
+    @JoinColumn(name = "sticker_id")
+    private Sticker sticker;
 }
