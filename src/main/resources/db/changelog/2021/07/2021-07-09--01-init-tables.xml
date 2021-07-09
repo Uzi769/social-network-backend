@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.10.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1625832244511-1" author="aleksey (generated)">
+        <createTable tableName="content">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_content"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="short_description" type="VARCHAR(255)"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="registration_link" type="VARCHAR(255)"/>
+            <column name="user_id" type="UUID"/>
+            <column name="sticker_id" type="BIGINT"/>
+            <column name="is_deleted" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1625832244511-2" author="aleksey (generated)">
+        <createTable tableName="picture">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_picture"/>
+            </column>
+            <column name="url" type="VARCHAR(255)"/>
+            <column name="content_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1625832244511-3" author="aleksey (generated)">
+        <createTable tableName="role">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_role"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1625832244511-4" author="aleksey (generated)">
+        <createTable tableName="role_permission">
+            <column name="permission_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_role_permission"/>
+            </column>
+            <column name="role_id" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_role_permission"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1625832244511-5" author="aleksey (generated)">
+        <createTable tableName="sticker">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_sticker"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1625832244511-6" author="aleksey (generated)">
+        <createTable tableName="token">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_token"/>
+            </column>
+            <column name="value" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1625832244511-7" author="aleksey (generated)">
+        <createTable tableName="user_content">
+            <column name="content_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_content"/>
+            </column>
+            <column name="user_id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_content"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1625832244511-8" author="aleksey (generated)">
+        <createTable tableName="user_entity">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_entity"/>
+            </column>
+            <column name="surname" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="gender" type="VARCHAR(255)"/>
+            <column name="birth_date" type="DATE"/>
+            <column name="password" type="VARCHAR(255)"/>
+            <column name="phone" type="VARCHAR(255)"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="vk" type="VARCHAR(255)"/>
+            <column name="facebook" type="VARCHAR(255)"/>
+            <column name="skype" type="VARCHAR(255)"/>
+            <column name="instagram" type="VARCHAR(255)"/>
+            <column name="linked_in" type="VARCHAR(255)"/>
+            <column name="telegram" type="VARCHAR(255)"/>
+            <column name="blocked" type="DATETIME"/>
+            <column name="avatar" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1625832244511-9" author="aleksey (generated)">
+        <createTable tableName="user_role">
+            <column name="role_id" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_role"/>
+            </column>
+            <column name="user_id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_role"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1625832244511-10" author="aleksey (generated)">
+        <addUniqueConstraint columnNames="name" constraintName="uc_sticker_name" tableName="sticker"/>
+    </changeSet>
+    <changeSet id="1625832244511-11" author="aleksey (generated)">
+        <addForeignKeyConstraint baseColumnNames="sticker_id" baseTableName="content"
+                                 constraintName="FK_CONTENT_ON_STICKER" referencedColumnNames="id"
+                                 referencedTableName="sticker"/>
+    </changeSet>
+    <changeSet id="1625832244511-12" author="aleksey (generated)">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="content" constraintName="FK_CONTENT_ON_USER"
+                                 referencedColumnNames="id" referencedTableName="user_entity"/>
+    </changeSet>
+    <changeSet id="1625832244511-13" author="aleksey (generated)">
+        <addForeignKeyConstraint baseColumnNames="content_id" baseTableName="picture"
+                                 constraintName="FK_PICTURE_ON_CONTENT" referencedColumnNames="id"
+                                 referencedTableName="content"/>
+    </changeSet>
+    <changeSet id="1625832244511-14" author="aleksey (generated)">
+        <addForeignKeyConstraint baseColumnNames="permission_id" baseTableName="role_permission"
+                                 constraintName="fk_rolper_on_permission" referencedColumnNames="id"
+                                 referencedTableName="sticker"/>
+    </changeSet>
+    <changeSet id="1625832244511-15" author="aleksey (generated)">
+        <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="role_permission"
+                                 constraintName="fk_rolper_on_role" referencedColumnNames="id"
+                                 referencedTableName="role"/>
+    </changeSet>
+    <changeSet id="1625832244511-16" author="aleksey (generated)">
+        <addForeignKeyConstraint baseColumnNames="content_id" baseTableName="user_content"
+                                 constraintName="fk_usecon_on_content" referencedColumnNames="id"
+                                 referencedTableName="content"/>
+    </changeSet>
+    <changeSet id="1625832244511-17" author="aleksey (generated)">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_content"
+                                 constraintName="fk_usecon_on_user_entity" referencedColumnNames="id"
+                                 referencedTableName="user_entity"/>
+    </changeSet>
+    <changeSet id="1625832244511-18" author="aleksey (generated)">
+        <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="user_role"
+                                 constraintName="fk_user_role_on_role" referencedColumnNames="id"
+                                 referencedTableName="role"/>
+    </changeSet>
+    <changeSet id="1625832244511-19" author="aleksey (generated)">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_role"
+                                 constraintName="fk_user_role_on_user_entity" referencedColumnNames="id"
+                                 referencedTableName="user_entity"/>
+    </changeSet>
+
+</databaseChangeLog>

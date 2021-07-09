@@ -1,4 +1,4 @@
-package com.irlix.irlixbook.dao.mapper.response.user;
+package com.irlix.irlixbook.dao.mapper.user;
 
 
 import com.irlix.irlixbook.dao.entity.UserEntity;

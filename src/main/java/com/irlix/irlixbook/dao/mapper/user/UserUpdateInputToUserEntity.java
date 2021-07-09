@@ -1,4 +1,4 @@
-package com.irlix.irlixbook.dao.mapper.request.user;
+package com.irlix.irlixbook.dao.mapper.user;
 
 import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.model.user.input.UserUpdateInput;

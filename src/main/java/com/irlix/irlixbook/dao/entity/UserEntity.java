@@ -71,7 +71,7 @@ public class UserEntity implements UserDetails {
     @Column(name = "instagram")
     private String instagram;
 
-    @Column(name = "linked_in ")
+    @Column(name = "linked_in")
     private String linkedIn;
 
     @Column(name = "telegram")

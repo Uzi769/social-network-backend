@@ -2,12 +2,13 @@ package com.irlix.irlixbook.repository.summary;
 
 import com.irlix.irlixbook.dao.entity.Content;
 import com.irlix.irlixbook.dao.model.PageableInput;
-import com.irlix.irlixbook.dao.model.post.PostSearch;
+import com.irlix.irlixbook.dao.model.content.request.ContentSearchRequest;
 import com.irlix.irlixbook.exception.BadRequestException;
 import com.irlix.irlixbook.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -25,7 +26,7 @@ public class ContentRepositorySummary {
 
     private final EntityManager entityManager;
 
-    public List<Content> search(PostSearch dto, PageableInput pageable) {
+    public List<Content> search(ContentSearchRequest dto, PageableInput pageable) {
 
         if (pageable.getPage() < 0 || pageable.getSize() < 0) {
             log.error("Pageable was negative.");
@@ -37,22 +38,19 @@ public class ContentRepositorySummary {
         Root<Content> root = query.from(Content.class);
         List<Predicate> predicates = new ArrayList<>();
 
-        if (dto.getTopic() != null) {
-            predicates.add(builder.like(root.get("topic"), "%" + dto.getTopic() + "%"));
+        if (StringUtils.hasLength(dto.getName())) {
+            predicates.add(builder.like(root.get("name"), "%" + dto.getName() + "%"));
         }
-        if (dto.getContent() != null) {
-            predicates.add(builder.like(root.get("content"), "%" + dto.getContent() + "%"));
-        }
-        if (dto.getDate() != null) {
-            predicates.add(builder.equal(root.get("date"), dto.getDate()));
+        if (StringUtils.hasLength(dto.getType())) {
+            predicates.add(builder.like(root.get("type"), "%" + dto.getType() + "%"));
         }
 
-        if (!pageable.isSort()) {
-            query.orderBy(builder.desc(root.get("date")));
-        }
-        if (pageable.isSort()) {
-            query.orderBy(builder.asc(root.get("date")));
-        }
+//        if (!pageable.isSort()) {
+//            query.orderBy(builder.desc(root.get("date")));
+//        }
+//        if (pageable.isSort()) {
+//            query.orderBy(builder.asc(root.get("date")));
+//        }
 
         query.where(builder.and(predicates.toArray(new Predicate[0])));
 

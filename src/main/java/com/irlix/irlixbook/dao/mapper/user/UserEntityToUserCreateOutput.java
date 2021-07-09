@@ -1,10 +1,8 @@
-package com.irlix.irlixbook.dao.mapper.response.user;
+package com.irlix.irlixbook.dao.mapper.user;
 
 import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.model.user.output.UserAuthOutput;
 import org.springframework.core.convert.converter.Converter;
-
-import java.util.stream.Collectors;
 
 public class UserEntityToUserCreateOutput implements Converter<UserEntity, UserAuthOutput> {
 

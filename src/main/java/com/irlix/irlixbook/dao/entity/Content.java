@@ -1,28 +1,8 @@
 package com.irlix.irlixbook.dao.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
+import lombok.*;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
+import javax.persistence.*;
 import java.util.List;
 
 @Getter
@@ -38,12 +18,10 @@ public class Content {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotEmpty
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @NotEmpty
-    @Column(name = "type")
+    @Column(name = "type", nullable = false)
     private String type;
 
     @Column(name = "short_description")
@@ -55,14 +33,17 @@ public class Content {
     @Column(name = "registration_link")
     private String registrationLink;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity author;
 
     @ManyToMany(mappedBy = "favoritesContents", fetch = FetchType.LAZY)
     private List<UserEntity> users;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
+    @ManyToOne
     @JoinColumn(name = "sticker_id")
     private Sticker sticker;
+
+    @Column(name = "is_deleted")
+    private boolean isDeleted;
 }
