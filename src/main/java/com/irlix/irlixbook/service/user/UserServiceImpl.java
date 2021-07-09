@@ -8,6 +8,7 @@ import com.irlix.irlixbook.dao.model.user.input.*;
 import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
 import com.irlix.irlixbook.exception.BadRequestException;
 import com.irlix.irlixbook.exception.ConflictException;
+import com.irlix.irlixbook.exception.MultipartException;
 import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.RoleRepository;
 import com.irlix.irlixbook.repository.UserRepository;
@@ -15,6 +16,7 @@ import com.irlix.irlixbook.repository.summary.UserRepositorySummary;
 import com.irlix.irlixbook.service.mail.MailSender;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,7 +24,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -46,6 +51,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     private static final String USER_ROLE = "USER";
     private static final String ADMIN_ROLE = "ADMIN";
+
+    @Value("${photo.upload.path}")
+    private String uploadPath;
+
+    @Value("${photo.upload.root}")
+    private String uploadRoot;
 
     @Override
     public UserEntity findById(UUID id) {
@@ -301,6 +312,50 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             throw new BadRequestException(MISMATCH_PASSWORDS);
         }
     }
+
+    @Override
+    public String uploading(MultipartFile file) {
+        if (file.getSize() > 10485760) {
+            log.info("File size exceeded");
+            throw new MultipartException("File size exceeded");
+        }
+        UserEntity user = SecurityContextUtils.getUserFromContext();
+
+        String folderName = user.getEmail().substring(0, user.getEmail().indexOf("@"));
+        String folderPath = uploadPath + "/" + folderName;
+        String photoName = "";
+        if (file != null) {
+            File uploadDir = new File(folderPath);
+            if (!uploadDir.exists()) {
+                uploadDir.mkdir();
+            }
+            String originFileName = file.getOriginalFilename();
+            String fileName = UUID.randomUUID() + originFileName.substring(originFileName.lastIndexOf("."));
+
+            try {
+                file.transferTo(new File(folderPath + "/" + fileName));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            photoName = uploadRoot + folderName + "/" + fileName;
+            user.setAvatar(photoName);
+            userRepository.save(user);
+            log.info(PHOTO_UPLOADED);
+        } else {
+            log.info(PHOTO_DELETED);
+        }
+        return photoName;
+    }
+
+    @Override
+    public void deletePicture(UUID id) {
+        UserEntity user = SecurityContextUtils.getUserFromContext();
+        user.setAvatar(null);
+        userRepository.save(user);
+    }
+
+
 
 
 
