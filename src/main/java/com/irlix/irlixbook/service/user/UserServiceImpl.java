@@ -13,6 +13,7 @@ import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.RoleRepository;
 import com.irlix.irlixbook.repository.UserRepository;
 import com.irlix.irlixbook.repository.summary.UserRepositorySummary;
+import com.irlix.irlixbook.service.mail.MailSender;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,6 +47,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final UserRepositorySummary userRepositorySummary;
     private final ConversionService conversionService;
     private final PasswordEncoder passwordEncoder;
+    private final MailSender mailSender;
 
     private static final String USER_ROLE = "USER";
     private static final String ADMIN_ROLE = "ADMIN";
@@ -95,7 +97,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
 
         checkingMailForUniqueness(userEntity, userCreateInput.getEmail());
-        userEntity.setPassword(passwordEncoder.encode(createPassword()));
+        String password = createPassword();
+        mailSender.send(userEntity.getEmail(), password);
+        userEntity.setPassword(passwordEncoder.encode(password));
 
         userEntity.setRoles(fetchRole(USER_ROLE));
         UserEntity savedUser = userRepository.save(userEntity);
