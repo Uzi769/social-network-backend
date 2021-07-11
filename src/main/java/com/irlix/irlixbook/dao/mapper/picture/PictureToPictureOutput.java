@@ -11,7 +11,7 @@ public class PictureToPictureOutput implements Converter<Picture, PictureOutput>
         return PictureOutput.builder()
                 .pictureId(picture.getId())
                 .url(picture.getUrl())
-                .contentId(picture.getId())
+                .contentId(picture.getContent().getId())
                 .build();
     }
 }

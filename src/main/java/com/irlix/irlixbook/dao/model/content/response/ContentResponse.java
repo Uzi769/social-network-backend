@@ -19,4 +19,5 @@ public class ContentResponse {
     private String author;
     private List<String> users;
     private String stickerName;
+    private List<String> pictures;
 }

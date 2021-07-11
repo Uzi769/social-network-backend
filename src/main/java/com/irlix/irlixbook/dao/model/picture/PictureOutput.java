@@ -13,5 +13,5 @@ public class PictureOutput {
 
     private UUID pictureId;
     private String url;
-    private UUID contentId;
+    private Long contentId;
 }

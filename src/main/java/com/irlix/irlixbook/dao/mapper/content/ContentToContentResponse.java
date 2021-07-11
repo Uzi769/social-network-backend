@@ -1,11 +1,9 @@
 package com.irlix.irlixbook.dao.mapper.content;
 
 import com.irlix.irlixbook.dao.entity.Content;
-import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 import org.springframework.core.convert.converter.Converter;
 
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ContentToContentResponse implements Converter<Content, ContentResponse> {
@@ -23,6 +21,9 @@ public class ContentToContentResponse implements Converter<Content, ContentRespo
                 .stickerName(content.getSticker().getName())
                 .users(content.getUsers() != null
                         ? content.getUsers().stream().map(u -> u.getId().toString()).collect(Collectors.toList())
+                        : null)
+                .pictures(content.getPictures() != null
+                        ? content.getPictures().stream().map(p -> p.getId().toString()).collect(Collectors.toList())
                         : null)
                 .build();
     }
