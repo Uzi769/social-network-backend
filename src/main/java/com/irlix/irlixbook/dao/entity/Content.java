@@ -46,4 +46,7 @@ public class Content {
 
     @Column(name = "is_deleted")
     private boolean isDeleted;
+
+    @OneToMany(mappedBy = "content")
+    private List<Picture> pictures;
 }

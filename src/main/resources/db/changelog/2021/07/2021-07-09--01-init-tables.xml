@@ -26,7 +26,7 @@
     </changeSet>
     <changeSet id="1625832244511-2" author="aleksey (generated)">
         <createTable tableName="picture">
-            <column autoIncrement="true" name="id" type="BIGINT">
+            <column name="id" type="UUID">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_picture"/>
             </column>
             <column name="url" type="VARCHAR(255)"/>

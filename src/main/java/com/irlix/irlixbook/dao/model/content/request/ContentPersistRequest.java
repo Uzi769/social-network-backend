@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -21,6 +22,6 @@ public class ContentPersistRequest {
     private String shortDescription;
     private String description;
     private String registrationLink;
-    @NotBlank
     private String stickerName;
+    private List<UUID> picturesId;
 }

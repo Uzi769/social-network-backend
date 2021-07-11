@@ -1,6 +1,7 @@
 package com.irlix.irlixbook.config.web;
 
 import com.irlix.irlixbook.dao.mapper.content.ContentPersistRequestToContent;
+import com.irlix.irlixbook.dao.mapper.picture.PictureToPictureOutput;
 import com.irlix.irlixbook.dao.mapper.user.UserCreateInputToUserEntity;
 import com.irlix.irlixbook.dao.mapper.user.UserUpdateInputToUserEntity;
 import com.irlix.irlixbook.dao.mapper.content.ContentToContentResponse;
@@ -22,6 +23,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addConverter(new UserUpdateInputToUserEntity());
         registry.addConverter(new ContentPersistRequestToContent());
         registry.addConverter(new ContentToContentResponse());
+        registry.addConverter(new PictureToPictureOutput());
     }
 
     /**

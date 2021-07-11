@@ -316,8 +316,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public String uploading(MultipartFile file) {
         if (file.getSize() > 10485760) {
-            log.info("File size exceeded");
-            throw new MultipartException("File size exceeded");
+            log.info(FILE_SIZE_EXCEEDED);
+            throw new MultipartException(FILE_SIZE_EXCEEDED);
         }
         UserEntity user = SecurityContextUtils.getUserFromContext();
 
@@ -354,6 +354,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setAvatar(null);
         userRepository.save(user);
     }
+
+
+
 
 
 

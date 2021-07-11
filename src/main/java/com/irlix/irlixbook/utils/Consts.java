@@ -19,14 +19,8 @@ public class Consts {
     public static final String ASSIGN_ROLE_USER = "User has been assigned the admin role";
     public static final String PHOTO_UPLOADED = "Photo was uploaded";
     public static final String PHOTO_DELETED = "Photo deleted";
-
-    public static final String POST_NOT_FOUND = "Post not found";
-    public static final String NOT_NULL_POST_INPUT = "PostInput cannot be null";
-
-
     public static final String PICTURE_NOT_FOUND = "Picture not found";
     public static final String PICTURE_DELETED = "Picture deleted";
     public static final String PICTURE_UPLOADED = "Picture was uploaded";
-    public static final String NOT_USERS_PHOTO = "This is not your photo";
-
+    public static final String FILE_SIZE_EXCEEDED = "File size exceeded";
 }

@@ -8,6 +8,7 @@ import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 import com.irlix.irlixbook.exception.BadRequestException;
 import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.ContentRepository;
+import com.irlix.irlixbook.service.picture.PictureService;
 import com.irlix.irlixbook.service.sticker.StickerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -29,6 +30,7 @@ public class ContentServiceImpl implements ContentService {
     private final ContentRepository contentRepository;
     private final ConversionService conversionService;
     private final StickerService stickerService;
+    private final PictureService pictureService;
 
     @Override
     @Transactional
@@ -45,6 +47,9 @@ public class ContentServiceImpl implements ContentService {
         content.setSticker(sticker);
 
         Content savedContent = contentRepository.save(content);
+        if (contentPersistRequest.getPicturesId() != null && !contentPersistRequest.getPicturesId().isEmpty()) {
+            content.setPictures(pictureService.addContentToPicture(contentPersistRequest.getPicturesId(), savedContent));
+        }
         log.info("Content saved. Class ContentServiceImpl, method save");
         return conversionService.convert(savedContent, ContentResponse.class);
     }
