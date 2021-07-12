@@ -54,7 +54,7 @@ public class PictureServiceImpl implements PictureService{
             String fileName = id + originFileName.substring(originFileName.lastIndexOf("."));
 
             try {
-                file.transferTo(new File(uploadPath + fileName));
+                file.transferTo(new File(uploadPath + "/" + fileName));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -69,8 +69,6 @@ public class PictureServiceImpl implements PictureService{
         }
         return conversionService.convert(picture, PictureOutput.class);
     }
-
-
 
 
     @Override
