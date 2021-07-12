@@ -5,7 +5,10 @@ import com.irlix.irlixbook.dao.entity.Role;
 import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.entity.enams.RoleEnam;
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
-import com.irlix.irlixbook.dao.model.user.input.*;
+import com.irlix.irlixbook.dao.model.user.input.UserCreateInput;
+import com.irlix.irlixbook.dao.model.user.input.UserPasswordInput;
+import com.irlix.irlixbook.dao.model.user.input.UserSearchInput;
+import com.irlix.irlixbook.dao.model.user.input.UserUpdateInput;
 import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
 import com.irlix.irlixbook.exception.BadRequestException;
 import com.irlix.irlixbook.exception.ConflictException;
@@ -19,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -91,45 +95,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return create(userCreateInput);
     }
 
-    private UserEntityOutput create(UserCreateInput userCreateInput) {
-        UserEntity userEntity = conversionService.convert(userCreateInput, UserEntity.class);
-        if (userEntity == null) {
-            throw new ConflictException("Error conversion user. Class UserServiceImpl, method createUser");
-        }
-
-        checkingMailForUniqueness(userEntity, userCreateInput.getEmail());
-        String password = createPassword();
-        mailSender.send(userEntity.getEmail(), password);
-        userEntity.setPassword(passwordEncoder.encode(password));
-
-        userEntity.setRoles(fetchRole(USER_ROLE));
-        UserEntity savedUser = userRepository.save(userEntity);
-        log.info(USER_SAVED);
-        return conversionService.convert(savedUser, UserEntityOutput.class);
-
-    }
-
-    private List<Role> fetchRole(String role) {
-        return Collections.singletonList(roleRepository.findByName(RoleEnam.valueOf(role))
-                .orElseThrow(() -> {
-                    log.error(ROLE_NOT_FOUND);
-                    return new NotFoundException(ROLE_NOT_FOUND);
-                }));
-    }
-
-    private void checkingMailForUniqueness(UserEntity userEntity, String email) {
-        if (userRepository.findByEmail(email).orElse(null) != null) {
-            throw new BadRequestException(USER_WITH_EMAIL_ALREADY_EXISTS);
-        } else {
-            userEntity.setEmail(email);
-        }
-    }
-
-    private String createPassword() {
-        return new Random().ints(8, 48, 57)
-                .mapToObj(i -> String.valueOf((char) i)).collect(Collectors.joining());
-    }
-
     @Override
     public List<UserEntityOutput> findUsers() {
         return userRepository.findAll().stream()
@@ -158,6 +123,152 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         UserEntity user = userRepository.save(userEntity);
         log.info(USER_UPDATED);
         return conversionService.convert(user, UserEntityOutput.class);
+    }
+
+    @Override
+    @Transactional
+    public UserEntityOutput blockedUser(UUID id) {
+        UserEntity userEntity = findById(id);
+        userEntity.setBlocked(LocalDateTime.now());
+        UserEntity savedUser = userRepository.save(userEntity);
+        log.info(USER_BLOCKED);
+        return conversionService.convert(savedUser, UserEntityOutput.class);
+    }
+
+    @Override
+    @Transactional
+    public UserEntityOutput unblockedUser(UUID id) {
+        UserEntity userEntity = findById(id);
+        userEntity.setBlocked(null);
+        UserEntity savedUser = userRepository.save(userEntity);
+        log.info(USER_UNBLOCKED);
+        return conversionService.convert(savedUser, UserEntityOutput.class);
+    }
+
+    @Override
+    @Transactional
+    public UserEntityOutput deletedUser(UUID id) {
+        UserEntity userEntity = findById(id);
+
+        log.info(USER_DELETED);
+        userRepository.delete(userEntity);
+        return conversionService.convert(userEntity, UserEntityOutput.class);
+    }
+
+    @Override
+    public List<UserEntityOutput> search(UserSearchInput userSearchInput) {
+        List<UserEntity> userEntityList = userRepositorySummary.search(userSearchInput);
+        return userEntityList.stream()
+                .map(userEntity -> conversionService.convert(userEntity, UserEntityOutput.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public UserEntityOutput assignRole(UUID id) {
+        UserEntity user = findById(id);
+        List<Role> roleList = user.getRoles();
+        List<RoleEnam> roleNames = roleList.stream()
+                .map(Role::getName)
+                .collect(Collectors.toList());
+
+        if (!roleNames.contains(RoleEnam.valueOf(ADMIN_ROLE))) {
+            roleList.add(fetchRole(ADMIN_ROLE).get(0));
+            user.setRoles(roleList);
+        }
+        userRepository.save(user);
+        log.info(ASSIGN_ROLE_USER);
+        return conversionService.convert(user, UserEntityOutput.class);
+    }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserDetails loadUserByUsername(String email) {
+        UserDetails userDetails = userRepository.findByEmail(email).orElseThrow(() -> {
+            log.error(USER_NOT_FOUND);
+            return new NotFoundException(USER_NOT_FOUND);
+        });
+        userDetails.getAuthorities();
+        return userDetails;
+    }
+
+    @Override
+    @Transactional
+    public UserEntityOutput updatePasswordByAdmin(UUID id, UserPasswordInput userPasswordInput) {
+        UserEntity user = findById(id);
+        updatePassword(userPasswordInput, user);
+        log.info(PASSWORD_RESET);
+        return conversionService.convert(user, UserEntityOutput.class);
+    }
+
+
+    @Override
+    @Transactional
+    public UserEntityOutput updatePasswordByUser(UserPasswordInput userPasswordInput) {
+        UserEntity user = SecurityContextUtils.getUserFromContext();
+        updatePassword(userPasswordInput, user);
+        log.info(PASSWORD_CHANGED);
+        return conversionService.convert(user, UserEntityOutput.class);
+    }
+
+    @Override
+    public String uploading(MultipartFile file) {
+        if (file.getSize() > 10485760) {
+            log.info(FILE_SIZE_EXCEEDED);
+            throw new MultipartException(FILE_SIZE_EXCEEDED);
+        }
+        UserEntity user = SecurityContextUtils.getUserFromContext();
+
+        String folderName = user.getEmail().substring(0, user.getEmail().indexOf("@"));
+        String folderPath = uploadPath + "/" + folderName;
+        String photoName = "";
+        if (file != null) {
+            File uploadDir = new File(folderPath);
+            if (!uploadDir.exists()) {
+                uploadDir.mkdir();
+            }
+            String originFileName = file.getOriginalFilename();
+            String fileName = UUID.randomUUID() + originFileName.substring(originFileName.lastIndexOf("."));
+
+            try {
+                file.transferTo(new File(folderPath + "/" + fileName));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            photoName = uploadRoot + folderName + "/" + fileName;
+            user.setAvatar(photoName);
+            userRepository.save(user);
+            log.info(PHOTO_UPLOADED);
+        } else {
+            log.info(PHOTO_DELETED);
+        }
+        return photoName;
+    }
+
+    @Override
+    public void deletePicture(UUID id) {
+        UserEntity user = SecurityContextUtils.getUserFromContext();
+        user.setAvatar(null);
+        userRepository.save(user);
+    }
+
+    @Override
+    public UserEntity findUserForAuth(AuthRequest request) {
+        String email = request.getEmail();
+        if (email != null) {
+            return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
+        }
+        return null;
+    }
+
+    @Scheduled(cron = "0 0 1 * * *")
+    public void deleteUsers() {
+        LocalDateTime blockedDate = LocalDateTime.now().plusMonths(2);
+        List<UserEntity> blockedUsers = userRepository.findByBlockedLessThanEqual(blockedDate);
+        userRepository.deleteAll(blockedUsers);
+        log.info("DELETE {} USERS how was blocked : {}", blockedUsers.size(), blockedDate);
     }
 
     private void checkingPhoneForUniqueness(UserEntity userEntity, String phone) {
@@ -214,87 +325,42 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
     }
 
-    @Override
-    @Transactional
-    public UserEntityOutput blockedUser(UUID id) {
-        UserEntity userEntity = findById(id);
-        userEntity.setBlocked(LocalDateTime.now());
-        UserEntity savedUser = userRepository.save(userEntity);
-        log.info(USER_BLOCKED);
-        return conversionService.convert(savedUser, UserEntityOutput.class);
-    }
-
-    @Override
-    @Transactional
-    public UserEntityOutput unblockedUser(UUID id) {
-        UserEntity userEntity = findById(id);
-        userEntity.setBlocked(null);
-        UserEntity savedUser = userRepository.save(userEntity);
-        log.info(USER_UNBLOCKED);
-        return conversionService.convert(savedUser, UserEntityOutput.class);
-    }
-
-    @Override
-    @Transactional
-    public UserEntityOutput deletedUser(UUID id) {
-        UserEntity userEntity = findById(id);
-
-        log.info(USER_DELETED);
-        userRepository.delete(userEntity);
-        return conversionService.convert(userEntity, UserEntityOutput.class);
-    }
-
-    @Override
-    public List<UserEntityOutput> search(UserSearchInput userSearchInput) {
-        List<UserEntity> userEntityList = userRepositorySummary.search(userSearchInput);
-        return userEntityList.stream()
-                .map(userEntity -> conversionService.convert(userEntity, UserEntityOutput.class))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    @Transactional
-    public UserEntityOutput assignRole(UUID id) {
-        UserEntity user = findById(id);
-        List<Role> roleList = user.getRoles();
-        if (!roleList.contains(ADMIN_ROLE)) {
-            roleList.add(fetchRole(ADMIN_ROLE).get(0));
-            user.setRoles(roleList);
+    private UserEntityOutput create(UserCreateInput userCreateInput) {
+        UserEntity userEntity = conversionService.convert(userCreateInput, UserEntity.class);
+        if (userEntity == null) {
+            throw new ConflictException("Error conversion user. Class UserServiceImpl, method createUser");
         }
-        userRepository.save(user);
-        log.info(ASSIGN_ROLE_USER);
-        return conversionService.convert(user, UserEntityOutput.class);
+
+        checkingMailForUniqueness(userEntity, userCreateInput.getEmail());
+        String password = createPassword();
+        mailSender.send(userEntity.getEmail(), password);
+        userEntity.setPassword(passwordEncoder.encode(password));
+
+        userEntity.setRoles(fetchRole(USER_ROLE));
+        UserEntity savedUser = userRepository.save(userEntity);
+        log.info(USER_SAVED);
+        return conversionService.convert(savedUser, UserEntityOutput.class);
     }
 
-
-    @Override
-    @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String email) {
-        UserDetails userDetails = userRepository.findByEmail(email).orElseThrow(() -> {
-            log.error(USER_NOT_FOUND);
-            return new NotFoundException(USER_NOT_FOUND);
-        });
-        userDetails.getAuthorities();
-        return userDetails;
+    private List<Role> fetchRole(String role) {
+        return Collections.singletonList(roleRepository.findByName(RoleEnam.valueOf(role))
+                .orElseThrow(() -> {
+                    log.error(ROLE_NOT_FOUND);
+                    return new NotFoundException(ROLE_NOT_FOUND);
+                }));
     }
 
-    @Override
-    @Transactional
-    public UserEntityOutput updatePasswordByAdmin(UUID id, UserPasswordInput userPasswordInput) {
-        UserEntity user = findById(id);
-        updatePassword(userPasswordInput, user);
-        log.info(PASSWORD_RESET);
-        return conversionService.convert(user, UserEntityOutput.class);
+    private void checkingMailForUniqueness(UserEntity userEntity, String email) {
+        if (userRepository.findByEmail(email).orElse(null) != null) {
+            throw new BadRequestException(USER_WITH_EMAIL_ALREADY_EXISTS);
+        } else {
+            userEntity.setEmail(email);
+        }
     }
 
-
-    @Override
-    @Transactional
-    public UserEntityOutput updatePasswordByUser(UserPasswordInput userPasswordInput) {
-        UserEntity user = SecurityContextUtils.getUserFromContext();
-        updatePassword(userPasswordInput, user);
-        log.info(PASSWORD_CHANGED);
-        return conversionService.convert(user, UserEntityOutput.class);
+    private String createPassword() {
+        return new Random().ints(8, 48, 57)
+                .mapToObj(i -> String.valueOf((char) i)).collect(Collectors.joining());
     }
 
     private void updatePassword(UserPasswordInput userPasswordThrow, UserEntity user) {
@@ -312,63 +378,5 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             log.error(MISMATCH_PASSWORDS);
             throw new BadRequestException(MISMATCH_PASSWORDS);
         }
-    }
-
-    @Override
-    public String uploading(MultipartFile file) {
-        if (file.getSize() > 10485760) {
-            log.info(FILE_SIZE_EXCEEDED);
-            throw new MultipartException(FILE_SIZE_EXCEEDED);
-        }
-        UserEntity user = SecurityContextUtils.getUserFromContext();
-
-        String folderName = user.getEmail().substring(0, user.getEmail().indexOf("@"));
-        String folderPath = uploadPath + "/" + folderName;
-        String photoName = "";
-        if (file != null) {
-            File uploadDir = new File(folderPath);
-            if (!uploadDir.exists()) {
-                uploadDir.mkdir();
-            }
-            String originFileName = file.getOriginalFilename();
-            String fileName = UUID.randomUUID() + originFileName.substring(originFileName.lastIndexOf("."));
-
-            try {
-                file.transferTo(new File(folderPath + "/" + fileName));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            photoName = uploadRoot + folderName + "/" + fileName;
-            user.setAvatar(photoName);
-            userRepository.save(user);
-            log.info(PHOTO_UPLOADED);
-        } else {
-            log.info(PHOTO_DELETED);
-        }
-        return photoName;
-    }
-
-    @Override
-    public void deletePicture(UUID id) {
-        UserEntity user = SecurityContextUtils.getUserFromContext();
-        user.setAvatar(null);
-        userRepository.save(user);
-    }
-
-
-
-
-
-
-
-
-    @Override
-    public UserEntity findUserForAuth(AuthRequest request) {
-        String email = request.getEmail();
-        if (email != null) {
-            return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
-        }
-        return null;
     }
 }
