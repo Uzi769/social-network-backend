@@ -15,4 +15,6 @@ public interface PictureService {
     void deletePicture(UUID id);
 
     List<Picture> addContentToPicture(List<UUID> pictureIdList, Content content);
+
+    List<PictureOutput>  getList();
 }

@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.irlix.irlixbook.utils.Consts.FILE_SIZE_EXCEEDED;
 
@@ -69,6 +70,9 @@ public class PictureServiceImpl implements PictureService{
         return conversionService.convert(picture, PictureOutput.class);
     }
 
+
+
+
     @Override
     public void deletePicture(UUID id) {
         Picture picture = pictureRepository.findById(id).orElseThrow(() -> {
@@ -93,5 +97,11 @@ public class PictureServiceImpl implements PictureService{
                     pictures.add(savedPicture);
                 });
         return pictures;
+    }
+
+    public List<PictureOutput> getList(){
+        return pictureRepository.findAll().stream()
+                .map(p -> conversionService.convert(p, PictureOutput.class))
+                .collect(Collectors.toList());
     }
 }
