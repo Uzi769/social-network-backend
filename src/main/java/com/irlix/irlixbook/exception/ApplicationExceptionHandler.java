@@ -46,6 +46,18 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
         return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler({UnauthorizedException.class})
+    protected ResponseEntity<ApiError> handleUnauthorizedException(UnauthorizedException ex) {
+        ApiError apiError = new ApiError("Unauthorized exception", ex.getMessage());
+        return new ResponseEntity<>(apiError, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler({ForbiddenException.class})
+    protected ResponseEntity<ApiError> handleForbiddenException(ForbiddenException ex) {
+        ApiError apiError = new ApiError("Forbidden exception", ex.getMessage());
+        return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
+    }
+
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(
             HttpMessageNotReadableException ex,

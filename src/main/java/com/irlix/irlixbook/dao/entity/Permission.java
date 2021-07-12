@@ -1,5 +1,6 @@
 package com.irlix.irlixbook.dao.entity;
 
+import com.irlix.irlixbook.dao.entity.enams.PermissionEnum;
 import lombok.*;
 
 import javax.persistence.*;
@@ -10,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "sticker")
+@Table(name = "permission")
 @Builder
 public class Permission {
 
@@ -19,8 +20,9 @@ public class Permission {
     private Long id;
 
     @Column
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private PermissionEnum name;
 
-    @ManyToMany(mappedBy = "permissions", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "permissions")
     private List<Role> roles;
 }

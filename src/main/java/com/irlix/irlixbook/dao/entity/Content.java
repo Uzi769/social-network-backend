@@ -3,6 +3,7 @@ package com.irlix.irlixbook.dao.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -32,6 +33,9 @@ public class Content {
 
     @Column(name = "registration_link")
     private String registrationLink;
+
+    @Column(name = "create_date")
+    private LocalDateTime dateCreated;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

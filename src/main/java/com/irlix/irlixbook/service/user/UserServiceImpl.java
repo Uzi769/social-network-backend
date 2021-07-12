@@ -3,6 +3,7 @@ package com.irlix.irlixbook.service.user;
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
 import com.irlix.irlixbook.dao.entity.Role;
 import com.irlix.irlixbook.dao.entity.UserEntity;
+import com.irlix.irlixbook.dao.entity.enams.RoleEnam;
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
 import com.irlix.irlixbook.dao.model.user.input.*;
 import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
@@ -49,8 +50,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final MailSender mailSender;
 
-    private static final String USER_ROLE = "USER";
-    private static final String ADMIN_ROLE = "ADMIN";
+    private static final String USER_ROLE = RoleEnam.USER.name();
+    private static final String ADMIN_ROLE = RoleEnam.ADMIN.name();
 
     @Value("${photo.upload.path}")
     private String uploadPath;
@@ -109,7 +110,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     private List<Role> fetchRole(String role) {
-        return Collections.singletonList(roleRepository.findByName(role)
+        return Collections.singletonList(roleRepository.findByName(RoleEnam.valueOf(role))
                 .orElseThrow(() -> {
                     log.error(ROLE_NOT_FOUND);
                     return new NotFoundException(ROLE_NOT_FOUND);

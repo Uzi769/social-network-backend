@@ -7,4 +7,5 @@
 
     <include file="2021-07-09--01-init-tables.xml" relativeToChangelogFile="true"/>
     <include file="2021-07-09--02-add-data.xml" relativeToChangelogFile="true"/>
+    <include file="2021-07-12--01-create-table.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
