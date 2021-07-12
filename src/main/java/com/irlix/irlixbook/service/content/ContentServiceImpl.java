@@ -62,6 +62,11 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
+    public Content findByIdOriginal(Long id) {
+        return getById(id);
+    }
+
+    @Override
     public List<ContentResponse> findAll() {
         return contentRepository.findAll().stream()
                 .map(c -> conversionService.convert(c, ContentResponse.class))

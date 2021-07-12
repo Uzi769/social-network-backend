@@ -1,6 +1,7 @@
 package com.irlix.irlixbook.service.user;
 
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
+import com.irlix.irlixbook.dao.entity.Content;
 import com.irlix.irlixbook.dao.entity.Role;
 import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.entity.enams.RoleEnam;
@@ -17,6 +18,7 @@ import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.RoleRepository;
 import com.irlix.irlixbook.repository.UserRepository;
 import com.irlix.irlixbook.repository.summary.UserRepositorySummary;
+import com.irlix.irlixbook.service.content.ContentService;
 import com.irlix.irlixbook.service.mail.MailSender;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -34,10 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.irlix.irlixbook.utils.Consts.*;
@@ -53,6 +52,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final ConversionService conversionService;
     private final PasswordEncoder passwordEncoder;
     private final MailSender mailSender;
+    private final ContentService contentService;
 
     private static final String USER_ROLE = RoleEnam.USER.name();
     private static final String ADMIN_ROLE = RoleEnam.ADMIN.name();
@@ -261,6 +261,24 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
         }
         return null;
+    }
+
+    @Override
+    @Transactional
+    public UserEntity addFavorites(Long favoritesContentId) {
+        Content content = contentService.findByIdOriginal(favoritesContentId);
+        UserEntity userFromContext = SecurityContextUtils.getUserFromContext();
+        Optional<UserEntity> currentUser = userRepository.findById(userFromContext.getId());
+        if (currentUser.isPresent()) {
+            UserEntity userEntity = currentUser.get();
+            List<Content> favoritesContents = userEntity.getFavoritesContents();
+            favoritesContents = favoritesContents != null ? favoritesContents : new ArrayList<>();
+            favoritesContents.add(content);
+            userRepository.save(userEntity);
+            return userEntity;
+        } else {
+            throw new NotFoundException("User with id : " + userFromContext.getId() + " doesn't exist");
+        }
     }
 
     @Scheduled(cron = "0 0 1 * * *")

@@ -1,10 +1,12 @@
 package com.irlix.irlixbook.controller;
 
 import com.irlix.irlixbook.config.security.annotation.RoleAndPermissionCheck;
+import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.entity.enams.RoleEnam;
 import com.irlix.irlixbook.service.content.ContentService;
 import com.irlix.irlixbook.dao.model.content.request.ContentPersistRequest;
 import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
+import com.irlix.irlixbook.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,6 +22,7 @@ import java.util.List;
 public class ContentController {
 
     private final ContentService contentService;
+    private final UserService userService;
 
     @GetMapping
     @RoleAndPermissionCheck({RoleEnam.USER, RoleEnam.ADMIN})
@@ -61,5 +65,12 @@ public class ContentController {
     public ResponseEntity<?> delete(@PathVariable("id") Long id) {
         contentService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/favorites/{contentId}")
+    @RoleAndPermissionCheck({RoleEnam.USER, RoleEnam.ADMIN})
+    public ResponseEntity<UUID> addFavorites(@PathVariable("contentId") Long favoritesId){
+        UserEntity userEntity = userService.addFavorites(favoritesId);
+        return new ResponseEntity<>(userEntity.getId(), HttpStatus.OK);
     }
 }

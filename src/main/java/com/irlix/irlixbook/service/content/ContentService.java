@@ -1,5 +1,6 @@
 package com.irlix.irlixbook.service.content;
 
+import com.irlix.irlixbook.dao.entity.Content;
 import com.irlix.irlixbook.dao.model.content.request.ContentPersistRequest;
 import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 
@@ -10,6 +11,8 @@ public interface ContentService {
     ContentResponse save(ContentPersistRequest contentPersistRequest);
 
     ContentResponse findById(Long id);
+
+    Content findByIdOriginal(Long id);
 
     List<ContentResponse> findAll();
 

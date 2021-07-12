@@ -3,6 +3,7 @@ package com.irlix.irlixbook.config.security.utils;
 import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.exception.UnauthorizedException;
 import lombok.experimental.UtilityClass;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -12,7 +13,7 @@ public class SecurityContextUtils {
 
     public static UserEntity getUserFromContext() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication == null){
+        if(authentication instanceof AnonymousAuthenticationToken){
             throw new UnauthorizedException("Unauthorized");
         }
         return (UserEntity) authentication.getPrincipal();

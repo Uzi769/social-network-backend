@@ -1,9 +1,11 @@
 package com.irlix.irlixbook.service.user;
 
 import com.irlix.irlixbook.dao.entity.UserEntity;
-import com.irlix.irlixbook.dao.model.PageableInput;
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
-import com.irlix.irlixbook.dao.model.user.input.*;
+import com.irlix.irlixbook.dao.model.user.input.UserCreateInput;
+import com.irlix.irlixbook.dao.model.user.input.UserPasswordInput;
+import com.irlix.irlixbook.dao.model.user.input.UserSearchInput;
+import com.irlix.irlixbook.dao.model.user.input.UserUpdateInput;
 import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -42,8 +44,7 @@ public interface UserService {
 
     void deletePicture(UUID id);
 
-
-
-
     UserEntity findUserForAuth(AuthRequest request);
+
+    UserEntity addFavorites(Long favoritesContentId);
 }
