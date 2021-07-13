@@ -19,9 +19,11 @@ import com.irlix.irlixbook.repository.RoleRepository;
 import com.irlix.irlixbook.repository.UserRepository;
 import com.irlix.irlixbook.repository.summary.UserRepositorySummary;
 import com.irlix.irlixbook.service.content.ContentService;
-import com.irlix.irlixbook.service.mail.MailSender;
+import com.irlix.irlixbook.service.messaging.MessageSender;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -51,8 +53,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final UserRepositorySummary userRepositorySummary;
     private final ConversionService conversionService;
     private final PasswordEncoder passwordEncoder;
-    private final MailSender mailSender;
     private final ContentService contentService;
+
+    @Autowired
+    @Qualifier("mailSenderImpl")
+    private MessageSender messageSender;
 
     private static final String USER_ROLE = RoleEnam.USER.name();
     private static final String ADMIN_ROLE = RoleEnam.ADMIN.name();
@@ -351,7 +356,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         checkingMailForUniqueness(userEntity, userCreateInput.getEmail());
         String password = createPassword();
-        mailSender.send(userEntity.getEmail(), password);
+        messageSender.send("Your password", userEntity.getEmail(), "Your password: " + password);
         userEntity.setPassword(passwordEncoder.encode(password));
 
         userEntity.setRoles(fetchRole(USER_ROLE));

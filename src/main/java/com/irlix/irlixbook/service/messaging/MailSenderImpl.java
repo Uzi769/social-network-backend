@@ -1,4 +1,4 @@
-package com.irlix.irlixbook.service.mail;
+package com.irlix.irlixbook.service.messaging;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,22 +7,22 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-@Service
+@Service("mailSenderImpl")
 @Slf4j
 @RequiredArgsConstructor
-public class MailSenderImpl implements MailSender {
+public class MailSenderImpl implements MessageSender {
 
     private final JavaMailSender emailSender;
 
     @Value("${spring.mail.username}")
     private String sender;
 
-    public void send(String receiver, String text){
+    public void send(String title, String receiver, String text){
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(sender);
         message.setTo(receiver);
-        message.setSubject("Your password");
-        message.setText("Your password: " + text);
+        message.setSubject(title);
+        message.setText(text);
         emailSender.send(message);
     }
 }
