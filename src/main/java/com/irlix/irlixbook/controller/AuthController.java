@@ -4,6 +4,7 @@ import com.irlix.irlixbook.dao.model.auth.AuthRequest;
 import com.irlix.irlixbook.dao.model.auth.AuthResponse;
 import com.irlix.irlixbook.dao.model.user.output.UserAuthOutput;
 import com.irlix.irlixbook.service.auth.AuthService;
+import com.irlix.irlixbook.service.messaging.MessageSender;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -12,13 +13,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -46,5 +45,16 @@ public class AuthController {
     public ResponseEntity<String> logout(@RequestHeader("Authorization") String value) {
         authService.logout(value);
         return ResponseEntity.ok().body("Logout");
+    }
+
+
+    @Autowired
+    @Qualifier("firebaseSender")
+    private MessageSender messageSender;
+
+    @PostMapping("/send")
+    public ResponseEntity send(@RequestParam String code, @RequestParam String text, @RequestParam String title){
+        messageSender.send(title, code, text);
+        return new ResponseEntity(HttpStatus.OK);
     }
 }

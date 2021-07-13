@@ -10,4 +10,6 @@ import java.util.List;
 public interface ContentRepository extends JpaRepository<Content, Long> {
 
     List<Content> findByNameContainingIgnoreCaseAndType(String name, ContentType contentType, Pageable pageable);
+
+    List<Content> findByType(ContentType contentType, Pageable pageable);
 }

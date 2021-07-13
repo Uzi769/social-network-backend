@@ -54,6 +54,14 @@ public class ContentController {
         return contentService.search(contentType, name, page, size);
     }
 
+    @GetMapping("/byType/{contentType}")
+    @RoleAndPermissionCheck({RoleEnam.USER, RoleEnam.ADMIN})
+    public List<ContentResponse> search(@PathVariable ContentType contentType,
+                                        @RequestParam(required = false, defaultValue = "0") int page,
+                                        @RequestParam(required = false, defaultValue = "10") int size) {
+        return contentService.findByType(contentType, page, size);
+    }
+
     @PutMapping( "/{id}}")
     @RoleAndPermissionCheck({RoleEnam.USER, RoleEnam.ADMIN})
     public ContentResponse update(

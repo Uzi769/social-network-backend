@@ -9,10 +9,13 @@ import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 import com.irlix.irlixbook.exception.BadRequestException;
 import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.ContentRepository;
+import com.irlix.irlixbook.service.messaging.MessageSender;
 import com.irlix.irlixbook.service.picture.PictureService;
 import com.irlix.irlixbook.service.sticker.StickerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -35,6 +38,10 @@ public class ContentServiceImpl implements ContentService {
     private final StickerService stickerService;
     private final PictureService pictureService;
 
+    @Autowired
+    @Qualifier("firebaseSender")
+    private MessageSender messageSender;
+
     @Override
     @Transactional
     public ContentResponse save(ContentPersistRequest contentPersistRequest) {
@@ -54,6 +61,9 @@ public class ContentServiceImpl implements ContentService {
         if (contentPersistRequest.getPicturesId() != null && !contentPersistRequest.getPicturesId().isEmpty()) {
             content.setPictures(pictureService.addContentToPicture(contentPersistRequest.getPicturesId(), savedContent));
         }
+        messageSender.send("New content was created",
+                "", //todo added logic with code of receiver
+                "New content was created");
         log.info("Content saved. Class ContentServiceImpl, method save");
         return conversionService.convert(savedContent, ContentResponse.class);
     }
@@ -81,6 +91,15 @@ public class ContentServiceImpl implements ContentService {
     public List<ContentResponse> search(ContentType contentType, String name, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("dateCreated").descending());
         List<Content> contents = contentRepository.findByNameContainingIgnoreCaseAndType(name, contentType, pageRequest);
+        return contents.stream()
+                .map(post -> conversionService.convert(post, ContentResponse.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ContentResponse> findByType(ContentType contentType, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("dateCreated").descending());
+        List<Content> contents = contentRepository.findByType(contentType, pageRequest);
         return contents.stream()
                 .map(post -> conversionService.convert(post, ContentResponse.class))
                 .collect(Collectors.toList());
