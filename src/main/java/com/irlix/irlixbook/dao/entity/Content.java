@@ -1,5 +1,6 @@
 package com.irlix.irlixbook.dao.entity;
 
+import com.irlix.irlixbook.dao.entity.enams.ContentType;
 import lombok.*;
 
 import javax.persistence.*;
@@ -23,7 +24,8 @@ public class Content {
     private String name;
 
     @Column(name = "type", nullable = false)
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private ContentType type;
 
     @Column(name = "short_description")
     private String shortDescription;

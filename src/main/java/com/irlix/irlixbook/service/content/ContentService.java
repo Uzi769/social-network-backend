@@ -1,6 +1,7 @@
 package com.irlix.irlixbook.service.content;
 
 import com.irlix.irlixbook.dao.entity.Content;
+import com.irlix.irlixbook.dao.entity.enams.ContentType;
 import com.irlix.irlixbook.dao.model.content.request.ContentPersistRequest;
 import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 
@@ -16,7 +17,7 @@ public interface ContentService {
 
     List<ContentResponse> findAll();
 
-    List<ContentResponse> search(String name, int page, int size);
+    List<ContentResponse> search(ContentType contentType, String name, int page, int size);
 
     ContentResponse update(Long id, @Valid ContentPersistRequest contentPersistRequest);
 

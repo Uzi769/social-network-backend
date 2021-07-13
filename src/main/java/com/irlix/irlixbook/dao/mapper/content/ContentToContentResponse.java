@@ -17,7 +17,7 @@ public class ContentToContentResponse implements Converter<Content, ContentRespo
                 .shortDescription(content.getShortDescription())
                 .name(content.getName())
                 .registrationLink(content.getRegistrationLink())
-                .type(content.getType())
+                .type(content.getType().name())
                 .stickerName(content.getSticker().getName())
                 .users(content.getUsers() != null
                         ? content.getUsers().stream().map(u -> u.getId().toString()).collect(Collectors.toList())

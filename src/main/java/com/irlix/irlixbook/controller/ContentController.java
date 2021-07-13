@@ -2,6 +2,7 @@ package com.irlix.irlixbook.controller;
 
 import com.irlix.irlixbook.config.security.annotation.RoleAndPermissionCheck;
 import com.irlix.irlixbook.dao.entity.UserEntity;
+import com.irlix.irlixbook.dao.entity.enams.ContentType;
 import com.irlix.irlixbook.dao.entity.enams.RoleEnam;
 import com.irlix.irlixbook.service.content.ContentService;
 import com.irlix.irlixbook.dao.model.content.request.ContentPersistRequest;
@@ -44,12 +45,13 @@ public class ContentController {
         return contentService.save(contentPersistRequest);
     }
 
-    @GetMapping("/search/{name}")
+    @GetMapping("/search/{contentType}/{name}")
     @RoleAndPermissionCheck({RoleEnam.USER, RoleEnam.ADMIN})
-    public List<ContentResponse> search(@PathVariable String name,
+    public List<ContentResponse> search(@PathVariable ContentType contentType,
+                                        @PathVariable String name,
                                         @RequestParam(required = false, defaultValue = "0") int page,
                                         @RequestParam(required = false, defaultValue = "10") int size) {
-        return contentService.search(name, page, size);
+        return contentService.search(contentType, name, page, size);
     }
 
     @PutMapping( "/{id}}")

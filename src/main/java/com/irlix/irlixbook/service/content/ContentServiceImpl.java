@@ -3,6 +3,7 @@ package com.irlix.irlixbook.service.content;
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
 import com.irlix.irlixbook.dao.entity.Content;
 import com.irlix.irlixbook.dao.entity.Sticker;
+import com.irlix.irlixbook.dao.entity.enams.ContentType;
 import com.irlix.irlixbook.dao.model.content.request.ContentPersistRequest;
 import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 import com.irlix.irlixbook.exception.BadRequestException;
@@ -14,10 +15,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -45,6 +48,7 @@ public class ContentServiceImpl implements ContentService {
 
         content.setAuthor(SecurityContextUtils.getUserFromContext());
         content.setSticker(sticker);
+        content.setDateCreated(LocalDateTime.now());
 
         Content savedContent = contentRepository.save(content);
         if (contentPersistRequest.getPicturesId() != null && !contentPersistRequest.getPicturesId().isEmpty()) {
@@ -74,9 +78,9 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public List<ContentResponse> search(String name, int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size);
-        List<Content> contents = contentRepository.findByNameContainingIgnoreCase(name, pageRequest);
+    public List<ContentResponse> search(ContentType contentType, String name, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("dateCreated").descending());
+        List<Content> contents = contentRepository.findByNameContainingIgnoreCaseAndType(name, contentType, pageRequest);
         return contents.stream()
                 .map(post -> conversionService.convert(post, ContentResponse.class))
                 .collect(Collectors.toList());
