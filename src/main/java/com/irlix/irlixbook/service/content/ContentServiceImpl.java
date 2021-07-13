@@ -61,9 +61,9 @@ public class ContentServiceImpl implements ContentService {
         if (contentPersistRequest.getPicturesId() != null && !contentPersistRequest.getPicturesId().isEmpty()) {
             content.setPictures(pictureService.addContentToPicture(contentPersistRequest.getPicturesId(), savedContent));
         }
-        messageSender.send("New content was created",
-                "", //todo added logic with code of receiver
-                "New content was created");
+//        messageSender.send("New content was created",
+//                "", //todo added logic with code of receiver
+//                "New content was created");
         log.info("Content saved. Class ContentServiceImpl, method save");
         return conversionService.convert(savedContent, ContentResponse.class);
     }
