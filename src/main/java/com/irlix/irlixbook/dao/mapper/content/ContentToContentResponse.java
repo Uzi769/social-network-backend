@@ -23,7 +23,7 @@ public class ContentToContentResponse implements Converter<Content, ContentRespo
                         ? content.getUsers().stream().map(u -> u.getId().toString()).collect(Collectors.toList())
                         : null)
                 .pictures(content.getPictures() != null
-                        ? content.getPictures().stream().map(p -> p.getId().toString()).collect(Collectors.toList())
+                        ? content.getPictures().stream().map(p -> p.getUrl()).collect(Collectors.toList())
                         : null)
                 .build();
     }
