@@ -28,7 +28,6 @@ import java.util.UUID;
 public class Picture {
 
     @Id
-    @GeneratedValue(generator = "UUID")
     private UUID id;
 
     @Column(name = "url")
