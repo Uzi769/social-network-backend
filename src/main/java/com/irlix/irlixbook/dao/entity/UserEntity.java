@@ -92,7 +92,7 @@ public class UserEntity implements UserDetails {
             inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
     private List<Role> roles;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_content",
             joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "content_id", referencedColumnName = "id")})

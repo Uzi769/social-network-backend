@@ -6,10 +6,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface ContentRepository extends JpaRepository<Content, Long> {
 
     List<Content> findByNameContainingIgnoreCaseAndType(String name, ContentType contentType, Pageable pageable);
 
     List<Content> findByType(ContentType contentType, Pageable pageable);
+
+    List<Content> findByUsers_Id(UUID userId, Pageable pageable);
+
+    List<Content> findByUsers_IdAndType(UUID userId, ContentType contentType, Pageable pageable);
 }

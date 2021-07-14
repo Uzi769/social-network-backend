@@ -3,7 +3,7 @@ package com.irlix.irlixbook.dao.model.user.output;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -28,5 +28,6 @@ public class UserEntityOutput {
     private String linkedIn;
     private String avatar;
     private String instagram;
+    private LocalDateTime blocked;
 
 }

@@ -124,6 +124,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
 
         checkingUpdatedData(userEntity, userEntityForUpdate);
+        List<Role> newRoles = roleRepository.findByNameIn(userUpdateInput.getRoles());
+        userEntity.setRoles(newRoles);
 
         UserEntity user = userRepository.save(userEntity);
         log.info(USER_UPDATED);
@@ -170,20 +172,24 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     @Transactional
-    public UserEntityOutput assignRole(UUID id) {
-        UserEntity user = findById(id);
-        List<Role> roleList = user.getRoles();
-        List<RoleEnam> roleNames = roleList.stream()
-                .map(Role::getName)
-                .collect(Collectors.toList());
+    public UserEntityOutput assignRole(RoleEnam roleEnam) {
+        UserEntity user = SecurityContextUtils.getUserFromContext();
+        Optional<UserEntity> persistedUserOptional = userRepository.findById(user.getId());
+        if (persistedUserOptional.isPresent()) {
+            UserEntity persistedUser = persistedUserOptional.get();
+            boolean roleNonExist = persistedUser.getRoles().stream().noneMatch(role -> role.getName() == roleEnam);
 
-        if (!roleNames.contains(RoleEnam.valueOf(ADMIN_ROLE))) {
-            roleList.add(fetchRole(ADMIN_ROLE).get(0));
-            user.setRoles(roleList);
+            if(roleNonExist){
+                Optional<Role> newRole = roleRepository.findByName(roleEnam);
+                persistedUser.getRoles().add(newRole.get());
+                userRepository.save(user);
+                log.info(ASSIGN_ROLE_USER);
+            }
+            return conversionService.convert(persistedUser, UserEntityOutput.class);
+        } else {
+            log.error("User with id : {}, and email: {}, not found!!!", user.getId(), user.getEmail());
+            throw new NotFoundException("User with id : " + user.getId() + ", and email: " + user.getEmail() + " not found!!!");
         }
-        userRepository.save(user);
-        log.info(ASSIGN_ROLE_USER);
-        return conversionService.convert(user, UserEntityOutput.class);
     }
 
 
@@ -359,18 +365,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         messageSender.send("Your password", userEntity.getEmail(), "Your password: " + password);
         userEntity.setPassword(passwordEncoder.encode(password));
 
-        userEntity.setRoles(fetchRole(USER_ROLE));
+        List<Role> newRoles = roleRepository.findByNameIn(userCreateInput.getRoles());
+        userEntity.setRoles(newRoles);
+
         UserEntity savedUser = userRepository.save(userEntity);
         log.info(USER_SAVED);
         return conversionService.convert(savedUser, UserEntityOutput.class);
-    }
-
-    private List<Role> fetchRole(String role) {
-        return Collections.singletonList(roleRepository.findByName(RoleEnam.valueOf(role))
-                .orElseThrow(() -> {
-                    log.error(ROLE_NOT_FOUND);
-                    return new NotFoundException(ROLE_NOT_FOUND);
-                }));
     }
 
     private void checkingMailForUniqueness(UserEntity userEntity, String email) {

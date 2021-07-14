@@ -3,6 +3,7 @@ package com.irlix.irlixbook.service.content;
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
 import com.irlix.irlixbook.dao.entity.Content;
 import com.irlix.irlixbook.dao.entity.Sticker;
+import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.entity.enams.ContentType;
 import com.irlix.irlixbook.dao.model.content.request.ContentPersistRequest;
 import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
@@ -21,6 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
@@ -51,10 +53,12 @@ public class ContentServiceImpl implements ContentService {
             throw new NullPointerException("ContentPersistRequest cannot be null");
         }
 
-        Sticker sticker = stickerService.findOrCreate(contentPersistRequest.getStickerName());
+        if (StringUtils.hasLength(contentPersistRequest.getStickerName())) {
+            Sticker sticker = stickerService.findOrCreate(contentPersistRequest.getStickerName());
+            content.setSticker(sticker);
+        }
 
         content.setAuthor(SecurityContextUtils.getUserFromContext());
-        content.setSticker(sticker);
         content.setDateCreated(LocalDateTime.now());
 
         Content savedContent = contentRepository.save(content);
@@ -113,6 +117,22 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
+    public List<ContentResponse> getFavorites(ContentType contentType, int page, int size) {
+        UserEntity userFromContext = SecurityContextUtils.getUserFromContext();
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("dateCreated").descending());
+
+        List<Content> resultContent;
+        if (Objects.nonNull(contentType)) {
+            resultContent = contentRepository.findByUsers_IdAndType(userFromContext.getId(), contentType, pageRequest);
+        } else {
+            resultContent = contentRepository.findByUsers_Id(userFromContext.getId(), pageRequest);
+        }
+        return resultContent.stream()
+                .map(post -> conversionService.convert(post, ContentResponse.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public ContentResponse update(Long id, @Valid ContentPersistRequest contentPersistRequest) {
         if (contentPersistRequest == null) {
             log.error("Content cannot be null, Class ContentServiceImpl, method update");
@@ -128,7 +148,10 @@ public class ContentServiceImpl implements ContentService {
         newContent.setAuthor(content.getAuthor());
         newContent.setUsers(content.getUsers());
         newContent.setId(content.getId());
-        newContent.setSticker(stickerService.findOrCreate(contentPersistRequest.getStickerName()));
+
+        if (StringUtils.hasLength(contentPersistRequest.getStickerName())) {
+            newContent.setSticker(stickerService.findOrCreate(contentPersistRequest.getStickerName()));
+        }
 
         contentRepository.save(newContent);
         log.info("Update Content by id: " + id + ". Class ContentServiceImpl, method update");

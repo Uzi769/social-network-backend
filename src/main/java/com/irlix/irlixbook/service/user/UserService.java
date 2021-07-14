@@ -1,6 +1,7 @@
 package com.irlix.irlixbook.service.user;
 
 import com.irlix.irlixbook.dao.entity.UserEntity;
+import com.irlix.irlixbook.dao.entity.enams.RoleEnam;
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
 import com.irlix.irlixbook.dao.model.user.input.UserCreateInput;
 import com.irlix.irlixbook.dao.model.user.input.UserPasswordInput;
@@ -34,7 +35,7 @@ public interface UserService {
 
     List<UserEntityOutput> search(UserSearchInput userSearchInput);
 
-    UserEntityOutput assignRole(UUID id);
+    UserEntityOutput assignRole(RoleEnam roleEnam);
 
     UserEntityOutput updatePasswordByAdmin(UUID id, UserPasswordInput userPasswordInput);
 
@@ -47,4 +48,5 @@ public interface UserService {
     UserEntity findUserForAuth(AuthRequest request);
 
     UserEntity addFavorites(Long favoritesContentId);
+
 }

@@ -1,6 +1,7 @@
 package com.irlix.irlixbook.dao.model.user.input;
 
 
+import com.irlix.irlixbook.dao.entity.enams.RoleEnam;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,11 +10,11 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.Column;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -42,4 +43,5 @@ public class UserUpdateInput {
     private String telegram;
     private String linkedIn;
     private String instagram;
+    private List<RoleEnam> roles;
 }

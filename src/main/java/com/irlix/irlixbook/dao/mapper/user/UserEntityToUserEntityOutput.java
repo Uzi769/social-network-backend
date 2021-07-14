@@ -26,6 +26,7 @@ public class UserEntityToUserEntityOutput implements Converter<UserEntity, UserE
                 .instagram(userEntity.getInstagram())
                 .linkedIn(userEntity.getLinkedIn())
                 .avatar(userEntity.getAvatar())
+                .blocked(userEntity.getBlocked())
                 .build();
     }
 }

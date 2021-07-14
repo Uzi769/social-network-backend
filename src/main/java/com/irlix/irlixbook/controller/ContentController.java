@@ -19,7 +19,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/contents")
+@RequestMapping("/api/contents")
 public class ContentController {
 
     private final ContentService contentService;
@@ -43,6 +43,14 @@ public class ContentController {
     public ContentResponse create(@RequestBody @Valid ContentPersistRequest contentPersistRequest) {
         System.out.println();
         return contentService.save(contentPersistRequest);
+    }
+
+    @GetMapping("/favorites")
+    @RoleAndPermissionCheck({RoleEnam.USER, RoleEnam.ADMIN})
+    public List<ContentResponse> getFavorites(@RequestParam(required = false) ContentType contentType,
+                                              @RequestParam(required = false, defaultValue = "0")int page,
+                                              @RequestParam(required = false, defaultValue = "10")int size){
+        return contentService.getFavorites(contentType, page, size);
     }
 
     @GetMapping("/search/{contentType}/{name}")

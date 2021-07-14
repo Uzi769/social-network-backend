@@ -24,4 +24,6 @@ public interface ContentService {
     ContentResponse update(Long id, @Valid ContentPersistRequest contentPersistRequest);
 
     void delete(Long id);
+
+    List<ContentResponse> getFavorites(ContentType contentType, int page, int size);
 }

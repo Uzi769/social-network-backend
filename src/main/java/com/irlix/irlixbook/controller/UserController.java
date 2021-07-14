@@ -1,5 +1,6 @@
 package com.irlix.irlixbook.controller;
 
+import com.irlix.irlixbook.dao.entity.enams.RoleEnam;
 import com.irlix.irlixbook.dao.model.user.input.UserCreateInput;
 import com.irlix.irlixbook.dao.model.user.input.UserPasswordInput;
 import com.irlix.irlixbook.dao.model.user.input.UserSearchInput;
@@ -16,107 +17,91 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/user")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
-    //    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER', 'MODERATOR'})")
-    @GetMapping(value = "/user/{id}")
+    @GetMapping(value = "/{id}")
     public UserEntityOutput getUserEntity(@PathVariable("id") UUID id) {
         return userService.findUserOutputById(id);
     }
 
-    //    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER', 'MODERATOR'})")
-    @GetMapping(value = "/user")
+    @GetMapping
     public UserEntityOutput getUserFromContext() {
         return userService.findUserFromContext();
     }
 
-    //    @PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping(value = "/user/create")
+    @PostMapping(value = "/create")
     @ResponseStatus(HttpStatus.CREATED)
     public UserEntityOutput createUser(@RequestBody @Valid UserCreateInput create) {
         return userService.createUser(create);
     }
 
-    //    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER', 'MODERATOR'})")
-    @GetMapping(value = "/users")
+    @GetMapping(value = "/all")
     public List<UserEntityOutput> getUsers() {
         return userService.findUsers();
     }
 
-    //    @PreAuthorize("hasAuthority('ADMIN')")
-    @PutMapping(value = "/user")
+    @PutMapping()
     public UserEntityOutput updateUser(@RequestBody @Valid UserUpdateInput update) {
         return userService.updateUser(update, null);
     }
 
-
-    //    @PreAuthorize("hasAuthority('USER', 'MODERATOR')")
-    @PutMapping(value = "/user/{id}", consumes = {"application/json"}, produces = {"application/json"})
+    @PutMapping(value = "/{id}", consumes = {"application/json"}, produces = {"application/json"})
     public UserEntityOutput updateUserByAdmin(@RequestBody @Valid UserUpdateInput update, @PathVariable("id") UUID id) {
         return userService.updateUser(update, id);
     }
 
-    //    @PreAuthorize("hasAuthority('ADMIN')")
-    @PutMapping(value = "/user-blocked/{id}")
+    @PutMapping(value = "/block/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public UserEntityOutput blockedUser(@PathVariable("id") UUID id) {
         return userService.blockedUser(id);
     }
 
-    //    @PreAuthorize("hasAuthority('ADMIN')")
-    @PutMapping(value = "/user-unblocked/{id}")
+    @PutMapping(value = "/unblock/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public UserEntityOutput unblockedUser(@PathVariable("id") UUID id) {
         return userService.unblockedUser(id);
     }
 
-    //    @PreAuthorize("hasAuthority('ADMIN')")
-    @DeleteMapping(value = "/user/{id}")
+    @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public UserEntityOutput deletedUser(@PathVariable("id") UUID id) {
         return userService.deletedUser(id);
     }
 
-    //    @PreAuthorize("hasAnyAuthority({'ADMIN', 'USER', 'MODERATOR'})")
-    @GetMapping(value = "/user/search")
+    @GetMapping(value = "/search")
     public List<UserEntityOutput> searchUser(UserSearchInput dto) {
         return userService.search(dto);
     }
 
-    //    @PreAuthorize("hasAuthority('ADMIN')")
-    @PutMapping(value = "/assign-role/{id}}")
+    @PutMapping(value = "/assign-role/{role}}")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserEntityOutput assignRole(@PathVariable UUID id) {
-
-        return userService.assignRole(id);
+    public UserEntityOutput assignRole(@PathVariable RoleEnam role) {
+        return userService.assignRole(role);
     }
 
-
-    //    @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
-    @PutMapping("user/update-password/{id}")
+    @PutMapping("/update-password/{id}")
     public UserEntityOutput updatePasswordByAdmin(@PathVariable("id") UUID id, @RequestBody @Valid UserPasswordInput userPasswordInput) {
         return userService.updatePasswordByAdmin(id, userPasswordInput);
     }
 
-    //    @PreAuthorize("hasAuthority('USER', 'MODERATOR')")
     @ResponseStatus(HttpStatus.CREATED)
-    @PutMapping("user/update-password")
+    @PutMapping("/update-password")
     public UserEntityOutput updatePassword(@RequestBody @Valid UserPasswordInput userPasswordInput) {
         return userService.updatePasswordByUser(userPasswordInput);
     }
 
 
-    @PostMapping(value = "user/upload-photo", consumes = "multipart/form-data")
+    @PostMapping(value = "/upload-photo", consumes = "multipart/form-data")
     public String pictureUpload(@RequestParam("file") MultipartFile file) {
         return userService.uploading(file);
     }
 
-    @DeleteMapping("user/delete-photo/{id}")
+    @DeleteMapping("/delete-photo/{id}")
     public void deletePicture(@PathVariable("id") UUID id) {
         userService.deletePicture(id);
     }
