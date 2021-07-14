@@ -43,7 +43,7 @@ public class Content {
     @JoinColumn(name = "user_id")
     private UserEntity author;
 
-    @ManyToMany(mappedBy = "favoritesContents", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "favoritesContents", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     private List<UserEntity> users;
 
     @ManyToOne
