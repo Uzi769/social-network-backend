@@ -4,9 +4,9 @@ import com.irlix.irlixbook.config.security.annotation.RoleAndPermissionCheck;
 import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.entity.enams.ContentType;
 import com.irlix.irlixbook.dao.entity.enams.RoleEnam;
-import com.irlix.irlixbook.service.content.ContentService;
 import com.irlix.irlixbook.dao.model.content.request.ContentPersistRequest;
 import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
+import com.irlix.irlixbook.service.content.ContentService;
 import com.irlix.irlixbook.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -48,8 +48,8 @@ public class ContentController {
     @GetMapping("/favorites")
     @RoleAndPermissionCheck({RoleEnam.USER, RoleEnam.ADMIN})
     public List<ContentResponse> getFavorites(@RequestParam(required = false) ContentType contentType,
-                                              @RequestParam(required = false, defaultValue = "0")int page,
-                                              @RequestParam(required = false, defaultValue = "10")int size){
+                                              @RequestParam(required = false, defaultValue = "0") int page,
+                                              @RequestParam(required = false, defaultValue = "10") int size) {
         return contentService.getFavorites(contentType, page, size);
     }
 
@@ -70,7 +70,7 @@ public class ContentController {
         return contentService.findByType(contentType, page, size);
     }
 
-    @PutMapping( "/{id}}")
+    @PutMapping("/{id}}")
     @RoleAndPermissionCheck({RoleEnam.USER, RoleEnam.ADMIN})
     public ContentResponse update(
             @PathVariable("id") Long id,
@@ -78,16 +78,23 @@ public class ContentController {
         return contentService.update(id, contentPersistRequest);
     }
 
-    @DeleteMapping( "/{id}}")
+    @DeleteMapping("/{id}}")
     @RoleAndPermissionCheck({RoleEnam.USER, RoleEnam.ADMIN})
     public ResponseEntity<?> delete(@PathVariable("id") Long id) {
         contentService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @DeleteMapping("/all")
+    @RoleAndPermissionCheck({RoleEnam.USER, RoleEnam.ADMIN})
+    public ResponseEntity<?> deleteAll() {
+        contentService.deleteAll();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @PostMapping("/favorites/{contentId}")
     @RoleAndPermissionCheck({RoleEnam.USER, RoleEnam.ADMIN})
-    public ResponseEntity<UUID> addFavorites(@PathVariable("contentId") Long favoritesId){
+    public ResponseEntity<UUID> addFavorites(@PathVariable("contentId") Long favoritesId) {
         UserEntity userEntity = userService.addFavorites(favoritesId);
         return new ResponseEntity<>(userEntity.getId(), HttpStatus.OK);
     }

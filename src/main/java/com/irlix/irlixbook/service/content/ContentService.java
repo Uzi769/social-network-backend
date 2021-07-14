@@ -25,5 +25,7 @@ public interface ContentService {
 
     void delete(Long id);
 
+    void deleteAll();
+
     List<ContentResponse> getFavorites(ContentType contentType, int page, int size);
 }

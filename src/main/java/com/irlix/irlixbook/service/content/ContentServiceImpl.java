@@ -117,6 +117,14 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
+    @Transactional
+    public void deleteAll(){
+        contentRepository.deleteAll();
+        UserEntity user = SecurityContextUtils.getUserFromContext();
+        log.info("DELETE ALL CONTENT BY: {}", user.getEmail());
+    }
+
+    @Override
     public List<ContentResponse> getFavorites(ContentType contentType, int page, int size) {
         UserEntity userFromContext = SecurityContextUtils.getUserFromContext();
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("dateCreated").descending());
