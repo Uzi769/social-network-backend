@@ -30,7 +30,7 @@ public class Picture {
     @Id
     private UUID id;
 
-    @Column(name = "url")
+    @Column(name = "url", length = 1500)
     private String url;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)

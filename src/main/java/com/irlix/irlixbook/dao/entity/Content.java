@@ -20,20 +20,20 @@ public class Content {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, length = 1500)
     private String name;
 
-    @Column(name = "type", nullable = false)
+    @Column(name = "type", nullable = false, length = 1500)
     @Enumerated(EnumType.STRING)
     private ContentType type;
 
-    @Column(name = "short_description")
+    @Column(name = "short_description", length = 1500)
     private String shortDescription;
 
-    @Column(name = "description")
+    @Column(name = "description", length = 1500)
     private String description;
 
-    @Column(name = "registration_link")
+    @Column(name = "registration_link", length = 1500)
     private String registrationLink;
 
     @Column(name = "create_date")

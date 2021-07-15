@@ -18,7 +18,7 @@ public class Sticker {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, length = 1500)
     private String name;
 
     @OneToMany(mappedBy = "sticker", cascade = CascadeType.MERGE)

@@ -31,11 +31,11 @@ public class UserEntity implements UserDetails {
     private UUID id;
 
     @NotEmpty
-    @Column(name = "surname")
+    @Column(name = "surname", length = 1500)
     private String surname;
 
     @NotEmpty
-    @Column(name = "name")
+    @Column(name = "name", length = 1500)
     private String name;
 
     @Column(name = "gender")
@@ -52,7 +52,7 @@ public class UserEntity implements UserDetails {
     @Pattern(regexp = "(^\\+?[78][-\\(]?\\d{3}\\)?-?\\d{3}-?\\d{2}-?\\d{2}$)")
     private String phone;
 
-    @Column(name = "description")
+    @Column(name = "description",  length = 3000)
     private String description;
 
     @Email
@@ -80,7 +80,7 @@ public class UserEntity implements UserDetails {
     @Column(name = "blocked")
     private LocalDateTime blocked;
 
-    @Column(name = "avatar")
+    @Column(name = "avatar", length = 1500)
     private String avatar;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.MERGE)
