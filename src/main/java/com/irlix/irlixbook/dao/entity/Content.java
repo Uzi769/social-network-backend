@@ -53,6 +53,6 @@ public class Content {
     @Column(name = "is_deleted")
     private boolean isDeleted;
 
-    @OneToMany(mappedBy = "content", cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "content", cascade = CascadeType.REMOVE)
     private List<Picture> pictures;
 }
