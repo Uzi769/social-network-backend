@@ -1,12 +1,12 @@
 package com.irlix.irlixbook.config.web;
 
 import com.irlix.irlixbook.dao.mapper.content.ContentPersistRequestToContent;
+import com.irlix.irlixbook.dao.mapper.content.ContentToContentResponse;
 import com.irlix.irlixbook.dao.mapper.picture.PictureToPictureOutput;
 import com.irlix.irlixbook.dao.mapper.user.UserCreateInputToUserEntity;
-import com.irlix.irlixbook.dao.mapper.user.UserUpdateInputToUserEntity;
-import com.irlix.irlixbook.dao.mapper.content.ContentToContentResponse;
 import com.irlix.irlixbook.dao.mapper.user.UserEntityToUserCreateOutput;
 import com.irlix.irlixbook.dao.mapper.user.UserEntityToUserEntityOutput;
+import com.irlix.irlixbook.dao.mapper.user.UserUpdateInputToUserEntity;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -32,6 +32,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("*")
-                .allowedMethods("*");
+                .allowedMethods("*")
+                .allowedHeaders("*");
     }
 }
