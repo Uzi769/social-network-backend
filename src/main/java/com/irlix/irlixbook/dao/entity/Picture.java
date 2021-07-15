@@ -33,7 +33,7 @@ public class Picture {
     @Column(name = "url")
     private String url;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "content_id")
     private Content content;
 }
