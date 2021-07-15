@@ -28,6 +28,6 @@ public class UserEntityOutput {
     private String linkedIn;
     private String avatar;
     private String instagram;
-    private LocalDateTime blocked;
+    private boolean blocked;
 
 }
