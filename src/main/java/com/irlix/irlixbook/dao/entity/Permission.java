@@ -23,6 +23,6 @@ public class Permission {
     @Enumerated(EnumType.STRING)
     private PermissionEnum name;
 
-    @ManyToMany(mappedBy = "permissions")
+    @ManyToMany(mappedBy = "permissions", cascade = CascadeType.MERGE)
     private List<Role> roles;
 }

@@ -21,6 +21,6 @@ public class Sticker {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "sticker")
+    @OneToMany(mappedBy = "sticker", cascade = CascadeType.MERGE)
     private List<Content> contents;
 }

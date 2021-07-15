@@ -39,20 +39,20 @@ public class Content {
     @Column(name = "create_date")
     private LocalDateTime dateCreated;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "user_id")
     private UserEntity author;
 
     @ManyToMany(mappedBy = "favoritesContents", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     private List<UserEntity> users;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "sticker_id")
     private Sticker sticker;
 
     @Column(name = "is_deleted")
     private boolean isDeleted;
 
-    @OneToMany(mappedBy = "content")
+    @OneToMany(mappedBy = "content", cascade = CascadeType.MERGE)
     private List<Picture> pictures;
 }
