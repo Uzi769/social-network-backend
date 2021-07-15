@@ -30,7 +30,7 @@ public class Content {
     @Column(name = "short_description", length = 1500)
     private String shortDescription;
 
-    @Column(name = "description", length = 1500)
+    @Column(name = "description", length = 10_000)
     private String description;
 
     @Column(name = "registration_link", length = 1500)
