@@ -8,7 +8,6 @@ import com.irlix.irlixbook.dao.entity.enams.RoleEnam;
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
 import com.irlix.irlixbook.dao.model.user.input.UserCreateInput;
 import com.irlix.irlixbook.dao.model.user.input.UserPasswordInput;
-import com.irlix.irlixbook.dao.model.user.input.UserSearchInput;
 import com.irlix.irlixbook.dao.model.user.input.UserUpdateInput;
 import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
 import com.irlix.irlixbook.exception.BadRequestException;
@@ -17,7 +16,6 @@ import com.irlix.irlixbook.exception.MultipartException;
 import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.RoleRepository;
 import com.irlix.irlixbook.repository.UserRepository;
-import com.irlix.irlixbook.repository.summary.UserRepositorySummary;
 import com.irlix.irlixbook.service.content.ContentService;
 import com.irlix.irlixbook.service.messaging.MessageSender;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -33,6 +33,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -50,7 +51,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final UserRepositorySummary userRepositorySummary;
     private final ConversionService conversionService;
     private final PasswordEncoder passwordEncoder;
     private final ContentService contentService;
@@ -163,8 +163,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public List<UserEntityOutput> search(UserSearchInput userSearchInput) {
-        List<UserEntity> userEntityList = userRepositorySummary.search(userSearchInput);
+    public List<UserEntityOutput> search(String surname, String name, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("id").ascending());
+        List<UserEntity> userEntityList;
+        if (StringUtils.hasLength(surname)) {
+            userEntityList = userRepository.findByNameContainingIgnoreCase(name, pageRequest);
+        } else {
+            userEntityList = userRepository.findByNameContainingIgnoreCaseAndSurnameContainingIgnoreCase(name, surname, pageRequest);
+        }
         return userEntityList.stream()
                 .map(userEntity -> conversionService.convert(userEntity, UserEntityOutput.class))
                 .collect(Collectors.toList());
@@ -179,7 +185,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             UserEntity persistedUser = persistedUserOptional.get();
             boolean roleNonExist = persistedUser.getRoles().stream().noneMatch(role -> role.getName() == roleEnam);
 
-            if(roleNonExist){
+            if (roleNonExist) {
                 Optional<Role> newRole = roleRepository.findByName(roleEnam);
                 persistedUser.getRoles().add(newRole.get());
                 userRepository.save(user);

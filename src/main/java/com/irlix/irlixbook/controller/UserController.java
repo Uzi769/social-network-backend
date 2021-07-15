@@ -73,8 +73,11 @@ public class UserController {
     }
 
     @GetMapping(value = "/search")
-    public List<UserEntityOutput> searchUser(UserSearchInput dto) {
-        return userService.search(dto);
+    public List<UserEntityOutput> searchUser(@RequestParam(required = false) String surname,
+                                             @RequestParam String name,
+                                             @RequestParam(required = false, defaultValue = "0") int page,
+                                             @RequestParam(required = false, defaultValue = "10") int size) {
+        return userService.search(surname, name, page, size);
     }
 
     @PutMapping(value = "/assign-role/{role}}")

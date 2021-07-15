@@ -33,7 +33,7 @@ public interface UserService {
 
     UserEntityOutput deletedUser(UUID id);
 
-    List<UserEntityOutput> search(UserSearchInput userSearchInput);
+    List<UserEntityOutput> search(String surname, String name, int page, int size);
 
     UserEntityOutput assignRole(RoleEnam roleEnam);
 
