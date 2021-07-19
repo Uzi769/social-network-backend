@@ -28,7 +28,7 @@ public class UserController {
         return userService.findUserOutputById(id);
     }
 
-    @GetMapping
+    @GetMapping("/me")
     public UserEntityOutput getUserFromContext() {
         return userService.findUserFromContext();
     }
@@ -44,7 +44,7 @@ public class UserController {
         return userService.findUsers();
     }
 
-    @PutMapping()
+    @PutMapping
     public UserEntityOutput updateUser(@RequestBody @Valid UserUpdateInput update) {
         return userService.updateUser(update, null);
     }
