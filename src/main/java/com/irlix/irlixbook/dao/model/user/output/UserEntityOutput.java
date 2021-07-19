@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -28,6 +29,7 @@ public class UserEntityOutput {
     private String linkedIn;
     private String avatar;
     private String instagram;
+    private List<String> roles;
     private boolean blocked;
 
 }

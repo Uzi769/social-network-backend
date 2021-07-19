@@ -5,6 +5,8 @@ import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
 import org.springframework.core.convert.converter.Converter;
 
+import java.util.stream.Collectors;
+
 public class UserEntityToUserEntityOutput implements Converter<UserEntity, UserEntityOutput> {
 
     @Override
@@ -26,6 +28,11 @@ public class UserEntityToUserEntityOutput implements Converter<UserEntity, UserE
                 .instagram(userEntity.getInstagram())
                 .linkedIn(userEntity.getLinkedIn())
                 .avatar(userEntity.getAvatar())
+                .roles(userEntity.getRoles() != null
+                        ? userEntity.getRoles().stream()
+                            .map(e -> e.getName().name())
+                            .collect(Collectors.toList())
+                        : null)
                 .blocked(userEntity.getBlocked() != null)
                 .build();
     }
