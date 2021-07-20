@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -58,7 +59,7 @@ public class ContentServiceImpl implements ContentService {
             content.setSticker(sticker);
         }
 
-        content.setAuthor(SecurityContextUtils.getUserFromContext());
+        content.setCreator(SecurityContextUtils.getUserFromContext());
         content.setDateCreated(LocalDateTime.now());
 
         Content savedContent = contentRepository.save(content);
@@ -82,6 +83,19 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public Content findByIdOriginal(Long id) {
         return getById(id);
+    }
+
+    public List<ContentResponse> findByEventDateForWeek(LocalDate start){
+        LocalDateTime startSearch;
+        if(start == null){
+            startSearch = LocalDate.now().atStartOfDay();
+        }else {
+            startSearch = start.atStartOfDay();
+        }
+        List<Content> contents = contentRepository.findByEventDateGreaterThanEqualAndEventDateLessThanAndType(startSearch, startSearch.plusDays(7), ContentType.EVENT);
+        return contents.stream()
+                .map(c -> conversionService.convert(c, ContentResponse.class))
+                .collect(Collectors.toList());
     }
 
     @Override

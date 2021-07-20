@@ -8,6 +8,7 @@ import com.irlix.irlixbook.dao.entity.enams.RoleEnam;
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
 import com.irlix.irlixbook.dao.model.user.input.UserCreateInput;
 import com.irlix.irlixbook.dao.model.user.input.UserPasswordInput;
+import com.irlix.irlixbook.dao.model.user.input.UserSearchInput;
 import com.irlix.irlixbook.dao.model.user.input.UserUpdateInput;
 import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
 import com.irlix.irlixbook.exception.BadRequestException;
@@ -16,6 +17,7 @@ import com.irlix.irlixbook.exception.MultipartException;
 import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.RoleRepository;
 import com.irlix.irlixbook.repository.UserRepository;
+import com.irlix.irlixbook.repository.summary.UserRepositorySummary;
 import com.irlix.irlixbook.service.content.ContentService;
 import com.irlix.irlixbook.service.messaging.MessageSender;
 import lombok.RequiredArgsConstructor;
@@ -54,6 +56,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final ConversionService conversionService;
     private final PasswordEncoder passwordEncoder;
     private final ContentService contentService;
+    private final UserRepositorySummary userRepositorySummary;
 
     @Autowired
     @Qualifier("mailSenderImpl")
@@ -92,6 +95,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         UUID id = SecurityContextUtils.getUserFromContext().getId();
         UserEntity user = findById(id);
         return conversionService.convert(user, UserEntityOutput.class);
+    }
+
+    @Override
+    public List<UserEntityOutput> findByComplexQuery(UserSearchInput input){
+        List<UserEntity> users = userRepositorySummary.search(input);
+        return users.stream()
+                .map(user -> conversionService.convert(user, UserEntityOutput.class))
+                .collect(Collectors.toList());
     }
 
     @Override

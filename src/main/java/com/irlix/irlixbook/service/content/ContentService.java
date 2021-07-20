@@ -6,6 +6,7 @@ import com.irlix.irlixbook.dao.model.content.request.ContentPersistRequest;
 import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 
 public interface ContentService {
@@ -14,6 +15,8 @@ public interface ContentService {
     ContentResponse findById(Long id);
 
     Content findByIdOriginal(Long id);
+
+    List<ContentResponse> findByEventDateForWeek(LocalDate start);
 
     List<ContentResponse> findAll();
 

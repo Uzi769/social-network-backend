@@ -15,6 +15,8 @@ public class ContentPersistRequestToContent implements Converter<ContentPersistR
                 .registrationLink(request.getRegistrationLink())
                 .shortDescription(request.getShortDescription())
                 .type(ContentType.valueOf(request.getType()))
+                .eventDate(request.getEventDate())
+                .author(request.getAuthor())
                 .build();
     }
 }

@@ -7,7 +7,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -34,10 +33,19 @@ public class UserRepositorySummary {
         if (userSearchInput.getName() != null) {
             predicates.add(builder.like(root.get("name"), "%" + userSearchInput.getName() + "%"));
         }
+        if(userSearchInput.getEmail() != null){
+            predicates.add(builder.like(root.get("email"), "%" + userSearchInput.getEmail() + "%"));
+        }
+        if(userSearchInput.getPhone() != null){
+            predicates.add(builder.like(root.get("phone"), "%" + userSearchInput.getPhone() + "%"));
+        }
+        Predicate[] predicatesArray = predicates.toArray(new Predicate[0]);
 
-        query.where(builder.and(predicates.toArray(new Predicate[0])));
+        query.where(builder.and(predicatesArray));
 
-        List<UserEntity> list = entityManager.createQuery(query).getResultList();
-        return list;
+        return entityManager.createQuery(query)
+                .setFirstResult(userSearchInput.getPage())
+                .setMaxResults(userSearchInput.getSize())
+                .getResultList();
     }
 }

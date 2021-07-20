@@ -33,6 +33,12 @@ public class UserController {
         return userService.findUserFromContext();
     }
 
+    @GetMapping("/complex/search")
+    public List<UserEntityOutput> findComplex(UserSearchInput searchInput) {
+        System.out.println(searchInput);
+        return userService.findByComplexQuery(searchInput);
+    }
+
     @PostMapping(value = "/create")
     @ResponseStatus(HttpStatus.CREATED)
     public UserEntityOutput createUser(@RequestBody @Valid UserCreateInput create) {

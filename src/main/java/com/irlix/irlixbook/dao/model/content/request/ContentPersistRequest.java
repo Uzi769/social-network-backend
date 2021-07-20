@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,5 +24,7 @@ public class ContentPersistRequest {
     private String description;
     private String registrationLink;
     private String stickerName;
+    private LocalDateTime eventDate;
+    private String author;
     private List<UUID> picturesId;
 }

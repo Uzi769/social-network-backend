@@ -1,6 +1,7 @@
 package com.irlix.irlixbook.dao.mapper.content;
 
 import com.irlix.irlixbook.dao.entity.Content;
+import com.irlix.irlixbook.dao.entity.Picture;
 import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 import org.springframework.core.convert.converter.Converter;
 
@@ -12,7 +13,10 @@ public class ContentToContentResponse implements Converter<Content, ContentRespo
     public ContentResponse convert(Content content) {
         return ContentResponse.builder()
                 .id(content.getId())
-                .author(content.getAuthor().getId().toString())
+                .author(content.getAuthor())
+                .creator(content.getCreator() != null
+                        ? content.getCreator().getId().toString()
+                        : null)
                 .description(content.getDescription())
                 .shortDescription(content.getShortDescription())
                 .name(content.getName())
@@ -23,8 +27,9 @@ public class ContentToContentResponse implements Converter<Content, ContentRespo
                         ? content.getUsers().stream().map(u -> u.getId().toString()).collect(Collectors.toList())
                         : null)
                 .pictures(content.getPictures() != null
-                        ? content.getPictures().stream().map(p -> p.getUrl()).collect(Collectors.toList())
+                        ? content.getPictures().stream().map(Picture::getUrl).collect(Collectors.toList())
                         : null)
+                .eventDate(content.getEventDate())
                 .build();
     }
 }

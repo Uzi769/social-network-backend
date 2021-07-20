@@ -21,6 +21,8 @@ public interface UserService {
 
     UserEntityOutput findUserFromContext();
 
+    List<UserEntityOutput> findByComplexQuery(UserSearchInput input);
+
     List<UserEntityOutput> findUsers();
 
     UserEntityOutput createUser(UserCreateInput userCreateInput);

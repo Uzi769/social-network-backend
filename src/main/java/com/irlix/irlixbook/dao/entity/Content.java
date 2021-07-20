@@ -39,9 +39,15 @@ public class Content {
     @Column(name = "create_date")
     private LocalDateTime dateCreated;
 
+    @Column(name = "event_date")
+    private LocalDateTime eventDate;
+
+    @Column
+    private String author;
+
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "user_id")
-    private UserEntity author;
+    private UserEntity creator;
 
     @ManyToMany(mappedBy = "favoritesContents", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     private List<UserEntity> users;

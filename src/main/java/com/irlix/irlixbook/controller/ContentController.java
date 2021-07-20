@@ -9,11 +9,13 @@ import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 import com.irlix.irlixbook.service.content.ContentService;
 import com.irlix.irlixbook.service.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,8 +43,14 @@ public class ContentController {
     @ResponseStatus(HttpStatus.CREATED)
     @RoleAndPermissionCheck({RoleEnam.USER, RoleEnam.ADMIN})
     public ContentResponse create(@RequestBody @Valid ContentPersistRequest contentPersistRequest) {
-        System.out.println();
         return contentService.save(contentPersistRequest);
+    }
+
+    @GetMapping("/event/byEventDate")//2021-07-20T10:03:01.820
+    public List<ContentResponse> findByEventDate(@RequestParam(required = false)
+                                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate searchDate) {
+        System.out.println(searchDate);
+        return contentService.findByEventDateForWeek(searchDate);
     }
 
     @GetMapping("/favorites")
