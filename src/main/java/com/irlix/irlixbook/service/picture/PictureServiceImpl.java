@@ -16,6 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -26,7 +28,7 @@ import static com.irlix.irlixbook.utils.Consts.FILE_SIZE_EXCEEDED;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class PictureServiceImpl implements PictureService{
+public class PictureServiceImpl implements PictureService {
 
     private final PictureRepository pictureRepository;
     private final ConversionService conversionService;
@@ -39,34 +41,37 @@ public class PictureServiceImpl implements PictureService{
 
     @Override
     public PictureOutput uploading(MultipartFile file) {
+        if (file == null) {
+            log.error("File is null");
+            throw new IllegalArgumentException("File is null");
+        }
         if (file.getSize() > 10485760) {
             log.info(FILE_SIZE_EXCEEDED);
             throw new MultipartException(FILE_SIZE_EXCEEDED);
         }
-        Picture picture = new Picture();
-        if (file != null) {
-            File uploadDir = new File(uploadPath);
-            if (!uploadDir.exists()) {
-                uploadDir.mkdir();
-            }
-            String originFileName = file.getOriginalFilename();
-            UUID id = UUID.randomUUID();
-            String fileName = id + originFileName.substring(originFileName.lastIndexOf("."));
 
-            try {
-                file.transferTo(new File(uploadPath + "/" + fileName));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            picture = Picture.builder()
-                    .id(id)
-                    .url(uploadRoot + fileName)
-                    .build();
-
-            pictureRepository.save(picture);
-            log.info(Consts.PICTURE_UPLOADED);
+        File uploadDir = new File(uploadPath);
+        if (!uploadDir.exists()) {
+            uploadDir.mkdir();
         }
+        String originFileName = file.getOriginalFilename();
+        UUID id = UUID.randomUUID();
+        String fileName = id + originFileName.substring(originFileName.lastIndexOf("."));
+
+        try {
+            Files.write(Path.of(uploadPath + "/" + fileName), file.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Picture picture = Picture.builder()
+                .id(id)
+                .url(uploadRoot + fileName)
+                .build();
+
+        pictureRepository.save(picture);
+        log.info(Consts.PICTURE_UPLOADED);
+
         return conversionService.convert(picture, PictureOutput.class);
     }
 
@@ -85,7 +90,7 @@ public class PictureServiceImpl implements PictureService{
     public List<Picture> addContentToPicture(List<UUID> pictureIdList, Content content) {
         List<Picture> pictures = new ArrayList<>();
         pictureIdList.stream()
-                .map(id -> pictureRepository.findById(id).orElseThrow(()-> {
+                .map(id -> pictureRepository.findById(id).orElseThrow(() -> {
                     log.error(Consts.PICTURE_NOT_FOUND);
                     return new ConflictException(Consts.PICTURE_NOT_FOUND);
                 }))
@@ -97,7 +102,7 @@ public class PictureServiceImpl implements PictureService{
         return pictures;
     }
 
-    public List<PictureOutput> getList(){
+    public List<PictureOutput> getList() {
         return pictureRepository.findAll().stream()
                 .map(p -> conversionService.convert(p, PictureOutput.class))
                 .collect(Collectors.toList());

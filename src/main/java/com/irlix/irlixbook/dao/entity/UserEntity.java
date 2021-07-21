@@ -83,7 +83,7 @@ public class UserEntity implements UserDetails {
     @Column(name = "avatar", length = 1500)
     private String avatar;
 
-    @OneToMany(mappedBy = "author", cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.MERGE)
     private List<Content> contents;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
