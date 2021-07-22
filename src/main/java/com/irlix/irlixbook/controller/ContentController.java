@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -47,10 +49,24 @@ public class ContentController {
     }
 
     @GetMapping("/event/byEventDate")//2021-07-20T10:03:01.820
+    @RoleAndPermissionCheck({RoleEnam.USER, RoleEnam.ADMIN})
     public List<ContentResponse> findByEventDate(@RequestParam(required = false)
                                                  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate searchDate) {
-        System.out.println(searchDate);
         return contentService.findByEventDateForWeek(searchDate);
+    }
+
+    @GetMapping("/event/dates")
+    @RoleAndPermissionCheck({RoleEnam.USER, RoleEnam.ADMIN})
+    public Set<String> getEventsForMonth(@RequestParam(required = false) Integer month) {
+        Month monthInput;
+        if (month == null) {
+            monthInput = LocalDate.now().getMonth();
+        } else if (month < 1 || month > 12) {
+            throw new IllegalArgumentException("Month value is not correct: " + month);
+        } else {
+            monthInput = Month.of(month);
+        }
+        return contentService.getEventsForMonth(monthInput);
     }
 
     @GetMapping("/favorites")
