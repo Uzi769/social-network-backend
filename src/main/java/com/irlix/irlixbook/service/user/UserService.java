@@ -43,10 +43,6 @@ public interface UserService {
 
     UserEntityOutput updatePasswordByUser(UserPasswordInput userPasswordInput);
 
-    String uploading(MultipartFile file);
-
-    void deletePicture(UUID id);
-
     UserEntity findUserForAuth(AuthRequest request);
 
     UserEntity addFavorites(Long favoritesContentId);

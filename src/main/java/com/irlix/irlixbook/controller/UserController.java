@@ -103,15 +103,4 @@ public class UserController {
     public UserEntityOutput updatePassword(@RequestBody @Valid UserPasswordInput userPasswordInput) {
         return userService.updatePasswordByUser(userPasswordInput);
     }
-
-
-    @PostMapping(value = "/upload-photo", consumes = "multipart/form-data")
-    public String pictureUpload(@RequestParam("file") MultipartFile file) {
-        return userService.uploading(file);
-    }
-
-    @DeleteMapping("/delete-photo/{id}")
-    public void deletePicture(@PathVariable("id") UUID id) {
-        userService.deletePicture(id);
-    }
 }
