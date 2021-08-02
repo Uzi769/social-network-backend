@@ -216,6 +216,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         UserEntity user = findById(id);
         updatePassword(userPasswordInput, user);
         log.info(PASSWORD_RESET);
+        messageSender.send("New password", user.getEmail(), "Your new password: " + userPasswordInput.getPassword());
         return conversionService.convert(user, UserEntityOutput.class);
     }
 
@@ -226,6 +227,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         UserEntity user = SecurityContextUtils.getUserFromContext();
         updatePassword(userPasswordInput, user);
         log.info(PASSWORD_CHANGED);
+        messageSender.send("New password", user.getEmail(), "Your new password: " + userPasswordInput.getPassword());
         return conversionService.convert(user, UserEntityOutput.class);
     }
 
