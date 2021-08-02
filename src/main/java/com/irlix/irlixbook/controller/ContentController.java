@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -48,14 +49,28 @@ public class ContentController {
         return contentService.save(contentPersistRequest);
     }
 
-    @GetMapping("/event/byEventDate")//2021-07-20T10:03:01.820
+    @GetMapping("/event/week/byEventDate")//2021-07-20
     @RoleAndPermissionCheck({RoleEnam.USER, RoleEnam.ADMIN})
-    public List<ContentResponse> findByEventDate(@RequestParam(required = false)
-                                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate searchDate) {
+    public List<ContentResponse> findByEventDateForWeek(@RequestParam(required = false)
+                                                        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate searchDate) {
         return contentService.findByEventDateForWeek(searchDate);
     }
 
-    @GetMapping("/event/dates")
+    @GetMapping("/event/day/byEventDate")//2021-07-20
+    @RoleAndPermissionCheck({RoleEnam.USER, RoleEnam.ADMIN})
+    public List<ContentResponse> findByEventDateForDay(@RequestParam(required = false)
+                                                       @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate searchDate) {
+        return contentService.findByEventDateForDay(searchDate);
+    }
+
+    @GetMapping("/event/month/byEventDate")//2021-07-20
+    @RoleAndPermissionCheck({RoleEnam.USER, RoleEnam.ADMIN})
+    public Collection<String> findByEventDateForMonth(@RequestParam(required = false)
+                                                       @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate searchDate) {
+        return contentService.findByEventDateForMonth(searchDate);
+    }
+
+    @GetMapping("/event/month")
     @RoleAndPermissionCheck({RoleEnam.USER, RoleEnam.ADMIN})
     public Set<String> getEventsForMonth(@RequestParam(required = false) Integer month) {
         Month monthInput;

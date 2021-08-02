@@ -23,4 +23,5 @@ public class ContentResponse {
     private List<String> users;
     private String stickerName;
     private List<String> pictures;
+    private String deeplink;
 }

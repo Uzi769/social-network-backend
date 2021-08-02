@@ -49,6 +49,9 @@ public class Content {
     @JoinColumn(name = "user_id")
     private UserEntity creator;
 
+    @Column(name = "deeplink", length = 1500)
+    private String deeplink;
+
     @ManyToMany(mappedBy = "favoritesContents", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     private List<UserEntity> users;
 

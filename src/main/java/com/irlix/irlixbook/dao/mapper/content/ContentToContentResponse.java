@@ -30,6 +30,7 @@ public class ContentToContentResponse implements Converter<Content, ContentRespo
                         ? content.getPictures().stream().map(Picture::getUrl).collect(Collectors.toList())
                         : null)
                 .eventDate(content.getEventDate())
+                .deeplink(content.getDeeplink())
                 .build();
     }
 }

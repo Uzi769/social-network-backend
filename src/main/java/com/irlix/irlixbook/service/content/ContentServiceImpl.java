@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -67,6 +68,9 @@ public class ContentServiceImpl implements ContentService {
         content.setDateCreated(LocalDateTime.now());
 
         Content savedContent = contentRepository.save(content);
+        savedContent.setDeeplink("/" + savedContent.getType().name() + "/" + savedContent.getId());
+        contentRepository.save(savedContent);
+
         if (contentPersistRequest.getPicturesId() != null && !contentPersistRequest.getPicturesId().isEmpty()) {
             content.setPictures(pictureService.addContentToPicture(contentPersistRequest.getPicturesId(), savedContent));
         }
@@ -100,6 +104,41 @@ public class ContentServiceImpl implements ContentService {
         return contents.stream()
                 .map(c -> conversionService.convert(c, ContentResponse.class))
                 .collect(Collectors.toList());
+    }
+
+    public List<ContentResponse> findByEventDateForDay(LocalDate start){
+        LocalDateTime startSearch;
+        LocalDateTime endSearch;
+        if (start == null) {
+            startSearch = LocalDate.now().atStartOfDay();
+            endSearch = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
+        } else {
+            startSearch = start.atStartOfDay();
+            endSearch = LocalDateTime.of(start, LocalTime.MAX);
+        }
+        List<Content> contents = contentRepository.findByEventDateGreaterThanEqualAndEventDateLessThanAndType(startSearch, endSearch, ContentType.EVENT);
+        return contents.stream()
+                .map(c -> conversionService.convert(c, ContentResponse.class))
+                .collect(Collectors.toList());
+    }
+
+    public Collection<String> findByEventDateForMonth(LocalDate start){
+        LocalDateTime startSearch;
+        LocalDateTime endSearch;
+        if (start == null) {
+            startSearch = LocalDate.now().atStartOfDay();
+            endSearch = LocalDateTime.of(LocalDate.now().plusDays(28), LocalTime.MAX);
+        } else {
+            startSearch = start.atStartOfDay();
+            endSearch = LocalDateTime.of(start.plusDays(28), LocalTime.MAX);
+        }
+        List<Content> contents = contentRepository.findByEventDateGreaterThanEqualAndEventDateLessThanAndType(startSearch, endSearch, ContentType.EVENT);
+        return contents.stream()
+                .map(Content::getEventDate)
+                .filter(Objects::nonNull)
+                .map(LocalDateTime::toLocalDate)
+                .map(date -> date.format(DateTimeFormatter.ISO_DATE))
+                .collect(Collectors.toSet());
     }
 
     @Override
