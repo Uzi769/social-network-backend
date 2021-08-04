@@ -44,7 +44,7 @@ public class AvatarServiceImpl implements AvatarService {
 
     @Override
     public String uploading(MultipartFile file) {
-        if (file != null) {
+        if (file == null) {
             log.info("File of avatar is null");
             throw new IllegalArgumentException("File of avatar is null");
         }
