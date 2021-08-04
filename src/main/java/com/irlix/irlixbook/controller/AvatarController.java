@@ -6,6 +6,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/avatar")
 public class AvatarController {
@@ -31,5 +33,10 @@ public class AvatarController {
     @PutMapping(consumes = "multipart/form-data")
     public String updateAvatar(@RequestParam("file") MultipartFile file) {
         return avatarService.update(file);
+    }
+
+    @GetMapping("/all")
+    public List<String> getAllFiles(@RequestParam(required = false) String dir){
+        return avatarService.getAllFiles(dir);
     }
 }
