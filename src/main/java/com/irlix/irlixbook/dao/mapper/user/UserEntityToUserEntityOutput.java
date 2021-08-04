@@ -26,7 +26,7 @@ public class UserEntityToUserEntityOutput implements Converter<UserEntity, UserE
                 .instagram(userEntity.getInstagram())
                 .linkedIn(userEntity.getLinkedIn())
                 .avatar(userEntity.getAvatar())
-                .role(userEntity.getRole().getName().name())
+                .role(userEntity.getRole().getName() != null ? userEntity.getRole().getName().name() : null)
                 .blocked(userEntity.getBlocked() != null)
                 .registrationDate(userEntity.getRegistrationDate())
                 .status(userEntity.getStatus())
