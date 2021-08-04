@@ -26,8 +26,8 @@ public class AvatarController {
     }
 
     @DeleteMapping
-    public void deletePicture() {
-        avatarService.deletePicture();
+    public void deletePicture(@RequestParam String filepath) {
+        avatarService.deletePicture(filepath);
     }
 
     @PutMapping(consumes = "multipart/form-data")

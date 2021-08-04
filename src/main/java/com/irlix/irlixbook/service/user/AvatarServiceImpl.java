@@ -97,11 +97,16 @@ public class AvatarServiceImpl implements AvatarService {
     }
 
     @Override
-    public void deletePicture() {
-        UserEntity user = SecurityContextUtils.getUserFromContext();
-        user.setAvatar(null);
+    public void deletePicture(String filepath) {
+//        UserEntity user = SecurityContextUtils.getUserFromContext();
+//        user.setAvatar(null);
         //todo add logic of delete file
-        userRepository.save(user);
+//        userRepository.save(user);
+
+        File file = new File(filepath);
+        log.info("File for delete: {} {} {}", file.isFile(), file.exists(), file.getAbsolutePath());
+        boolean delete = file.delete();
+        log.info("DELETE FILE RESULT: {}", delete);
     }
 
     @Override

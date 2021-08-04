@@ -10,7 +10,7 @@ public interface AvatarService {
 
     String uploading(MultipartFile file);
 
-    void deletePicture();
+    void deletePicture(String filepath);
 
     List<String> getAllFiles(String dirname);
 
