@@ -9,7 +9,6 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
-import java.util.List;
 
 @Getter
 @Setter
@@ -31,5 +30,5 @@ public class UserCreateInput {
     private String email;
     @Pattern(regexp = "(^\\+?[78][-\\(]?\\d{3}\\)?-?\\d{3}-?\\d{2}-?\\d{2}$)")
     private String phone;
-    private List<RoleEnam> roles;
+    private RoleEnam role;
 }

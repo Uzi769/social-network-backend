@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.List;
 
 @Aspect
 @Component
@@ -25,16 +24,25 @@ public class RoleAndPermissionChecker {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
         RoleAndPermissionCheck myAnnotation = method.getAnnotation(RoleAndPermissionCheck.class);
-        RoleEnam[] availableRoles = myAnnotation.value();
+        RoleEnam availableRole = myAnnotation.value();
+
+        RoleEnam[] includeRoles = availableRole.includeRoles();
+
+        RoleEnam[] availableRoles;
+        if (includeRoles.length > 0) {
+            availableRoles = new RoleEnam[includeRoles.length + 1];
+            for (int i = 0; i < includeRoles.length; i++) {
+                availableRoles[i] = includeRoles[i];
+            }
+            availableRoles[includeRoles.length] = availableRole;
+        } else {
+            availableRoles = new RoleEnam[]{availableRole};
+        }
 
         UserEntity userFromContext = SecurityContextUtils.getUserFromContext();
-        List<Role> roles = userFromContext.getRoles();
+        Role role = userFromContext.getRole();
 
-        boolean isNotValidRole = roles.stream()
-                .map(Role::getName)
-                .noneMatch(r ->
-                        Arrays.stream(availableRoles).anyMatch(ar -> ar == r)
-                );
+        boolean isNotValidRole = Arrays.stream(availableRoles).noneMatch(ar -> ar == role.getName());
 
         if (isNotValidRole) {
             throw new ForbiddenException("User " + userFromContext.getEmail() + ", has not role or permission on method: " + method.getName());

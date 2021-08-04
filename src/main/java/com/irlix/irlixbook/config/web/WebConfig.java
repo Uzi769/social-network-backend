@@ -3,6 +3,7 @@ package com.irlix.irlixbook.config.web;
 import com.irlix.irlixbook.dao.mapper.content.ContentPersistRequestToContent;
 import com.irlix.irlixbook.dao.mapper.content.ContentToContentResponse;
 import com.irlix.irlixbook.dao.mapper.picture.PictureToPictureOutput;
+import com.irlix.irlixbook.dao.mapper.sticker.StickerToStickerResponse;
 import com.irlix.irlixbook.dao.mapper.user.UserCreateInputToUserEntity;
 import com.irlix.irlixbook.dao.mapper.user.UserEntityToUserCreateOutput;
 import com.irlix.irlixbook.dao.mapper.user.UserEntityToUserEntityOutput;
@@ -24,6 +25,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addConverter(new ContentPersistRequestToContent());
         registry.addConverter(new ContentToContentResponse());
         registry.addConverter(new PictureToPictureOutput());
+        registry.addConverter(new StickerToStickerResponse());
     }
 
     /**

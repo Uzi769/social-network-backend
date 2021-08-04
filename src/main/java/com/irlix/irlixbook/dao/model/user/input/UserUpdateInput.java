@@ -14,7 +14,6 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -43,5 +42,5 @@ public class UserUpdateInput {
     private String telegram;
     private String linkedIn;
     private String instagram;
-    private List<RoleEnam> roles;
+    private RoleEnam role;
 }

@@ -1,5 +1,6 @@
 package com.irlix.irlixbook.dao.entity;
 
+import com.irlix.irlixbook.dao.entity.enams.StatusEnam;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -12,9 +13,9 @@ import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -52,7 +53,7 @@ public class UserEntity implements UserDetails {
     @Pattern(regexp = "(^\\+?[78][-\\(]?\\d{3}\\)?-?\\d{3}-?\\d{2}-?\\d{2}$)")
     private String phone;
 
-    @Column(name = "description",  length = 3000)
+    @Column(name = "description", length = 3000)
     private String description;
 
     @Email
@@ -83,14 +84,19 @@ public class UserEntity implements UserDetails {
     @Column(name = "avatar", length = 1500)
     private String avatar;
 
+    @Column(name = "registration_date")
+    private LocalDateTime registrationDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column
+    private StatusEnam status;
+
     @OneToMany(mappedBy = "creator", cascade = CascadeType.MERGE)
     private List<Content> contents;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    @JoinTable(name = "user_role",
-            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
-    private List<Role> roles;
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "role_id")
+    private Role role;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinTable(name = "user_content",
@@ -100,10 +106,7 @@ public class UserEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.getRoles()
-                .stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
-                .collect(Collectors.toList());
+        return Collections.singletonList(new SimpleGrantedAuthority(role.getName().name()));
     }
 
     @Override

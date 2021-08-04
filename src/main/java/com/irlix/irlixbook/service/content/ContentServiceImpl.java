@@ -5,7 +5,7 @@ import com.irlix.irlixbook.dao.entity.Content;
 import com.irlix.irlixbook.dao.entity.Sticker;
 import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.entity.enams.ContentType;
-import com.irlix.irlixbook.dao.model.content.enam.PeriodType;
+import com.irlix.irlixbook.dao.entity.enams.PeriodType;
 import com.irlix.irlixbook.dao.model.content.request.ContentPersistRequest;
 import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 import com.irlix.irlixbook.exception.BadRequestException;

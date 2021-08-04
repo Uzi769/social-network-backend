@@ -1,7 +1,11 @@
 package com.irlix.irlixbook.dao.entity;
 
 import com.irlix.irlixbook.dao.entity.enams.RoleEnam;
-import lombok.*;
+import com.irlix.irlixbook.dao.entity.enams.StatusEnam;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.List;
@@ -21,10 +25,10 @@ public class Role {
     @Column
     private RoleEnam name;
 
-    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "role", cascade = CascadeType.MERGE)
     private List<UserEntity> users;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @ManyToMany(cascade = CascadeType.MERGE)
     @JoinTable(name = "role_permission",
             joinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "permission_id", referencedColumnName = "id")})

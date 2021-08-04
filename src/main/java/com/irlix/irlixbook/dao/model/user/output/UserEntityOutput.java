@@ -1,10 +1,10 @@
 package com.irlix.irlixbook.dao.model.user.output;
 
+import com.irlix.irlixbook.dao.entity.enams.StatusEnam;
 import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -29,7 +29,9 @@ public class UserEntityOutput {
     private String linkedIn;
     private String avatar;
     private String instagram;
-    private List<String> roles;
+    private String role;
     private boolean blocked;
+    private LocalDateTime registrationDate;
+    private StatusEnam status;
 
 }

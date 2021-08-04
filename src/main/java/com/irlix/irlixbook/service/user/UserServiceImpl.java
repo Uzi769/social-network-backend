@@ -5,6 +5,7 @@ import com.irlix.irlixbook.dao.entity.Content;
 import com.irlix.irlixbook.dao.entity.Role;
 import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.entity.enams.RoleEnam;
+import com.irlix.irlixbook.dao.entity.enams.StatusEnam;
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
 import com.irlix.irlixbook.dao.model.user.input.UserCreateInput;
 import com.irlix.irlixbook.dao.model.user.input.UserPasswordInput;
@@ -33,7 +34,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
@@ -122,9 +122,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
 
         checkingUpdatedData(userEntity, userEntityForUpdate);
-        if(!CollectionUtils.isEmpty(userUpdateInput.getRoles())){
-            List<Role> newRoles = roleRepository.findByNameIn(userUpdateInput.getRoles());
-            userEntity.setRoles(newRoles);
+        if (userUpdateInput.getRole() != null) {
+            roleRepository.findByName(userUpdateInput.getRole())
+                    .ifPresent(userEntity::setRole);
         }
 
         UserEntity user = userRepository.save(userEntity);
@@ -183,14 +183,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         Optional<UserEntity> persistedUserOptional = userRepository.findById(user.getId());
         if (persistedUserOptional.isPresent()) {
             UserEntity persistedUser = persistedUserOptional.get();
-            boolean roleNonExist = persistedUser.getRoles().stream().noneMatch(role -> role.getName() == roleEnam);
 
-            if (roleNonExist) {
-                Optional<Role> newRole = roleRepository.findByName(roleEnam);
-                persistedUser.getRoles().add(newRole.get());
-                userRepository.save(user);
-                log.info(ASSIGN_ROLE_USER);
-            }
+            roleRepository.findByName(roleEnam).ifPresent(user::setRole);
+            userRepository.save(user);
+            log.info("User : {} assigned role: {}", persistedUser.getEmail(), roleEnam);
+            StatusEnam newStatus = roleEnam.getStatus(persistedUser.getRegistrationDate());
+            persistedUser.setStatus(newStatus);
+
             return conversionService.convert(persistedUser, UserEntityOutput.class);
         } else {
             log.error("User with id : {}, and email: {}, not found!!!", user.getId(), user.getEmail());
@@ -266,6 +265,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         log.info("DELETE {} USERS how was blocked : {}", blockedUsers.size(), blockedDate);
     }
 
+    @Scheduled(cron = "0 0 1 * * *")
+    public void changeStatus() {
+        LocalDateTime eventDate = LocalDateTime.now().plusMonths(2).plusDays(1);
+        List<UserEntity> users = userRepository.findByRegistrationDateLessThan(eventDate);
+        for (UserEntity user : users) {
+            Role role = user.getRole();
+            StatusEnam status = role.getName().getStatus(user.getRegistrationDate());
+            user.setStatus(status);
+        }
+        userRepository.saveAll(users);
+    }
+
     private void checkingPhoneForUniqueness(UserEntity userEntity, String phone) {
         if (userRepository.findByPhone(phone).orElse(null) != null) {
             throw new BadRequestException(USER_WITH_PHONE_ALREADY_EXISTS);
@@ -331,9 +342,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         messageSender.send("Your password", userEntity.getEmail(), "Your password: " + password);
         userEntity.setPassword(passwordEncoder.encode(password));
 
-        List<Role> newRoles = roleRepository.findByNameIn(userCreateInput.getRoles());
-        userEntity.setRoles(newRoles);
+        roleRepository.findByName(userCreateInput.getRole()).ifPresent(userEntity::setRole);
 
+        Role role = userEntity.getRole();
+        StatusEnam status = role.getName().getStatus(null);
+        userEntity.setStatus(status);
+        userEntity.setRegistrationDate(LocalDateTime.now());
         UserEntity savedUser = userRepository.save(userEntity);
         log.info(USER_SAVED);
         return conversionService.convert(savedUser, UserEntityOutput.class);

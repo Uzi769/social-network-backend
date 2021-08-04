@@ -1,4 +1,4 @@
-package com.irlix.irlixbook.dao.model.content.enam;
+package com.irlix.irlixbook.dao.entity.enams;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -11,5 +11,5 @@ public enum PeriodType {
     WEEK,
 
     @JsonProperty("month")
-    MONTH;
+    MONTH
 }
