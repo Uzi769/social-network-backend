@@ -26,7 +26,10 @@ public class RoleAndPermissionChecker {
         RoleAndPermissionCheck myAnnotation = method.getAnnotation(RoleAndPermissionCheck.class);
         RoleEnam availableRole = myAnnotation.value();
 
-        RoleEnam[] includeRoles = availableRole.includeRoles();
+        UserEntity userFromContext = SecurityContextUtils.getUserFromContext();
+        Role role = userFromContext.getRole();
+
+        RoleEnam[] includeRoles = role.getName().includeRoles();
 
         RoleEnam[] availableRoles;
         if (includeRoles.length > 0) {
@@ -34,15 +37,12 @@ public class RoleAndPermissionChecker {
             for (int i = 0; i < includeRoles.length; i++) {
                 availableRoles[i] = includeRoles[i];
             }
-            availableRoles[includeRoles.length] = availableRole;
+            availableRoles[includeRoles.length] = role.getName();
         } else {
-            availableRoles = new RoleEnam[]{availableRole};
+            availableRoles = new RoleEnam[]{role.getName()};
         }
 
-        UserEntity userFromContext = SecurityContextUtils.getUserFromContext();
-        Role role = userFromContext.getRole();
-
-        boolean isNotValidRole = Arrays.stream(availableRoles).noneMatch(ar -> ar == role.getName());
+        boolean isNotValidRole = Arrays.stream(availableRoles).noneMatch(ar -> ar == availableRole);
 
         if (isNotValidRole) {
             throw new ForbiddenException("User " + userFromContext.getEmail() + ", has not role or permission on method: " + method.getName());

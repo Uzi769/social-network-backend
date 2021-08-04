@@ -94,7 +94,7 @@ public class UserEntity implements UserDetails {
     @OneToMany(mappedBy = "creator", cascade = CascadeType.MERGE)
     private List<Content> contents;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "role_id")
     private Role role;
 
