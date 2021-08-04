@@ -87,9 +87,8 @@ public class AvatarServiceImpl implements AvatarService {
 
     @Override
     public String update(MultipartFile file) {
-        String uploading = this.uploading(file);
         this.delete();
-        return uploading;
+        return this.uploading(file);
     }
 
     private void deleteFile(String filepath) {
