@@ -2,6 +2,7 @@ package com.irlix.irlixbook.service.content;
 
 import com.irlix.irlixbook.dao.entity.Content;
 import com.irlix.irlixbook.dao.entity.enams.ContentType;
+import com.irlix.irlixbook.dao.model.content.enam.PeriodType;
 import com.irlix.irlixbook.dao.model.content.request.ContentPersistRequest;
 import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 
@@ -19,9 +20,7 @@ public interface ContentService {
 
     Content findByIdOriginal(Long id);
 
-    List<ContentResponse> findByEventDateForWeek(LocalDate start);
-
-    List<ContentResponse> findByEventDateForDay(LocalDate start);
+    List<ContentResponse> findByEventDateForPeriod(LocalDate start, PeriodType periodType);
 
     Collection<String> findByEventDateForMonth(LocalDate start);
 

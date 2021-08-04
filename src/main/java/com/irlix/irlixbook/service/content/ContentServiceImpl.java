@@ -5,6 +5,7 @@ import com.irlix.irlixbook.dao.entity.Content;
 import com.irlix.irlixbook.dao.entity.Sticker;
 import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.entity.enams.ContentType;
+import com.irlix.irlixbook.dao.model.content.enam.PeriodType;
 import com.irlix.irlixbook.dao.model.content.request.ContentPersistRequest;
 import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 import com.irlix.irlixbook.exception.BadRequestException;
@@ -93,36 +94,46 @@ public class ContentServiceImpl implements ContentService {
         return getById(id);
     }
 
-    public List<ContentResponse> findByEventDateForWeek(LocalDate start) {
-        LocalDateTime startSearch;
-        if (start == null) {
-            startSearch = LocalDate.now().atStartOfDay();
-        } else {
-            startSearch = start.atStartOfDay();
-        }
-        List<Content> contents = contentRepository.findByEventDateGreaterThanEqualAndEventDateLessThanAndType(startSearch, startSearch.plusDays(7), ContentType.EVENT);
-        return contents.stream()
-                .map(c -> conversionService.convert(c, ContentResponse.class))
-                .collect(Collectors.toList());
-    }
-
-    public List<ContentResponse> findByEventDateForDay(LocalDate start){
+    public List<ContentResponse> findByEventDateForPeriod(LocalDate start, PeriodType periodType) {
         LocalDateTime startSearch;
         LocalDateTime endSearch;
-        if (start == null) {
-            startSearch = LocalDate.now().atStartOfDay();
-            endSearch = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
+        if (PeriodType.DAY == periodType) {
+            if (start == null) {
+                startSearch = LocalDate.now().atStartOfDay();
+                endSearch = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
+            } else {
+                startSearch = start.atStartOfDay();
+                endSearch = LocalDateTime.of(start, LocalTime.MAX);
+            }
+        } else if (PeriodType.WEEK == periodType) {
+            if (start == null) {
+                LocalDate now = LocalDate.now();
+                startSearch = now.atStartOfDay();
+                endSearch = LocalDateTime.of(now.plusDays(7), LocalTime.MAX);
+            } else {
+                startSearch = start.atStartOfDay();
+                endSearch = LocalDateTime.of(start.plusDays(7), LocalTime.MAX);
+            }
+        } else if (PeriodType.MONTH == periodType) {
+            if (start == null) {
+                LocalDate now = LocalDate.now();
+                startSearch = now.atStartOfDay();
+                endSearch = LocalDateTime.of(now.plusDays(28), LocalTime.MAX);
+            } else {
+                startSearch = start.atStartOfDay();
+                endSearch = LocalDateTime.of(start.plusDays(28), LocalTime.MAX);
+            }
         } else {
-            startSearch = start.atStartOfDay();
-            endSearch = LocalDateTime.of(start, LocalTime.MAX);
+            throw new IllegalArgumentException("PeriodType is null");
         }
+
         List<Content> contents = contentRepository.findByEventDateGreaterThanEqualAndEventDateLessThanAndType(startSearch, endSearch, ContentType.EVENT);
         return contents.stream()
                 .map(c -> conversionService.convert(c, ContentResponse.class))
                 .collect(Collectors.toList());
     }
 
-    public Collection<String> findByEventDateForMonth(LocalDate start){
+    public Collection<String> findByEventDateForMonth(LocalDate start) {
         LocalDateTime startSearch;
         LocalDateTime endSearch;
         if (start == null) {

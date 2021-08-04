@@ -4,6 +4,7 @@ import com.irlix.irlixbook.config.security.annotation.RoleAndPermissionCheck;
 import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.entity.enams.ContentType;
 import com.irlix.irlixbook.dao.entity.enams.RoleEnam;
+import com.irlix.irlixbook.dao.model.content.enam.PeriodType;
 import com.irlix.irlixbook.dao.model.content.request.ContentPersistRequest;
 import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 import com.irlix.irlixbook.service.content.ContentService;
@@ -49,18 +50,12 @@ public class ContentController {
         return contentService.save(contentPersistRequest);
     }
 
-    @GetMapping("/event/week/byEventDate")//2021-07-20
+    @GetMapping("/event/{periodType}/byEventDate")//2021-07-20
     @RoleAndPermissionCheck({RoleEnam.USER, RoleEnam.ADMIN})
     public List<ContentResponse> findByEventDateForWeek(@RequestParam(required = false)
-                                                        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate searchDate) {
-        return contentService.findByEventDateForWeek(searchDate);
-    }
-
-    @GetMapping("/event/day/byEventDate")//2021-07-20
-    @RoleAndPermissionCheck({RoleEnam.USER, RoleEnam.ADMIN})
-    public List<ContentResponse> findByEventDateForDay(@RequestParam(required = false)
-                                                       @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate searchDate) {
-        return contentService.findByEventDateForDay(searchDate);
+                                                        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate searchDate,
+                                                        @PathVariable PeriodType periodType) {
+        return contentService.findByEventDateForPeriod(searchDate, periodType);
     }
 
     @GetMapping("/event/month/byEventDate")//2021-07-20
