@@ -59,7 +59,8 @@ public class AvatarServiceImpl implements AvatarService {
 
         File uploadDir = new File(folderPath);
         if (!uploadDir.exists()) {
-            uploadDir.mkdir();
+            boolean mkdir = uploadDir.mkdir();
+            log.info("create dir: {}", mkdir);
         }
         String originFileName = file.getOriginalFilename();
         String fileName = UUID.randomUUID() + originFileName.substring(originFileName.lastIndexOf("."));
