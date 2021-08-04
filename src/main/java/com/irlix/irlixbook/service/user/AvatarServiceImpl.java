@@ -8,18 +8,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static com.irlix.irlixbook.utils.Consts.FILE_SIZE_EXCEEDED;
 import static com.irlix.irlixbook.utils.Consts.PHOTO_UPLOADED;
@@ -38,8 +33,9 @@ public class AvatarServiceImpl implements AvatarService {
     private String uploadRoot;
 
     @Override
-    public byte[] getAvatar(String path) {
-        return new byte[0];
+    public String getAvatar(String path) {
+        UserEntity user = SecurityContextUtils.getUserFromContext();
+        return user.getAvatar();
     }
 
     @Override
@@ -78,39 +74,28 @@ public class AvatarServiceImpl implements AvatarService {
         return photoName;
     }
 
-    public List<String> getAllFiles(String dirname) {
-        String path = StringUtils.hasLength(dirname)
-                ? uploadPath + "/" + dirname
-                : uploadPath;
-
-        File rootDir = new File(path);
-        log.info("ROOT DIR: {} {} {}", rootDir.exists(), rootDir.isDirectory(), rootDir.getAbsolutePath());
-
-        List<String> result = new ArrayList<>();
-        if (rootDir.exists() && rootDir.isDirectory()) {
-            File[] files = rootDir.listFiles();
-            result = Arrays.stream(files != null ? files : new File[0])
-                    .map(File::getAbsolutePath)
-                    .collect(Collectors.toList());
-        }
-        return result;
-    }
-
     @Override
-    public void deletePicture(String filepath) {
-//        UserEntity user = SecurityContextUtils.getUserFromContext();
-//        user.setAvatar(null);
-        //todo add logic of delete file
-//        userRepository.save(user);
+    public void delete() {
+        UserEntity user = SecurityContextUtils.getUserFromContext();
+        String avatar = user.getAvatar();
 
-        File file = new File(filepath);
-        log.info("File for delete: {} {} {}", file.isFile(), file.exists(), file.getAbsolutePath());
-        boolean delete = file.delete();
-        log.info("DELETE FILE RESULT: {}", delete);
+        String filepath = avatar.replace(uploadRoot, uploadPath + "/");
+        this.deleteFile(filepath);
+        user.setAvatar(null);
+        userRepository.save(user);
     }
 
     @Override
     public String update(MultipartFile file) {
-        return null;
+        String uploading = this.uploading(file);
+        this.delete();
+        return uploading;
+    }
+
+    private void deleteFile(String filepath) {
+        File file = new File(filepath);
+        log.info("File for delete: {} {} {}", file.isFile(), file.exists(), file.getAbsolutePath());
+        boolean delete = file.delete();
+        log.info("DELETE FILE RESULT: {}", delete);
     }
 }
