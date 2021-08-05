@@ -1,4 +1,4 @@
-package com.irlix.irlixbook.service.user;
+package com.irlix.irlixbook.service.user.avatar;
 
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
 import com.irlix.irlixbook.dao.entity.UserEntity;

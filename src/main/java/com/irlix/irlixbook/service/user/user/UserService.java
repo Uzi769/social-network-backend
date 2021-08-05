@@ -1,14 +1,12 @@
-package com.irlix.irlixbook.service.user;
+package com.irlix.irlixbook.service.user.user;
 
 import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.entity.enams.RoleEnam;
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
 import com.irlix.irlixbook.dao.model.user.input.UserCreateInput;
-import com.irlix.irlixbook.dao.model.user.input.UserPasswordInput;
 import com.irlix.irlixbook.dao.model.user.input.UserSearchInput;
 import com.irlix.irlixbook.dao.model.user.input.UserUpdateInput;
 import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -38,10 +36,6 @@ public interface UserService {
     List<UserEntityOutput> search(String surname, String name, int page, int size);
 
     UserEntityOutput assignRole(RoleEnam roleEnam);
-
-    UserEntityOutput updatePasswordByAdmin(UUID id, UserPasswordInput userPasswordInput);
-
-    UserEntityOutput updatePasswordByUser(UserPasswordInput userPasswordInput);
 
     UserEntity findUserForAuth(AuthRequest request);
 

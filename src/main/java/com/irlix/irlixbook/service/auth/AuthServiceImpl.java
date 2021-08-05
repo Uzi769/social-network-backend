@@ -9,7 +9,7 @@ import com.irlix.irlixbook.dao.model.user.output.UserAuthOutput;
 import com.irlix.irlixbook.exception.BadRequestException;
 import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.TokenRepository;
-import com.irlix.irlixbook.service.user.UserService;
+import com.irlix.irlixbook.service.user.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.security.crypto.password.PasswordEncoder;

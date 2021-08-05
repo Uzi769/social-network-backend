@@ -1,4 +1,4 @@
-package com.irlix.irlixbook.service.user;
+package com.irlix.irlixbook.service.user.avatar;
 
 import org.springframework.web.multipart.MultipartFile;
 

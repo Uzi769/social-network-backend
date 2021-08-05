@@ -8,7 +8,7 @@ import com.irlix.irlixbook.dao.entity.enams.PeriodType;
 import com.irlix.irlixbook.dao.model.content.request.ContentPersistRequest;
 import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 import com.irlix.irlixbook.service.content.ContentService;
-import com.irlix.irlixbook.service.user.UserService;
+import com.irlix.irlixbook.service.user.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;

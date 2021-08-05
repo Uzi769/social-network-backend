@@ -1,4 +1,4 @@
-package com.irlix.irlixbook.service.user;
+package com.irlix.irlixbook.service.user.user;
 
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
 import com.irlix.irlixbook.dao.entity.Content;
@@ -8,7 +8,6 @@ import com.irlix.irlixbook.dao.entity.enams.RoleEnam;
 import com.irlix.irlixbook.dao.entity.enams.StatusEnam;
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
 import com.irlix.irlixbook.dao.model.user.input.UserCreateInput;
-import com.irlix.irlixbook.dao.model.user.input.UserPasswordInput;
 import com.irlix.irlixbook.dao.model.user.input.UserSearchInput;
 import com.irlix.irlixbook.dao.model.user.input.UserUpdateInput;
 import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
@@ -210,27 +209,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    @Transactional
-    public UserEntityOutput updatePasswordByAdmin(UUID id, UserPasswordInput userPasswordInput) {
-        UserEntity user = findById(id);
-        updatePassword(userPasswordInput, user);
-        log.info(PASSWORD_RESET);
-        messageSender.send("New password", user.getEmail(), "Your new password: " + userPasswordInput.getPassword());
-        return conversionService.convert(user, UserEntityOutput.class);
-    }
-
-
-    @Override
-    @Transactional
-    public UserEntityOutput updatePasswordByUser(UserPasswordInput userPasswordInput) {
-        UserEntity user = SecurityContextUtils.getUserFromContext();
-        updatePassword(userPasswordInput, user);
-        log.info(PASSWORD_CHANGED);
-        messageSender.send("New password", user.getEmail(), "Your new password: " + userPasswordInput.getPassword());
-        return conversionService.convert(user, UserEntityOutput.class);
-    }
-
-    @Override
     public UserEntity findUserForAuth(AuthRequest request) {
         String email = request.getEmail();
         if (email != null) {
@@ -259,7 +237,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Scheduled(cron = "0 0 1 * * *")
     public void deleteUsers() {
-        LocalDateTime blockedDate = LocalDateTime.now().plusMonths(2);
+        LocalDateTime blockedDate = LocalDateTime.now().minusMonths(2);
         List<UserEntity> blockedUsers = userRepository.findByBlockedLessThanEqual(blockedDate);
         userRepository.deleteAll(blockedUsers);
         log.info("DELETE {} USERS how was blocked : {}", blockedUsers.size(), blockedDate);
@@ -364,22 +342,5 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private String createPassword() {
         return new Random().ints(8, 48, 57)
                 .mapToObj(i -> String.valueOf((char) i)).collect(Collectors.joining());
-    }
-
-    private void updatePassword(UserPasswordInput userPasswordThrow, UserEntity user) {
-        validPassword(userPasswordThrow);
-        user.setPassword(passwordEncoder.encode(userPasswordThrow.getPassword()));
-        userRepository.save(user);
-    }
-
-    private void validPassword(UserPasswordInput userPasswordInput) {
-        if (userPasswordInput.getPassword() == null || userPasswordInput.getVerificationPassword() == null) {
-            log.error(INCORRECT_PASSWORD);
-            throw new BadRequestException(INCORRECT_PASSWORD);
-        }
-        if (!userPasswordInput.getPassword().equals(userPasswordInput.getVerificationPassword())) {
-            log.error(MISMATCH_PASSWORDS);
-            throw new BadRequestException(MISMATCH_PASSWORDS);
-        }
     }
 }

@@ -2,7 +2,7 @@ package com.irlix.irlixbook.controller;
 
 import com.irlix.irlixbook.config.security.annotation.RoleAndPermissionCheck;
 import com.irlix.irlixbook.dao.entity.enams.RoleEnam;
-import com.irlix.irlixbook.service.user.AvatarService;
+import com.irlix.irlixbook.service.user.avatar.AvatarService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
