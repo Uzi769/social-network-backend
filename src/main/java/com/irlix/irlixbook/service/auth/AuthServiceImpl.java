@@ -2,6 +2,7 @@ package com.irlix.irlixbook.service.auth;
 
 import com.irlix.irlixbook.config.security.utils.JwtProvider;
 import com.irlix.irlixbook.dao.entity.Token;
+import com.irlix.irlixbook.dao.entity.UserAppCode;
 import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
 import com.irlix.irlixbook.dao.model.auth.AuthResponse;
@@ -9,12 +10,15 @@ import com.irlix.irlixbook.dao.model.user.output.UserAuthOutput;
 import com.irlix.irlixbook.exception.BadRequestException;
 import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.TokenRepository;
+import com.irlix.irlixbook.service.user.appcode.UserAppCodeService;
 import com.irlix.irlixbook.service.user.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
@@ -24,12 +28,19 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final TokenRepository tokenRepository;
     private final ConversionService conversionService;
+    private final UserAppCodeService userAppCodeService;
 
     @Override
-    public AuthResponse authUser(AuthRequest request) {
+    public AuthResponse authUser(AuthRequest request, String appCode) {
         String password = request.getPassword();
         UserEntity userEntity = userService.findUserForAuth(request);
         if (passwordEncoder.matches(password, userEntity.getPassword()) && userEntity.getBlocked() == null) {
+            userAppCodeService.addNewCode(UserAppCode.builder()
+                    .email(userEntity.getEmail())
+                    .userId(userEntity.getId())
+                    .codes(Collections.singleton(appCode))
+                    .build());
+
             String value = JwtProvider.generateToken(userEntity.getEmail());
             if (tokenRepository.findByValue(value).isPresent()) {
                 return AuthResponse.builder()

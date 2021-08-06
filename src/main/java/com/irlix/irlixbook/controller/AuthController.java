@@ -33,10 +33,13 @@ public class AuthController {
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = AuthResponse.class))))
     })
     @PostMapping("/sign-in")
-    public ResponseEntity<UserAuthOutput> auth(@RequestBody AuthRequest request) {
+    public ResponseEntity<UserAuthOutput> auth(
+            @RequestHeader("user-app-code") String code,
+            @RequestBody AuthRequest request) {
+        AuthResponse authResponse = authService.authUser(request, code);
         return ResponseEntity.ok()
-                .header("Authorization", authService.authUser(request).getToken())
-                .body(authService.authUser(request).getUserAuthOutput());
+                .header("Authorization", authResponse.getToken())
+                .body(authResponse.getUserAuthOutput());
     }
 
     @Operation(summary = "Logout in POST request")
@@ -52,7 +55,7 @@ public class AuthController {
     private MessageSender messageSender;
 
     @PostMapping("/send")
-    public ResponseEntity send(@RequestParam String code, @RequestParam String text, @RequestParam String title){
+    public ResponseEntity send(@RequestParam String code, @RequestParam String text, @RequestParam String title) {
         messageSender.send(title, code, text);
         return new ResponseEntity(HttpStatus.OK);
     }
