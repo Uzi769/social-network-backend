@@ -20,6 +20,7 @@ public class ContentResponse {
     private String author;
     private String creator;
     private LocalDateTime eventDate;
+    private LocalDateTime createDate;
     private List<String> users;
     private String stickerName;
     private List<String> pictures;

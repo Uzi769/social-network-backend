@@ -44,6 +44,7 @@ public class ContentToContentResponse implements Converter<Content, ContentRespo
                 .eventDate(content.getEventDate())
                 .deeplink(content.getDeeplink())
                 .favorite(isFavorite)
+                .createDate(content.getDateCreated())
                 .build();
     }
 }
