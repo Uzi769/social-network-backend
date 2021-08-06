@@ -1,10 +1,9 @@
 package com.irlix.irlixbook.controller;
 
 import com.irlix.irlixbook.config.security.annotation.RoleAndPermissionCheck;
-import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.entity.enams.ContentType;
-import com.irlix.irlixbook.dao.entity.enams.RoleEnam;
 import com.irlix.irlixbook.dao.entity.enams.PeriodType;
+import com.irlix.irlixbook.dao.entity.enams.RoleEnam;
 import com.irlix.irlixbook.dao.model.content.request.ContentPersistRequest;
 import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 import com.irlix.irlixbook.service.content.ContentService;
@@ -21,7 +20,6 @@ import java.time.Month;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -61,22 +59,8 @@ public class ContentController {
     @GetMapping("/event/month/byEventDate/dates")//2021-07-20
     @RoleAndPermissionCheck(RoleEnam.USER)
     public Collection<String> findByEventDateForMonth(@RequestParam(required = false)
-                                                       @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate searchDate) {
+                                                      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate searchDate) {
         return contentService.findByEventDateForMonth(searchDate);
-    }
-
-    @GetMapping("/event/month")
-    @RoleAndPermissionCheck(RoleEnam.USER)
-    public Set<String> getEventsForMonth(@RequestParam(required = false) Integer month) {
-        Month monthInput;
-        if (month == null) {
-            monthInput = LocalDate.now().getMonth();
-        } else if (month < 1 || month > 12) {
-            throw new IllegalArgumentException("Month value is not correct: " + month);
-        } else {
-            monthInput = Month.of(month);
-        }
-        return contentService.getEventsForMonth(monthInput);
     }
 
     @GetMapping("/search/{contentType}/{name}")
@@ -128,8 +112,13 @@ public class ContentController {
 
     @PostMapping("/favorites/{contentId}")
     @RoleAndPermissionCheck(RoleEnam.USER)
-    public ResponseEntity<UUID> addFavorites(@PathVariable("contentId") Long favoritesId) {
-        UserEntity userEntity = userService.addFavorites(favoritesId);
-        return new ResponseEntity<>(userEntity.getId(), HttpStatus.OK);
+    public void addFavorites(@PathVariable("contentId") Long favoritesId) {
+        userService.addFavorites(favoritesId);
+    }
+
+    @DeleteMapping("/favorites/{contentId}")
+    @RoleAndPermissionCheck(RoleEnam.USER)
+    public void deleteFavorites(@PathVariable("contentId") Long favoritesId) {
+        userService.deleteFavorites(favoritesId);
     }
 }

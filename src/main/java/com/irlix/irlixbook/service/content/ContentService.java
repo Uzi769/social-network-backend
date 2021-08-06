@@ -8,10 +8,8 @@ import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 public interface ContentService {
     ContentResponse save(ContentPersistRequest contentPersistRequest);
@@ -37,6 +35,4 @@ public interface ContentService {
     void deleteAll();
 
     List<ContentResponse> getFavorites(ContentType contentType, int page, int size);
-
-    Set<String> getEventsForMonth(Month month);
 }

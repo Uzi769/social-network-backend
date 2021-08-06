@@ -29,12 +29,10 @@ import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -206,31 +204,6 @@ public class ContentServiceImpl implements ContentService {
         return resultContent.stream()
                 .map(post -> conversionService.convert(post, ContentResponse.class))
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public Set<String> getEventsForMonth(Month month) {
-        LocalDate now = LocalDate.now();
-        Month currentMonth = now.getMonth();
-
-        LocalDateTime startDate;
-        LocalDateTime endDate;
-        if (currentMonth == month) {
-            startDate = now.atStartOfDay();
-            LocalDate end = now.withDayOfMonth(now.lengthOfMonth());
-            endDate = end.atTime(LocalTime.MAX);
-        } else {
-            LocalDate date = LocalDate.of(now.getYear(), month, 1);
-            startDate = LocalDateTime.of(date, LocalTime.MIN);
-            endDate = LocalDateTime.of(LocalDate.of(now.getYear(), month, date.lengthOfMonth()), LocalTime.MAX);
-        }
-        List<Content> contents = contentRepository.findByEventDateGreaterThanEqualAndEventDateLessThanAndType(startDate, endDate, ContentType.EVENT);
-        return contents.stream()
-                .map(Content::getEventDate)
-                .filter(Objects::nonNull)
-                .map(LocalDateTime::toLocalDate)
-                .map(date -> date.format(DateTimeFormatter.ISO_DATE))
-                .collect(Collectors.toSet());
     }
 
     @Override

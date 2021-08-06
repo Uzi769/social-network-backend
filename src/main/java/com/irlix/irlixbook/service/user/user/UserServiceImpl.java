@@ -228,15 +228,45 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             List<Content> favoritesContents = userEntity.getFavoritesContents();
             favoritesContents = favoritesContents != null ? favoritesContents : new ArrayList<>();
             boolean alreadyFavorites = favoritesContents.stream().anyMatch(c -> c.getId().equals(favoritesContentId));
-            if(alreadyFavorites){
+            if (alreadyFavorites) {
                 throw new BadRequestException("Content with id: " + favoritesContentId + " already added to favorites");
-            }else {
+            } else {
                 favoritesContents.add(content);
                 userRepository.save(userEntity);
                 return userEntity;
             }
         } else {
             throw new NotFoundException("User with id : " + userFromContext.getId() + " doesn't exist");
+        }
+    }
+
+    @Override
+    @Transactional
+    public UserEntity deleteFavorites(Long favoritesContentId) {
+        Content content = contentService.findByIdOriginal(favoritesContentId);
+        if (content != null) {
+            UserEntity userFromContext = SecurityContextUtils.getUserFromContext();
+            Optional<UserEntity> currentUser = userRepository.findById(userFromContext.getId());
+            if (currentUser.isPresent()) {
+                UserEntity userEntity = currentUser.get();
+                List<Content> favoritesContents = userEntity.getFavoritesContents();
+                favoritesContents = favoritesContents != null ? favoritesContents : new ArrayList<>();
+                boolean alreadyFavorites = favoritesContents.stream().anyMatch(c -> c.getId().equals(favoritesContentId));
+                if (alreadyFavorites) {
+                    List<Content> newFavorites = favoritesContents.stream()
+                            .filter(c -> !c.getId().equals(favoritesContentId))
+                            .collect(Collectors.toList());
+                    userEntity.setFavoritesContents(newFavorites);
+                    userRepository.save(userEntity);
+                    return userEntity;
+                } else {
+                    throw new BadRequestException("Content with id: " + favoritesContentId + " is not favorite");
+                }
+            } else {
+                throw new NotFoundException("User with id : " + userFromContext.getId() + " doesn't exist");
+            }
+        } else {
+            throw new NotFoundException("Content with id : " + favoritesContentId + " doesn't exist");
         }
     }
 

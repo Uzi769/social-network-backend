@@ -32,7 +32,6 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "You are successfully logged in!",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = AuthResponse.class))))
     })
-
     @PostMapping("/sign-in")
     public ResponseEntity<UserAuthOutput> auth(@RequestBody AuthRequest request) {
         return ResponseEntity.ok()
