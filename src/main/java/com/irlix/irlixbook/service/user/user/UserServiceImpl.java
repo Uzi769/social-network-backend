@@ -227,9 +227,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             UserEntity userEntity = currentUser.get();
             List<Content> favoritesContents = userEntity.getFavoritesContents();
             favoritesContents = favoritesContents != null ? favoritesContents : new ArrayList<>();
-            favoritesContents.add(content);
-            userRepository.save(userEntity);
-            return userEntity;
+            boolean alreadyFavorites = favoritesContents.stream().anyMatch(c -> c.getId().equals(favoritesContentId));
+            if(alreadyFavorites){
+                throw new BadRequestException("Content with id: " + favoritesContentId + " already added to favorites");
+            }else {
+                favoritesContents.add(content);
+                userRepository.save(userEntity);
+                return userEntity;
+            }
         } else {
             throw new NotFoundException("User with id : " + userFromContext.getId() + " doesn't exist");
         }
