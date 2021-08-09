@@ -6,20 +6,21 @@ import com.irlix.irlixbook.dao.entity.enams.PeriodType;
 import com.irlix.irlixbook.dao.entity.enams.RoleEnam;
 import com.irlix.irlixbook.dao.model.content.request.ContentPersistRequest;
 import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
+import com.irlix.irlixbook.exception.BadRequestException;
 import com.irlix.irlixbook.service.content.ContentService;
 import com.irlix.irlixbook.service.user.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
+import java.util.regex.Pattern;
 
 @RestController
 @RequiredArgsConstructor
@@ -69,6 +70,7 @@ public class ContentController {
                                         @PathVariable String name,
                                         @RequestParam(required = false, defaultValue = "0") int page,
                                         @RequestParam(required = false, defaultValue = "10") int size) {
+        this.validateSearchName(name);
         return contentService.search(contentType, name, page, size);
     }
 
@@ -120,5 +122,14 @@ public class ContentController {
     @RoleAndPermissionCheck(RoleEnam.USER)
     public void deleteFavorites(@PathVariable("contentId") Long favoritesId) {
         userService.deleteFavorites(favoritesId);
+    }
+
+    private void validateSearchName(String name) {
+        if (!StringUtils.hasLength(name)) {
+            throw new BadRequestException("Param name is null or empty");
+        }
+        if (!Pattern.matches("[a-zA-ZА-Яа-я ]+", name.trim())) {
+            throw new BadRequestException("Search param contains not valid chars: \'" + name + "\'");
+        }
     }
 }

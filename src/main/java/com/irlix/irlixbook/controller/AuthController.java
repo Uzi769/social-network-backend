@@ -34,7 +34,7 @@ public class AuthController {
     })
     @PostMapping("/sign-in")
     public ResponseEntity<UserAuthOutput> auth(
-            @RequestHeader("user-app-code") String code,
+            @RequestHeader(value = "user-app-code", required = false) String code,
             @RequestBody AuthRequest request) {
         AuthResponse authResponse = authService.authUser(request, code);
         return ResponseEntity.ok()
