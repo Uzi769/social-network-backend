@@ -50,6 +50,15 @@ public class ContentServiceImpl implements ContentService {
     private MessageSender messageSender;
 
     @Override
+    public List<ContentResponse> findImportant(ContentType type, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        List<Content> importantContent = contentRepository.findImportantContent(type, pageRequest);
+        return importantContent.stream()
+                .map(e -> conversionService.convert(e, ContentResponse.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     @Transactional
     public ContentResponse save(ContentPersistRequest contentPersistRequest) {
         Content content = conversionService.convert(contentPersistRequest, Content.class);

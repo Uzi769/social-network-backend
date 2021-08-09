@@ -5,24 +5,32 @@ import com.irlix.irlixbook.dao.entity.Content;
 import com.irlix.irlixbook.dao.entity.Picture;
 import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
+import com.irlix.irlixbook.exception.UnauthorizedException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class ContentToContentResponse implements Converter<Content, ContentResponse> {
 
     @Override
     public ContentResponse convert(Content content) {
         List<UserEntity> users = content.getUsers();
-        UserEntity currentUser = SecurityContextUtils.getUserFromContext();
         boolean isFavorite = false;
 
-        if (!CollectionUtils.isEmpty(users) && currentUser != null) {
-            isFavorite = users.stream()
-                    .anyMatch(u -> u.getId().equals(currentUser.getId()));
+        try {
+            UserEntity currentUser = SecurityContextUtils.getUserFromContext();
+            if (!CollectionUtils.isEmpty(users) && currentUser != null) {
+                isFavorite = users.stream()
+                        .anyMatch(u -> u.getId().equals(currentUser.getId()));
+            }
+        } catch (UnauthorizedException e) {
+            log.error("Convert content to content response without authorization");
         }
+
         return ContentResponse.builder()
                 .id(content.getId())
                 .author(content.getAuthor())

@@ -35,4 +35,6 @@ public interface ContentService {
     void deleteAll();
 
     List<ContentResponse> getFavorites(ContentType contentType, int page, int size);
+
+    List<ContentResponse> findImportant(ContentType type, int page, int size);
 }

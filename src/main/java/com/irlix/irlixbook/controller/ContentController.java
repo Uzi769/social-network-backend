@@ -30,6 +30,16 @@ public class ContentController {
     private final ContentService contentService;
     private final UserService userService;
 
+    @GetMapping("/{type}/important")
+    public ResponseEntity findImportant(@PathVariable ContentType type,
+                                        @RequestParam(required = false, defaultValue = "0") int page,
+                                        @RequestParam(required = false, defaultValue = "10") int size
+    ) {
+
+        List<ContentResponse> list = contentService.findImportant(type, page, size);
+        return new ResponseEntity(list, HttpStatus.OK);
+    }
+
     @GetMapping
     @RoleAndPermissionCheck(RoleEnam.USER)
     public List<ContentResponse> findAll() {
