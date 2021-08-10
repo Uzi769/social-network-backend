@@ -1,7 +1,9 @@
 package com.irlix.irlixbook.service.picture;
 
+import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
 import com.irlix.irlixbook.dao.entity.Content;
 import com.irlix.irlixbook.dao.entity.Picture;
+import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.model.picture.PictureOutput;
 import com.irlix.irlixbook.exception.ConflictException;
 import com.irlix.irlixbook.exception.MultipartException;
@@ -41,7 +43,6 @@ public class PictureServiceImpl implements PictureService {
 
     @Override
     public PictureOutput uploading(MultipartFile file) {
-        log.info("INPUT FILE: {} {} {}", file.getSize(), file.getOriginalFilename(), file.getContentType());
         if (file == null) {
             log.error("File is null");
             throw new IllegalArgumentException("File is null");
@@ -60,12 +61,8 @@ public class PictureServiceImpl implements PictureService {
         String fileName = id + originFileName.substring(originFileName.lastIndexOf("."));
 
         try {
-            Path of = Path.of(uploadPath + "/" + fileName);
-            Path file1 = Files.createFile(of);
-            File file2 = file1.toFile();
-            log.info("File exist: {} {} {}", file2.exists(), file2.getAbsolutePath(), file2.isFile());
-            Path write = Files.write(of, file.getBytes());
-            log.info("Write file: {}", write);
+            Path write = Files.write(Path.of(uploadPath + "/" + fileName), file.getBytes());
+            log.info("Save picture: {}", write);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -89,6 +86,9 @@ public class PictureServiceImpl implements PictureService {
         });
         pictureRepository.delete(picture);
         log.info(Consts.PICTURE_DELETED);
+
+        String filepath = picture.getUrl().replace(uploadRoot, uploadPath + "/");
+        this.deleteFile(filepath);
     }
 
     @Override
@@ -111,5 +111,12 @@ public class PictureServiceImpl implements PictureService {
         return pictureRepository.findAll().stream()
                 .map(p -> conversionService.convert(p, PictureOutput.class))
                 .collect(Collectors.toList());
+    }
+
+    private void deleteFile(String filepath) {
+        File file = new File(filepath);
+        log.info("File for delete: {} {} {}", file.isFile(), file.exists(), file.getAbsolutePath());
+        boolean delete = file.delete();
+        log.info("DELETE FILE RESULT: {}", delete);
     }
 }
