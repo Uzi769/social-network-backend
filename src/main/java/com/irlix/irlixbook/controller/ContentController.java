@@ -92,7 +92,7 @@ public class ContentController {
         return contentService.findByType(contentType, page, size);
     }
 
-    @PutMapping("/{id}}")
+    @PutMapping("/{id}")
     @RoleAndPermissionCheck(RoleEnam.USER)
     public ContentResponse update(
             @PathVariable("id") Long id,
@@ -100,7 +100,7 @@ public class ContentController {
         return contentService.update(id, contentPersistRequest);
     }
 
-    @DeleteMapping("/{id}}")
+    @DeleteMapping("/{id}")
     @RoleAndPermissionCheck(RoleEnam.ADMIN)
     public ResponseEntity<?> delete(@PathVariable("id") Long id) {
         contentService.delete(id);

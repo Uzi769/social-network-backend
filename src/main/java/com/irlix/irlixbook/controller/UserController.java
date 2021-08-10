@@ -99,7 +99,7 @@ public class UserController {
         return userService.search(surname, name, page, size);
     }
 
-    @PutMapping(value = "/assign-role/{role}}")
+    @PutMapping(value = "/assign-role/{role}")
     @ResponseStatus(HttpStatus.CREATED)
     @RoleAndPermissionCheck(RoleEnam.ADMIN)
     public UserEntityOutput assignRole(@PathVariable RoleEnam role) {
