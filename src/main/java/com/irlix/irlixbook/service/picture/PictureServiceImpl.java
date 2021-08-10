@@ -52,14 +52,15 @@ public class PictureServiceImpl implements PictureService {
 
         File uploadDir = new File(uploadPath);
         if (!uploadDir.exists()) {
-            uploadDir.mkdir();
+            log.info("Create dir: {} = {}", uploadPath, uploadDir.mkdir());
         }
         String originFileName = file.getOriginalFilename();
         UUID id = UUID.randomUUID();
         String fileName = id + originFileName.substring(originFileName.lastIndexOf("."));
 
         try {
-            Files.write(Path.of(uploadPath + "/" + fileName), file.getBytes());
+            Path write = Files.write(Path.of(uploadPath + "/" + fileName), file.getBytes());
+            log.info("Write file: {}", write);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -74,7 +75,6 @@ public class PictureServiceImpl implements PictureService {
 
         return conversionService.convert(picture, PictureOutput.class);
     }
-
 
     @Override
     public void deletePicture(UUID id) {
