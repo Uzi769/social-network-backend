@@ -1,7 +1,10 @@
 package com.irlix.irlixbook.dao.entity;
 
 import com.irlix.irlixbook.dao.entity.enams.ContentType;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -51,7 +54,10 @@ public class Content {
     @Column(name = "deeplink", length = 1500)
     private String deeplink;
 
-    @ManyToMany(mappedBy = "favoritesContents", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE, targetEntity = UserEntity.class)
+    @JoinTable(name = "user_content",
+            joinColumns = {@JoinColumn(name = "content_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")})
     private List<UserEntity> users;
 
     @ManyToOne(cascade = CascadeType.MERGE)

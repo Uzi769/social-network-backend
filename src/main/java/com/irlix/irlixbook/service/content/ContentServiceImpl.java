@@ -30,6 +30,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -187,8 +188,15 @@ public class ContentServiceImpl implements ContentService {
     @Override
     @Transactional
     public void delete(Long id) {
-        contentRepository.deleteById(id);
-        log.info("Content deleted. Class ContentServiceImpl, method delete");
+        Content contentForDelete = getById(id);
+        if (contentForDelete != null) {
+            contentForDelete.setUsers(new ArrayList<>());
+            contentRepository.save(contentForDelete);
+            contentRepository.delete(contentForDelete);
+            log.info("Content deleted. Class ContentServiceImpl, method delete");
+        } else {
+            throw new NotFoundException("Content with id nor found");
+        }
     }
 
     @Override
