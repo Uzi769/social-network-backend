@@ -41,6 +41,7 @@ public class PictureServiceImpl implements PictureService {
 
     @Override
     public PictureOutput uploading(MultipartFile file) {
+        log.info("INPUT FILE: {} {} {}", file.getSize(), file.getOriginalFilename(), file.getContentType());
         if (file == null) {
             log.error("File is null");
             throw new IllegalArgumentException("File is null");
