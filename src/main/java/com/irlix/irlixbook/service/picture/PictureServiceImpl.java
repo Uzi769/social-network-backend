@@ -59,8 +59,10 @@ public class PictureServiceImpl implements PictureService {
         String fileName = id + originFileName.substring(originFileName.lastIndexOf("."));
 
         try {
-            Path write = Files.write(Path.of(uploadPath + "/" + fileName), file.getBytes());
-            log.info("Write file: {}", write);
+//            Path write = Files.write(Path.of(uploadPath + "/" + fileName), file.getBytes());
+            Path path = Path.of(uploadPath + "/" + fileName);
+            file.transferTo(path);
+            log.info("Write file: {}", path);
         } catch (IOException e) {
             e.printStackTrace();
         }
