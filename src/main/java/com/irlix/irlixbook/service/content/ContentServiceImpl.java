@@ -2,6 +2,7 @@ package com.irlix.irlixbook.service.content;
 
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
 import com.irlix.irlixbook.dao.entity.Content;
+import com.irlix.irlixbook.dao.entity.Picture;
 import com.irlix.irlixbook.dao.entity.Sticker;
 import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.entity.enams.ContentType;
@@ -23,6 +24,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.validation.Valid;
@@ -235,19 +237,42 @@ public class ContentServiceImpl implements ContentService {
             throw new BadRequestException("Content by id: " + id + " is absent");
         }
 
-        Content newContent = conversionService.convert(contentPersistRequest, Content.class);
-        newContent.setAuthor(content.getAuthor());
-        newContent.setUsers(content.getUsers());
-        newContent.setId(content.getId());
-
-        if (StringUtils.hasLength(contentPersistRequest.getStickerName())) {
-            newContent.setSticker(stickerService.findOrCreate(contentPersistRequest.getStickerName()));
-        }
-
-        contentRepository.save(newContent);
+        this.updateContent(content, contentPersistRequest);
+        contentRepository.save(content);
         log.info("Update Content by id: " + id + ". Class ContentServiceImpl, method update");
 
-        return conversionService.convert(newContent, ContentResponse.class);
+        return conversionService.convert(content, ContentResponse.class);
+    }
+
+    private void updateContent(Content content, ContentPersistRequest newContent) {
+        if (newContent.getEventDate() != null) {
+            content.setEventDate(newContent.getEventDate());
+        }
+        if (StringUtils.hasLength(newContent.getName())) {
+            content.setName(newContent.getName());
+        }
+        if (StringUtils.hasLength(newContent.getType())) {
+            content.setType(ContentType.valueOf(newContent.getType()));
+        }
+        if (StringUtils.hasLength(newContent.getDescription())) {
+            content.setDescription(newContent.getDescription());
+        }
+        if (StringUtils.hasLength(newContent.getShortDescription())) {
+            content.setShortDescription(newContent.getShortDescription());
+        }
+        if (StringUtils.hasLength(newContent.getRegistrationLink())) {
+            content.setRegistrationLink(newContent.getRegistrationLink());
+        }
+        if (StringUtils.hasLength(newContent.getStickerName())) {
+            content.setSticker(stickerService.findOrCreate(newContent.getStickerName()));
+        }
+        if (StringUtils.hasLength(newContent.getAuthor())) {
+            content.setAuthor(newContent.getAuthor());
+        }
+        if (!CollectionUtils.isEmpty(newContent.getPicturesId())) {
+            List<Picture> newPictures = pictureService.addContentToPicture(newContent.getPicturesId(), content);
+            content.setPictures(newPictures);
+        }
     }
 
     private Content getById(Long id) {

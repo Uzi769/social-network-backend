@@ -1,9 +1,7 @@
 package com.irlix.irlixbook.service.picture;
 
-import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
 import com.irlix.irlixbook.dao.entity.Content;
 import com.irlix.irlixbook.dao.entity.Picture;
-import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.model.picture.PictureOutput;
 import com.irlix.irlixbook.exception.ConflictException;
 import com.irlix.irlixbook.exception.MultipartException;
