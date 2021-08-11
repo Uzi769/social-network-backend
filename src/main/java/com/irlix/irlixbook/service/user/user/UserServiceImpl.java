@@ -35,6 +35,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -56,6 +57,17 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Autowired
     @Qualifier("mailSenderImpl")
     private MessageSender messageSender;
+
+    @PostConstruct
+    private void init() {
+        List<UserEntity> users = userRepository.findByStatus(null);
+        for (UserEntity byStatus : users) {
+            Role role = byStatus.getRole();
+            StatusEnam status = role.getName().getStatus(byStatus.getRegistrationDate());
+            byStatus.setStatus(status);
+        }
+        userRepository.saveAll(users);
+    }
 
     @Override
     public UserEntity findById(UUID id) {
