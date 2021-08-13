@@ -74,10 +74,10 @@ public class ContentController {
         return contentService.findByEventDateForMonth(searchDate);
     }
 
-    @GetMapping("/search/{contentType}/{name}")
+    @GetMapping("/search/{contentType}")
     @RoleAndPermissionCheck(RoleEnam.USER)
     public List<ContentResponse> search(@PathVariable ContentType contentType,
-                                        @PathVariable String name,
+                                        @RequestParam String name,
                                         @RequestParam(required = false, defaultValue = "0") int page,
                                         @RequestParam(required = false, defaultValue = "10") int size) {
         this.validateSearchName(name);
