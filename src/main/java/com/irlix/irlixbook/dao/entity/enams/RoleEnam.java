@@ -12,8 +12,8 @@ public enum RoleEnam {
             return StatusEnam.COMMUNITY_LEADER;
         } else {
             if (registrationDate != null) {
-                LocalDateTime eventDate = registrationDate.plusMonths(2).plusDays(1);
-                if (eventDate.isBefore(LocalDateTime.now())) {
+                LocalDateTime eventDate = LocalDateTime.now().plusMonths(2);
+                if (eventDate.isBefore(registrationDate)) {
                     return StatusEnam.COMMUNITY_MEMBER;
                 } else {
                     return StatusEnam.NEW_MEMBER;
