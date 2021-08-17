@@ -1,9 +1,7 @@
 package com.irlix.irlixbook.service.user.user;
 
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
-import com.irlix.irlixbook.dao.entity.Content;
-import com.irlix.irlixbook.dao.entity.Role;
-import com.irlix.irlixbook.dao.entity.UserEntity;
+import com.irlix.irlixbook.dao.entity.*;
 import com.irlix.irlixbook.dao.entity.enams.RoleEnam;
 import com.irlix.irlixbook.dao.entity.enams.StatusEnam;
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
@@ -14,6 +12,7 @@ import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
 import com.irlix.irlixbook.exception.BadRequestException;
 import com.irlix.irlixbook.exception.ConflictException;
 import com.irlix.irlixbook.exception.NotFoundException;
+import com.irlix.irlixbook.repository.ContentUserRepository;
 import com.irlix.irlixbook.repository.RoleRepository;
 import com.irlix.irlixbook.repository.UserRepository;
 import com.irlix.irlixbook.repository.summary.UserRepositorySummary;
@@ -53,6 +52,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final ContentService contentService;
     private final UserRepositorySummary userRepositorySummary;
+    private final ContentUserRepository contentUserRepository;
 
     @Autowired
     @Qualifier("mailSenderImpl")
@@ -63,8 +63,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         List<UserEntity> users = userRepository.findByStatus(null);
         for (UserEntity byStatus : users) {
             Role role = byStatus.getRole();
-            StatusEnam status = role.getName().getStatus(byStatus.getRegistrationDate());
-            byStatus.setStatus(status);
+            if (role != null) {
+                StatusEnam status = role.getName().getStatus(byStatus.getRegistrationDate());
+                byStatus.setStatus(status);
+            } else {
+                Optional<Role> byName = roleRepository.findByName(RoleEnam.USER);
+                Role newRole = byName.get();
+                StatusEnam status = newRole.getName().getStatus(byStatus.getRegistrationDate());
+                byStatus.setStatus(status);
+                byStatus.setRole(newRole);
+            }
         }
         userRepository.saveAll(users);
     }
@@ -237,15 +245,19 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         Optional<UserEntity> currentUser = userRepository.findById(userFromContext.getId());
         if (currentUser.isPresent()) {
             UserEntity userEntity = currentUser.get();
-            List<Content> favoritesContents = userEntity.getFavoritesContents();
-            favoritesContents = favoritesContents != null ? favoritesContents : new ArrayList<>();
+            List<ContentUser> contentUsers = userEntity.getContentUsers();
+            List<Content> favoritesContents = contentUsers != null ? contentUsers.stream().map(ContentUser::getContent).collect(Collectors.toList()) : new ArrayList<>();
             boolean alreadyFavorites = favoritesContents.stream().anyMatch(c -> c.getId().equals(favoritesContentId));
             if (alreadyFavorites) {
                 throw new BadRequestException("Content with id: " + favoritesContentId + " already added to favorites");
             } else {
-                favoritesContents.add(content);
-                userRepository.save(userEntity);
-                return userEntity;
+                contentUserRepository.save(ContentUser.builder()
+                        .content(content)
+                        .user(userEntity)
+                        .createdOn(LocalDateTime.now())
+                        .id(new ContentUserId(content.getId(), userEntity.getId()))
+                        .build());
+                return userRepository.findById(userFromContext.getId()).get();
             }
         } else {
             throw new NotFoundException("User with id : " + userFromContext.getId() + " doesn't exist");
@@ -261,16 +273,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             Optional<UserEntity> currentUser = userRepository.findById(userFromContext.getId());
             if (currentUser.isPresent()) {
                 UserEntity userEntity = currentUser.get();
-                List<Content> favoritesContents = userEntity.getFavoritesContents();
-                favoritesContents = favoritesContents != null ? favoritesContents : new ArrayList<>();
+                List<ContentUser> contentUsers = userEntity.getContentUsers();
+
+                List<Content> favoritesContents = contentUsers != null
+                        ? contentUsers.stream().map(ContentUser::getContent).collect(Collectors.toList())
+                        : new ArrayList<>();
                 boolean alreadyFavorites = favoritesContents.stream().anyMatch(c -> c.getId().equals(favoritesContentId));
                 if (alreadyFavorites) {
-                    List<Content> newFavorites = favoritesContents.stream()
-                            .filter(c -> !c.getId().equals(favoritesContentId))
-                            .collect(Collectors.toList());
-                    userEntity.setFavoritesContents(newFavorites);
-                    userRepository.save(userEntity);
-                    return userEntity;
+                    contentUserRepository.deleteByContentId(favoritesContentId);
+                    return userRepository.findById(userFromContext.getId()).get();
                 } else {
                     throw new BadRequestException("Content with id: " + favoritesContentId + " is not favorite");
                 }

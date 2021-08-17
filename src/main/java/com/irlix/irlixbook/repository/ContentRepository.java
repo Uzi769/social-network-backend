@@ -17,10 +17,6 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
 
     List<Content> findByType(ContentType contentType, Pageable pageable);
 
-    List<Content> findByUsers_Id(UUID userId, Pageable pageable);
-
-    List<Content> findByUsers_IdAndType(UUID userId, ContentType contentType, Pageable pageable);
-
     List<Content> findByEventDateGreaterThanEqualAndEventDateLessThanAndType(LocalDateTime start, LocalDateTime end, ContentType type);
 
     @Query(value = "select c from Content c where c.type = :contentType order by case c.sticker.name when 'Важное' then 0 else 1 end")

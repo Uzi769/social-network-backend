@@ -2,6 +2,7 @@ package com.irlix.irlixbook.dao.mapper.content;
 
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
 import com.irlix.irlixbook.dao.entity.Content;
+import com.irlix.irlixbook.dao.entity.ContentUser;
 import com.irlix.irlixbook.dao.entity.Picture;
 import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
@@ -18,17 +19,21 @@ public class ContentToContentResponse implements Converter<Content, ContentRespo
 
     @Override
     public ContentResponse convert(Content content) {
-        List<UserEntity> users = content.getUsers();
+        List<ContentUser> contentUsers = content.getContentUsers();
         boolean isFavorite = false;
+        List<UserEntity> users = null;
 
-        try {
-            UserEntity currentUser = SecurityContextUtils.getUserFromContext();
-            if (!CollectionUtils.isEmpty(users) && currentUser != null) {
-                isFavorite = users.stream()
-                        .anyMatch(u -> u.getId().equals(currentUser.getId()));
+        if (!CollectionUtils.isEmpty(contentUsers)) {
+            users = contentUsers.stream().map(ContentUser::getUser).collect(Collectors.toList());
+            try {
+                UserEntity currentUser = SecurityContextUtils.getUserFromContext();
+                if (!CollectionUtils.isEmpty(users) && currentUser != null) {
+                    isFavorite = users.stream()
+                            .anyMatch(u -> u.getId().equals(currentUser.getId()));
+                }
+            } catch (UnauthorizedException e) {
+                log.error("Convert content to content response without authorization");
             }
-        } catch (UnauthorizedException e) {
-            log.error("Convert content to content response without authorization");
         }
 
         return ContentResponse.builder()
@@ -43,8 +48,8 @@ public class ContentToContentResponse implements Converter<Content, ContentRespo
                 .registrationLink(content.getRegistrationLink())
                 .type(content.getType().name())
                 .stickerName(content.getSticker() != null ? content.getSticker().getName() : null)
-                .users(content.getUsers() != null
-                        ? content.getUsers().stream().map(u -> u.getId().toString()).collect(Collectors.toList())
+                .users(users != null
+                        ? users.stream().map(u -> u.getId().toString()).collect(Collectors.toList())
                         : null)
                 .pictures(content.getPictures() != null
                         ? content.getPictures().stream().map(Picture::getUrl).collect(Collectors.toList())

@@ -1,10 +1,7 @@
 package com.irlix.irlixbook.service.content;
 
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
-import com.irlix.irlixbook.dao.entity.Content;
-import com.irlix.irlixbook.dao.entity.Picture;
-import com.irlix.irlixbook.dao.entity.Sticker;
-import com.irlix.irlixbook.dao.entity.UserEntity;
+import com.irlix.irlixbook.dao.entity.*;
 import com.irlix.irlixbook.dao.entity.enams.ContentType;
 import com.irlix.irlixbook.dao.entity.enams.PeriodType;
 import com.irlix.irlixbook.dao.model.content.request.ContentPersistRequest;
@@ -12,6 +9,7 @@ import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 import com.irlix.irlixbook.exception.BadRequestException;
 import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.ContentRepository;
+import com.irlix.irlixbook.repository.ContentUserRepository;
 import com.irlix.irlixbook.service.messaging.MessageSender;
 import com.irlix.irlixbook.service.picture.PictureService;
 import com.irlix.irlixbook.service.sticker.StickerService;
@@ -32,7 +30,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -47,6 +44,7 @@ public class ContentServiceImpl implements ContentService {
     private final ConversionService conversionService;
     private final StickerService stickerService;
     private final PictureService pictureService;
+    private final ContentUserRepository contentUserRepository;
 
     @Autowired
     @Qualifier("firebaseSender")
@@ -192,7 +190,6 @@ public class ContentServiceImpl implements ContentService {
     public void delete(Long id) {
         Content contentForDelete = getById(id);
         if (contentForDelete != null) {
-            contentForDelete.setUsers(new ArrayList<>());
             contentRepository.save(contentForDelete);
             contentRepository.delete(contentForDelete);
             log.info("Content deleted. Class ContentServiceImpl, method delete");
@@ -212,13 +209,15 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public List<ContentResponse> getFavorites(ContentType contentType, int page, int size) {
         UserEntity userFromContext = SecurityContextUtils.getUserFromContext();
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("dateCreated").descending());
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdOn").descending());
 
         List<Content> resultContent;
         if (Objects.nonNull(contentType)) {
-            resultContent = contentRepository.findByUsers_IdAndType(userFromContext.getId(), contentType, pageRequest);
+            List<ContentUser> favorites = contentUserRepository.findByUserIdAndContent_Type(userFromContext.getId(), contentType, pageRequest);
+            resultContent = favorites.stream().map(ContentUser::getContent).collect(Collectors.toList());
         } else {
-            resultContent = contentRepository.findByUsers_Id(userFromContext.getId(), pageRequest);
+            List<ContentUser> favorites = contentUserRepository.findByUserId(userFromContext.getId(), pageRequest);
+            resultContent = favorites.stream().map(ContentUser::getContent).collect(Collectors.toList());
         }
         return resultContent.stream()
                 .map(post -> conversionService.convert(post, ContentResponse.class))
