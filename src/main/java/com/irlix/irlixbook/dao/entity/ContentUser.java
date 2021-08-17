@@ -19,11 +19,11 @@ public class ContentUser {
     @EmbeddedId
     private ContentUserId id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @MapsId("contentId")
     private Content content;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @MapsId("userId")
     private UserEntity user;
 

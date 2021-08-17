@@ -275,13 +275,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 UserEntity userEntity = currentUser.get();
                 List<ContentUser> contentUsers = userEntity.getContentUsers();
 
-                List<Content> favoritesContents = contentUsers != null
-                        ? contentUsers.stream().map(ContentUser::getContent).collect(Collectors.toList())
-                        : new ArrayList<>();
-                boolean alreadyFavorites = favoritesContents.stream().anyMatch(c -> c.getId().equals(favoritesContentId));
-                if (alreadyFavorites) {
-                    contentUserRepository.deleteByContentId(favoritesContentId);
-                    return userRepository.findById(userFromContext.getId()).get();
+                Optional<ContentUser> first = contentUsers.stream().filter(c -> c.getContent().getId().equals(favoritesContentId)).findFirst();
+                if (first.isPresent()) {
+                    ContentUser contentUser = first.get();
+                    contentUsers.remove(contentUser);
+                    content.getContentUsers().remove(contentUser);
+                    contentUser.setContent(null);
+                    contentUser.setUser(null);
+                    return userRepository.save(userEntity);
                 } else {
                     throw new BadRequestException("Content with id: " + favoritesContentId + " is not favorite");
                 }

@@ -98,17 +98,9 @@ public class UserEntity implements UserDetails {
     @JoinColumn(name = "role_id")
     private Role role;
 
-//    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE, targetEntity = Content.class)
-//    @JoinTable(name = "user_content",
-//            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
-//            inverseJoinColumns = {@JoinColumn(name = "content_id", referencedColumnName = "id")})
-//    private List<Content> favoritesContents;
-
-    @OneToMany(
-            mappedBy = "user",
+    @OneToMany(mappedBy = "user",
             cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+            orphanRemoval = true)
     private List<ContentUser> contentUsers;
 
     @Override

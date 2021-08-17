@@ -209,7 +209,12 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public List<ContentResponse> getFavorites(ContentType contentType, int page, int size) {
         UserEntity userFromContext = SecurityContextUtils.getUserFromContext();
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdOn").descending());
+        PageRequest pageRequest;
+        if (Objects.nonNull(contentType) && contentType == ContentType.NEWS) {
+            pageRequest = PageRequest.of(page, size, Sort.by("createdOn").descending());
+        } else {
+            pageRequest = PageRequest.of(page, size);
+        }
 
         List<Content> resultContent;
         if (Objects.nonNull(contentType)) {

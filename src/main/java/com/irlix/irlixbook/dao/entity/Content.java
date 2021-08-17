@@ -54,14 +54,7 @@ public class Content {
     @Column(name = "deeplink", length = 1500)
     private String deeplink;
 
-//    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE, targetEntity = UserEntity.class)
-//    @JoinTable(name = "user_content",
-//            joinColumns = {@JoinColumn(name = "content_id", referencedColumnName = "id")},
-//            inverseJoinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")})
-//    private List<UserEntity> users;
-
-    @OneToMany(
-            mappedBy = "content",
+    @OneToMany(mappedBy = "content",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
