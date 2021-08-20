@@ -33,13 +33,13 @@ public class AuthController {
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = AuthResponse.class))))
     })
     @PostMapping("/sign-in")
-    public ResponseEntity<UserAuthOutput> auth(
+    public ResponseEntity<String> auth(
             @RequestHeader(value = "user-app-code", required = false) String code,
             @RequestBody AuthRequest request) {
         AuthResponse authResponse = authService.authUser(request, code);
         return ResponseEntity.ok()
                 .header("Authorization", authResponse.getToken())
-                .body(authResponse.getUserAuthOutput());
+                .body(authResponse.getToken());
     }
 
     @Operation(summary = "Logout in POST request")
