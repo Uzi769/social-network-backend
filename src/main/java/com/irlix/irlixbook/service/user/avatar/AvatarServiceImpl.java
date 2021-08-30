@@ -2,7 +2,9 @@ package com.irlix.irlixbook.service.user.avatar;
 
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
 import com.irlix.irlixbook.dao.entity.UserEntity;
+import com.irlix.irlixbook.exception.AlreadyExistException;
 import com.irlix.irlixbook.exception.MultipartException;
+import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.irlix.irlixbook.utils.Consts.FILE_SIZE_EXCEEDED;
@@ -33,9 +36,18 @@ public class AvatarServiceImpl implements AvatarService {
     private String uploadRoot;
 
     @Override
-    public String getAvatar(String path) {
+    public String getAvatar() {
         UserEntity user = SecurityContextUtils.getUserFromContext();
         return user.getAvatar();
+    }
+
+    @Override
+    public String getAvatarByUserID(UUID id) {
+        Optional<UserEntity> user = userRepository.findById(id);
+        if (user.isEmpty()) {
+            throw new NotFoundException("Cannot find avatar of user with id: " + id);
+        }
+        return user.get().getAvatar();
     }
 
     @Override
@@ -60,6 +72,10 @@ public class AvatarServiceImpl implements AvatarService {
         }
         String originFileName = file.getOriginalFilename();
         String fileName = UUID.randomUUID() + originFileName.substring(originFileName.lastIndexOf("."));
+
+        if (!(uploadDir.list().length == 0)) {
+            throw new AlreadyExistException("Avatar already exist");
+        }
 
         try {
             Files.write(Path.of(folderPath + "/" + fileName), file.getBytes());

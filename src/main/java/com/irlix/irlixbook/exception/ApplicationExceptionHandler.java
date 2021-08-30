@@ -64,6 +64,12 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler({AlreadyExistException.class})
+    protected ResponseEntity<ApiError> handleAlreadyExistException(AlreadyExistException ex) {
+        ApiError apiError = new ApiError("AlreadyExistException", ex.getMessage());
+        return new ResponseEntity<>(apiError, HttpStatus.CONFLICT);
+    }
+
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(
             HttpMessageNotReadableException ex,
