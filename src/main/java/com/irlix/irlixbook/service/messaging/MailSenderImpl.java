@@ -25,4 +25,8 @@ public class MailSenderImpl implements MessageSender {
         message.setText(text);
         emailSender.send(message);
     }
+
+    @Override
+    public void send(String title, String receiver, String text, Long id) {
+    }
 }

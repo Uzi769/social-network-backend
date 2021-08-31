@@ -10,6 +10,7 @@ import com.irlix.irlixbook.exception.BadRequestException;
 import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.ContentRepository;
 import com.irlix.irlixbook.repository.ContentUserRepository;
+import com.irlix.irlixbook.repository.UserAppCodeRepository;
 import com.irlix.irlixbook.service.messaging.MessageSender;
 import com.irlix.irlixbook.service.picture.PictureService;
 import com.irlix.irlixbook.service.sticker.StickerService;
@@ -45,6 +46,7 @@ public class ContentServiceImpl implements ContentService {
     private final StickerService stickerService;
     private final PictureService pictureService;
     private final ContentUserRepository contentUserRepository;
+    private final UserAppCodeRepository userAppCodeRepository;
 
     @Autowired
     @Qualifier("firebaseSender")
@@ -86,6 +88,18 @@ public class ContentServiceImpl implements ContentService {
 //        messageSender.send("New content was created",
 //                "", //todo added logic with code of receiver
 //                "New content was created");
+        if (savedContent.getType() == ContentType.NEWS || savedContent.getType() == ContentType.EVENT) {
+            List<UserAppCode> listOfCodes = userAppCodeRepository.findAll();
+            for (UserAppCode codes : listOfCodes) {
+                for (String code : codes.getCodes()) {
+                    messageSender.send(savedContent.getType() + " was created."
+                            , code
+                            , savedContent.getName()
+                            , savedContent.getId());
+                }
+            }
+        }
+
         log.info("Content saved. Class ContentServiceImpl, method save");
         return conversionService.convert(savedContent, ContentResponse.class);
     }
