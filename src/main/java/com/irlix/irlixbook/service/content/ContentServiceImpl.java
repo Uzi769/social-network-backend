@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -52,6 +53,9 @@ public class ContentServiceImpl implements ContentService {
     @Qualifier("firebaseSender")
     private MessageSender messageSender;
 
+    @Value("${url.root}")
+    private String urlRoot;
+
     @Override
     public List<ContentResponse> findImportant(ContentType type, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
@@ -79,7 +83,7 @@ public class ContentServiceImpl implements ContentService {
         content.setDateCreated(LocalDateTime.now());
 
         Content savedContent = contentRepository.save(content);
-        savedContent.setDeeplink("/" + savedContent.getType().name() + "/" + savedContent.getId());
+        savedContent.setDeeplink(urlRoot + savedContent.getType().name() + "/" + savedContent.getId());
         contentRepository.save(savedContent);
 
         if (contentPersistRequest.getPicturesId() != null && !contentPersistRequest.getPicturesId().isEmpty()) {
@@ -95,7 +99,7 @@ public class ContentServiceImpl implements ContentService {
                     messageSender.send(savedContent.getType() + " was created."
                             , code
                             , savedContent.getName()
-                            , savedContent.getId());
+                            , savedContent.getId(), savedContent.getType());
                 }
             }
         }

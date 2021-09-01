@@ -40,7 +40,8 @@ public class EventPushScheduler {
                         messageSender.send(event.getType() + " was created."
                                 , code
                                 , event.getName()
-                                , event.getId());
+                                , event.getId()
+                                , event.getType());
                     }
                 }
             }

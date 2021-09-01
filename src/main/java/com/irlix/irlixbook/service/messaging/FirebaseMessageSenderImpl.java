@@ -1,6 +1,7 @@
 package com.irlix.irlixbook.service.messaging;
 
 import com.google.firebase.messaging.*;
+import com.irlix.irlixbook.dao.entity.enams.ContentType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -48,7 +49,7 @@ public class FirebaseMessageSenderImpl implements MessageSender {
     }
 
     @Override
-    public void send(String title, String receiver, String text, Long id) {
+    public void send(String title, String receiver, String text, Long id, ContentType type) {
         Notification notification = Notification
                 .builder()
                 .setTitle(LocalDateTime.now() + "-" + LocalDateTime.now() + " " + title)
@@ -70,6 +71,7 @@ public class FirebaseMessageSenderImpl implements MessageSender {
                 .setToken(receiver)
                 .setNotification(notification)
                 .putData("contentId", String.valueOf(id))
+                .putData("type", String.valueOf(type))
                 .setAndroidConfig(androidConfig)
                 .build();
 

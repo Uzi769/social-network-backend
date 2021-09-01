@@ -1,5 +1,6 @@
 package com.irlix.irlixbook.service.messaging;
 
+import com.irlix.irlixbook.dao.entity.enams.ContentType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +28,6 @@ public class MailSenderImpl implements MessageSender {
     }
 
     @Override
-    public void send(String title, String receiver, String text, Long id) {
+    public void send(String title, String receiver, String text, Long id, ContentType type) {
     }
 }
