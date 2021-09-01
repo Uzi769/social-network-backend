@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/avatar")
 public class AvatarController {
@@ -16,8 +18,14 @@ public class AvatarController {
 
     @GetMapping
     @RoleAndPermissionCheck(RoleEnam.USER)
-    public String getAvatar(@RequestParam String avatarId) {
-        return avatarService.getAvatar(avatarId);
+    public String getAvatar() {
+        return avatarService.getAvatar();
+    }
+
+    @GetMapping("/userId")
+    @RoleAndPermissionCheck(RoleEnam.USER)
+    public String getAvatarByUserId(@RequestParam UUID userId) {
+        return avatarService.getAvatarByUserID(userId);
     }
 
     @PostMapping(consumes = "multipart/form-data")
