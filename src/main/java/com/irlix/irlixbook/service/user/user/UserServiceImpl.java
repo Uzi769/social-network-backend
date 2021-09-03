@@ -2,7 +2,7 @@ package com.irlix.irlixbook.service.user.user;
 
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
 import com.irlix.irlixbook.dao.entity.*;
-import com.irlix.irlixbook.dao.entity.enams.RoleEnam;
+import com.irlix.irlixbook.dao.entity.enams.RoleEnum;
 import com.irlix.irlixbook.dao.entity.enams.StatusEnam;
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
 import com.irlix.irlixbook.dao.model.user.input.UserCreateInput;
@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 StatusEnam status = role.getName().getStatus(byStatus.getRegistrationDate());
                 byStatus.setStatus(status);
             } else {
-                Optional<Role> byName = roleRepository.findByName(RoleEnam.USER);
+                Optional<Role> byName = roleRepository.findByName(RoleEnum.USER);
                 Role newRole = byName.get();
                 StatusEnam status = newRole.getName().getStatus(byStatus.getRegistrationDate());
                 byStatus.setStatus(status);
@@ -197,16 +197,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     @Transactional
-    public UserEntityOutput assignRole(RoleEnam roleEnam) {
+    public UserEntityOutput assignRole(RoleEnum roleEnum) {
         UserEntity user = SecurityContextUtils.getUserFromContext();
         Optional<UserEntity> persistedUserOptional = userRepository.findById(user.getId());
         if (persistedUserOptional.isPresent()) {
             UserEntity persistedUser = persistedUserOptional.get();
 
-            roleRepository.findByName(roleEnam).ifPresent(user::setRole);
+            roleRepository.findByName(roleEnum).ifPresent(user::setRole);
             userRepository.save(user);
-            log.info("User : {} assigned role: {}", persistedUser.getEmail(), roleEnam);
-            StatusEnam newStatus = roleEnam.getStatus(persistedUser.getRegistrationDate());
+            log.info("User : {} assigned role: {}", persistedUser.getEmail(), roleEnum);
+            StatusEnam newStatus = roleEnum.getStatus(persistedUser.getRegistrationDate());
             persistedUser.setStatus(newStatus);
 
             return conversionService.convert(persistedUser, UserEntityOutput.class);
@@ -370,6 +370,17 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     private UserEntityOutput create(UserCreateInput userCreateInput) {
         UserEntity userEntity = conversionService.convert(userCreateInput, UserEntity.class);
+        switch (userCreateInput.getRole()) {
+            case ADMIN:
+                userEntity.setRole(roleRepository.findByName(RoleEnum.ADMIN).get());
+                break;
+            case USER:
+                userEntity.setRole(roleRepository.findByName(RoleEnum.USER).get());
+                break;
+            case GUEST:
+                userEntity.setRole(roleRepository.findByName(RoleEnum.GUEST).get());
+                break;
+        }
         if (userEntity == null) {
             throw new ConflictException("Error conversion user. Class UserServiceImpl, method createUser");
         }

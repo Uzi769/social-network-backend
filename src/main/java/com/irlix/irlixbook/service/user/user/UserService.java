@@ -1,7 +1,7 @@
 package com.irlix.irlixbook.service.user.user;
 
 import com.irlix.irlixbook.dao.entity.UserEntity;
-import com.irlix.irlixbook.dao.entity.enams.RoleEnam;
+import com.irlix.irlixbook.dao.entity.enams.RoleEnum;
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
 import com.irlix.irlixbook.dao.model.user.input.UserCreateInput;
 import com.irlix.irlixbook.dao.model.user.input.UserSearchInput;
@@ -35,7 +35,7 @@ public interface UserService {
 
     List<UserEntityOutput> search(String surname, String name, int page, int size);
 
-    UserEntityOutput assignRole(RoleEnam roleEnam);
+    UserEntityOutput assignRole(RoleEnum roleEnum);
 
     UserEntity findUserForAuth(AuthRequest request);
 

@@ -4,7 +4,7 @@ import com.irlix.irlixbook.config.security.annotation.RoleAndPermissionCheck;
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
 import com.irlix.irlixbook.dao.entity.Role;
 import com.irlix.irlixbook.dao.entity.UserEntity;
-import com.irlix.irlixbook.dao.entity.enams.RoleEnam;
+import com.irlix.irlixbook.dao.entity.enams.RoleEnum;
 import com.irlix.irlixbook.exception.ForbiddenException;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -24,22 +24,22 @@ public class RoleAndPermissionChecker {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
         RoleAndPermissionCheck myAnnotation = method.getAnnotation(RoleAndPermissionCheck.class);
-        RoleEnam availableRole = myAnnotation.value();
+        RoleEnum availableRole = myAnnotation.value();
 
         UserEntity userFromContext = SecurityContextUtils.getUserFromContext();
         Role role = userFromContext.getRole();
 
-        RoleEnam[] includeRoles = role.getName().includeRoles();
+        RoleEnum[] includeRoles = role.getName().includeRoles();
 
-        RoleEnam[] availableRoles;
+        RoleEnum[] availableRoles;
         if (includeRoles.length > 0) {
-            availableRoles = new RoleEnam[includeRoles.length + 1];
+            availableRoles = new RoleEnum[includeRoles.length + 1];
             for (int i = 0; i < includeRoles.length; i++) {
                 availableRoles[i] = includeRoles[i];
             }
             availableRoles[includeRoles.length] = role.getName();
         } else {
-            availableRoles = new RoleEnam[]{role.getName()};
+            availableRoles = new RoleEnum[]{role.getName()};
         }
 
         boolean isNotValidRole = Arrays.stream(availableRoles).noneMatch(ar -> ar == availableRole);

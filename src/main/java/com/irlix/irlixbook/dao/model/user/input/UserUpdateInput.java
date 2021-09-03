@@ -2,7 +2,7 @@ package com.irlix.irlixbook.dao.model.user.input;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.irlix.irlixbook.dao.entity.enams.RoleEnam;
+import com.irlix.irlixbook.dao.entity.enams.RoleEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -42,5 +42,5 @@ public class UserUpdateInput {
     private String telegram;
     private String linkedIn;
     private String instagram;
-    private RoleEnam role;
+    private RoleEnum role;
 }
