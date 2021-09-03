@@ -10,6 +10,7 @@ import com.irlix.irlixbook.exception.BadRequestException;
 import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.ContentRepository;
 import com.irlix.irlixbook.repository.ContentUserRepository;
+import com.irlix.irlixbook.repository.UserAppCodeRepository;
 import com.irlix.irlixbook.service.messaging.MessageSender;
 import com.irlix.irlixbook.service.picture.PictureService;
 import com.irlix.irlixbook.service.sticker.StickerService;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -45,10 +47,14 @@ public class ContentServiceImpl implements ContentService {
     private final StickerService stickerService;
     private final PictureService pictureService;
     private final ContentUserRepository contentUserRepository;
+    private final UserAppCodeRepository userAppCodeRepository;
 
     @Autowired
     @Qualifier("firebaseSender")
     private MessageSender messageSender;
+
+    @Value("${url.root}")
+    private String urlRoot;
 
     @Override
     public List<ContentResponse> findImportant(ContentType type, int page, int size) {
@@ -77,7 +83,7 @@ public class ContentServiceImpl implements ContentService {
         content.setDateCreated(LocalDateTime.now());
 
         Content savedContent = contentRepository.save(content);
-        savedContent.setDeeplink("/" + savedContent.getType().name() + "/" + savedContent.getId());
+        savedContent.setDeeplink(urlRoot + savedContent.getType().name() + "/" + savedContent.getId());
         contentRepository.save(savedContent);
 
         if (contentPersistRequest.getPicturesId() != null && !contentPersistRequest.getPicturesId().isEmpty()) {
@@ -86,6 +92,18 @@ public class ContentServiceImpl implements ContentService {
 //        messageSender.send("New content was created",
 //                "", //todo added logic with code of receiver
 //                "New content was created");
+        if (savedContent.getType() == ContentType.NEWS || savedContent.getType() == ContentType.EVENT) {
+            List<UserAppCode> listOfCodes = userAppCodeRepository.findAll();
+            for (UserAppCode codes : listOfCodes) {
+                for (String code : codes.getCodes()) {
+                    messageSender.send(savedContent.getType() + " was created."
+                            , code
+                            , savedContent.getName()
+                            , savedContent.getId(), savedContent.getType());
+                }
+            }
+        }
+
         log.info("Content saved. Class ContentServiceImpl, method save");
         return conversionService.convert(savedContent, ContentResponse.class);
     }
