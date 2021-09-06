@@ -370,17 +370,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     private UserEntityOutput create(UserCreateInput userCreateInput) {
         UserEntity userEntity = conversionService.convert(userCreateInput, UserEntity.class);
-        switch (userCreateInput.getRole()) {
-            case ADMIN:
-                userEntity.setRole(roleRepository.findByName(RoleEnum.ADMIN).get());
-                break;
-            case USER:
-                userEntity.setRole(roleRepository.findByName(RoleEnum.USER).get());
-                break;
-            case GUEST:
-                userEntity.setRole(roleRepository.findByName(RoleEnum.GUEST).get());
-                break;
-        }
         if (userEntity == null) {
             throw new ConflictException("Error conversion user. Class UserServiceImpl, method createUser");
         }
