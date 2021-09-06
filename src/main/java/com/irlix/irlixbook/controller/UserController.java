@@ -1,7 +1,7 @@
 package com.irlix.irlixbook.controller;
 
 import com.irlix.irlixbook.config.security.annotation.RoleAndPermissionCheck;
-import com.irlix.irlixbook.dao.entity.enams.RoleEnam;
+import com.irlix.irlixbook.dao.entity.enams.RoleEnum;
 import com.irlix.irlixbook.dao.model.user.UserPasswordWithCodeInput;
 import com.irlix.irlixbook.dao.model.user.input.UserCreateInput;
 import com.irlix.irlixbook.dao.model.user.input.UserPasswordInput;
@@ -27,19 +27,19 @@ public class UserController {
     private final PasswordService passwordService;
 
     @GetMapping(value = "/{id}")
-    @RoleAndPermissionCheck(RoleEnam.USER)
+    @RoleAndPermissionCheck(RoleEnum.USER)
     public UserEntityOutput getUserEntity(@PathVariable("id") UUID id) {
         return userService.findUserOutputById(id);
     }
 
     @GetMapping("/me")
-    @RoleAndPermissionCheck(RoleEnam.USER)
+    @RoleAndPermissionCheck(RoleEnum.USER)
     public UserEntityOutput getUserFromContext() {
         return userService.findUserFromContext();
     }
 
     @GetMapping("/complex/search")
-    @RoleAndPermissionCheck(RoleEnam.USER)
+    @RoleAndPermissionCheck(RoleEnum.USER)
     public List<UserEntityOutput> findComplex(UserSearchInput searchInput) {
         System.out.println(searchInput);
         return userService.findByComplexQuery(searchInput);
@@ -47,7 +47,7 @@ public class UserController {
 
     @PostMapping(value = "/create")
     @ResponseStatus(HttpStatus.CREATED)
-    @RoleAndPermissionCheck(RoleEnam.USER)
+    @RoleAndPermissionCheck(RoleEnum.USER)
     public UserEntityOutput createUser(@RequestBody @Valid UserCreateInput create) {
         return userService.createUser(create);
     }
@@ -58,40 +58,40 @@ public class UserController {
     }
 
     @PutMapping
-    @RoleAndPermissionCheck(RoleEnam.USER)
+    @RoleAndPermissionCheck(RoleEnum.USER)
     public UserEntityOutput updateUser(@RequestBody @Valid UserUpdateInput update) {
         return userService.updateUser(update, null);
     }
 
     @PutMapping(value = "/{id}", consumes = {"application/json"}, produces = {"application/json"})
-    @RoleAndPermissionCheck(RoleEnam.ADMIN)
+    @RoleAndPermissionCheck(RoleEnum.ADMIN)
     public UserEntityOutput updateUserByAdmin(@RequestBody @Valid UserUpdateInput update, @PathVariable("id") UUID id) {
         return userService.updateUser(update, id);
     }
 
     @PutMapping(value = "/block/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @RoleAndPermissionCheck(RoleEnam.ADMIN)
+    @RoleAndPermissionCheck(RoleEnum.ADMIN)
     public UserEntityOutput blockedUser(@PathVariable("id") UUID id) {
         return userService.blockedUser(id);
     }
 
     @PutMapping(value = "/unblock/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @RoleAndPermissionCheck(RoleEnam.ADMIN)
+    @RoleAndPermissionCheck(RoleEnum.ADMIN)
     public UserEntityOutput unblockedUser(@PathVariable("id") UUID id) {
         return userService.unblockedUser(id);
     }
 
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @RoleAndPermissionCheck(RoleEnam.ADMIN)
+    @RoleAndPermissionCheck(RoleEnum.ADMIN)
     public UserEntityOutput deletedUser(@PathVariable("id") UUID id) {
         return userService.deletedUser(id);
     }
 
     @GetMapping(value = "/search")
-    @RoleAndPermissionCheck(RoleEnam.USER)
+    @RoleAndPermissionCheck(RoleEnum.USER)
     public List<UserEntityOutput> searchUser(@RequestParam(required = false) String surname,
                                              @RequestParam String name,
                                              @RequestParam(required = false, defaultValue = "0") int page,
@@ -101,13 +101,13 @@ public class UserController {
 
     @PutMapping(value = "/assign-role/{role}")
     @ResponseStatus(HttpStatus.CREATED)
-    @RoleAndPermissionCheck(RoleEnam.ADMIN)
-    public UserEntityOutput assignRole(@PathVariable RoleEnam role) {
+    @RoleAndPermissionCheck(RoleEnum.ADMIN)
+    public UserEntityOutput assignRole(@PathVariable RoleEnum role) {
         return userService.assignRole(role);
     }
 
     @PutMapping("/update-password/{id}")
-    @RoleAndPermissionCheck(RoleEnam.ADMIN)
+    @RoleAndPermissionCheck(RoleEnum.ADMIN)
     public UserEntityOutput updatePasswordByAdmin(@PathVariable("id") UUID id, @RequestBody @Valid UserPasswordInput userPasswordInput) {
         return passwordService.updatePasswordByAdmin(id, userPasswordInput);
     }

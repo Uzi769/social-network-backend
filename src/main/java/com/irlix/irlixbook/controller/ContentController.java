@@ -3,7 +3,7 @@ package com.irlix.irlixbook.controller;
 import com.irlix.irlixbook.config.security.annotation.RoleAndPermissionCheck;
 import com.irlix.irlixbook.dao.entity.enams.ContentType;
 import com.irlix.irlixbook.dao.entity.enams.PeriodType;
-import com.irlix.irlixbook.dao.entity.enams.RoleEnam;
+import com.irlix.irlixbook.dao.entity.enams.RoleEnum;
 import com.irlix.irlixbook.dao.model.content.request.ContentPersistRequest;
 import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 import com.irlix.irlixbook.exception.BadRequestException;
@@ -41,26 +41,26 @@ public class ContentController {
     }
 
     @GetMapping
-    @RoleAndPermissionCheck(RoleEnam.USER)
+    @RoleAndPermissionCheck(RoleEnum.USER)
     public List<ContentResponse> findAll() {
         return contentService.findAll();
     }
 
     @GetMapping("/{id}")
-    @RoleAndPermissionCheck(RoleEnam.USER)
+    @RoleAndPermissionCheck(RoleEnum.GUEST)
     public ContentResponse findById(@PathVariable("id") Long id) {
         return contentService.findById(id);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @RoleAndPermissionCheck(RoleEnam.USER)
+    @RoleAndPermissionCheck(RoleEnum.USER)
     public ContentResponse create(@RequestBody @Valid ContentPersistRequest contentPersistRequest) {
         return contentService.save(contentPersistRequest);
     }
 
     @GetMapping("/event/{periodType}/byEventDate")//2021-07-20
-    @RoleAndPermissionCheck(RoleEnam.USER)
+    @RoleAndPermissionCheck(RoleEnum.GUEST)
     public List<ContentResponse> findByEventDateForWeek(@RequestParam(required = false)
                                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate searchDate,
                                                         @PathVariable PeriodType periodType) {
@@ -68,14 +68,14 @@ public class ContentController {
     }
 
     @GetMapping("/event/month/byEventDate/dates")//2021-07-20
-    @RoleAndPermissionCheck(RoleEnam.USER)
+    @RoleAndPermissionCheck(RoleEnum.USER)
     public Collection<String> findByEventDateForMonth(@RequestParam(required = false)
                                                       @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate searchDate) {
         return contentService.findByEventDateForMonth(searchDate);
     }
 
     @GetMapping("/search/{contentType}")
-    @RoleAndPermissionCheck(RoleEnam.USER)
+    @RoleAndPermissionCheck(RoleEnum.USER)
     public List<ContentResponse> search(@PathVariable ContentType contentType,
                                         @RequestParam String name,
                                         @RequestParam(required = false, defaultValue = "0") int page,
@@ -85,7 +85,7 @@ public class ContentController {
     }
 
     @GetMapping("/byType/{contentType}")
-    @RoleAndPermissionCheck(RoleEnam.USER)
+    @RoleAndPermissionCheck(RoleEnum.USER)
     public List<ContentResponse> search(@PathVariable ContentType contentType,
                                         @RequestParam(required = false, defaultValue = "0") int page,
                                         @RequestParam(required = false, defaultValue = "10") int size) {
@@ -93,7 +93,7 @@ public class ContentController {
     }
 
     @PutMapping("/{id}")
-    @RoleAndPermissionCheck(RoleEnam.USER)
+    @RoleAndPermissionCheck(RoleEnum.USER)
     public ContentResponse update(
             @PathVariable("id") Long id,
             @RequestBody @Valid ContentPersistRequest contentPersistRequest) {
@@ -101,21 +101,21 @@ public class ContentController {
     }
 
     @DeleteMapping("/{id}")
-    @RoleAndPermissionCheck(RoleEnam.ADMIN)
+    @RoleAndPermissionCheck(RoleEnum.ADMIN)
     public ResponseEntity<?> delete(@PathVariable("id") Long id) {
         contentService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/all")
-    @RoleAndPermissionCheck(RoleEnam.ADMIN)
+    @RoleAndPermissionCheck(RoleEnum.ADMIN)
     public ResponseEntity<?> deleteAll() {
         contentService.deleteAll();
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/favorites")
-    @RoleAndPermissionCheck(RoleEnam.USER)
+    @RoleAndPermissionCheck(RoleEnum.USER)
     public List<ContentResponse> getFavorites(@RequestParam(required = false) ContentType contentType,
                                               @RequestParam(required = false, defaultValue = "0") int page,
                                               @RequestParam(required = false, defaultValue = "10") int size) {
@@ -123,13 +123,13 @@ public class ContentController {
     }
 
     @PostMapping("/favorites/{contentId}")
-    @RoleAndPermissionCheck(RoleEnam.USER)
+    @RoleAndPermissionCheck(RoleEnum.USER)
     public void addFavorites(@PathVariable("contentId") Long favoritesId) {
         userService.addFavorites(favoritesId);
     }
 
     @DeleteMapping("/favorites/{contentId}")
-    @RoleAndPermissionCheck(RoleEnam.USER)
+    @RoleAndPermissionCheck(RoleEnum.USER)
     public void deleteFavorites(@PathVariable("contentId") Long favoritesId) {
         userService.deleteFavorites(favoritesId);
     }

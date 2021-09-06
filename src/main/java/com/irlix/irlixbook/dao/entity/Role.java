@@ -1,7 +1,6 @@
 package com.irlix.irlixbook.dao.entity;
 
-import com.irlix.irlixbook.dao.entity.enams.RoleEnam;
-import com.irlix.irlixbook.dao.entity.enams.StatusEnam;
+import com.irlix.irlixbook.dao.entity.enams.RoleEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,7 +22,7 @@ public class Role {
 
     @Enumerated(EnumType.STRING)
     @Column
-    private RoleEnam name;
+    private RoleEnum name;
 
     @OneToMany(mappedBy = "role", cascade = CascadeType.MERGE)
     private List<UserEntity> users;

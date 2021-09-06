@@ -1,7 +1,7 @@
 package com.irlix.irlixbook.dao.model.user.input;
 
 
-import com.irlix.irlixbook.dao.entity.enams.RoleEnam;
+import com.irlix.irlixbook.dao.entity.enams.RoleEnum;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
@@ -30,5 +30,5 @@ public class UserCreateInput {
     private String email;
     @Pattern(regexp = "(^\\+?[78][-\\(]?\\d{3}\\)?-?\\d{3}-?\\d{2}-?\\d{2}$)")
     private String phone;
-    private RoleEnam role;
+    private RoleEnum role;
 }

@@ -1,7 +1,7 @@
 package com.irlix.irlixbook.controller;
 
 import com.irlix.irlixbook.config.security.annotation.RoleAndPermissionCheck;
-import com.irlix.irlixbook.dao.entity.enams.RoleEnam;
+import com.irlix.irlixbook.dao.entity.enams.RoleEnum;
 import com.irlix.irlixbook.dao.model.picture.PictureOutput;
 import com.irlix.irlixbook.service.picture.PictureService;
 import lombok.RequiredArgsConstructor;
@@ -20,19 +20,19 @@ public class PictureController {
     public final PictureService pictureService;
 
     @PostMapping(consumes = "multipart/form-data")
-    @RoleAndPermissionCheck(RoleEnam.USER)
+    @RoleAndPermissionCheck(RoleEnum.USER)
     public PictureOutput pictureUpload(@RequestParam("file") MultipartFile file) {
         return pictureService.uploading(file);
     }
 
     @DeleteMapping({"/{id}"})
-    @RoleAndPermissionCheck(RoleEnam.ADMIN)
+    @RoleAndPermissionCheck(RoleEnum.ADMIN)
     public void deletePicture(@PathVariable("id") UUID id) {
         pictureService.deletePicture(id);
     }
 
     @GetMapping
-    @RoleAndPermissionCheck(RoleEnam.USER)
+    @RoleAndPermissionCheck(RoleEnum.USER)
     public List<PictureOutput> getAll() {
         return pictureService.getList();
     }

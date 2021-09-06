@@ -1,6 +1,6 @@
 package com.irlix.irlixbook.config.security.annotation;
 
-import com.irlix.irlixbook.dao.entity.enams.RoleEnam;
+import com.irlix.irlixbook.dao.entity.enams.RoleEnum;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -11,5 +11,5 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 public @interface RoleAndPermissionCheck {
 
-    RoleEnam value();
+    RoleEnum value();
 }

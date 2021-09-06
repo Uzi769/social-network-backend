@@ -2,10 +2,11 @@ package com.irlix.irlixbook.dao.entity.enams;
 
 import java.time.LocalDateTime;
 
-public enum RoleEnam {
+public enum RoleEnum {
 
     ADMIN,
-    USER;
+    USER,
+    GUEST;
 
     public StatusEnam getStatus(LocalDateTime registrationDate) {
         if (this == ADMIN) {
@@ -24,11 +25,13 @@ public enum RoleEnam {
         }
     }
 
-    public RoleEnam[] includeRoles() {
+    public RoleEnum[] includeRoles() {
         if (this == ADMIN) {
-            return new RoleEnam[]{USER};
+            return new RoleEnum[]{USER, GUEST};
+        } else if (this == USER){
+            return new RoleEnum[]{GUEST};
         } else {
-            return new RoleEnam[0];
+            return new RoleEnum[0];
         }
     }
 }
