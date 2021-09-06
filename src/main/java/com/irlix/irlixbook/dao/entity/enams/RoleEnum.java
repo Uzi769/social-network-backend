@@ -11,7 +11,7 @@ public enum RoleEnum {
     public StatusEnam getStatus(LocalDateTime registrationDate) {
         if (this == ADMIN) {
             return StatusEnam.COMMUNITY_LEADER;
-        } else if (this == USER){
+        } else {
             if (registrationDate != null) {
                 LocalDateTime eventDate = LocalDateTime.now().plusMonths(2);
                 if (eventDate.isBefore(registrationDate)) {
@@ -22,8 +22,6 @@ public enum RoleEnum {
             } else {
                 return StatusEnam.NEW_MEMBER;
             }
-        } else {
-            return null;
         }
     }
 

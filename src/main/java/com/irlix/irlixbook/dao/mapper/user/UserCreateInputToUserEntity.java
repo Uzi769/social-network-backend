@@ -15,7 +15,6 @@ public class UserCreateInputToUserEntity implements Converter<UserCreateInput, U
                 .email(userCreateInput.getEmail())
                 .telegram(userCreateInput.getGender())
                 .phone(userCreateInput.getPhone())
-                //.role(userCreateInput.getRole())
                 .build();
     }
 }
