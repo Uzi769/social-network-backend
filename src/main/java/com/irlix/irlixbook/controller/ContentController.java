@@ -85,7 +85,7 @@ public class ContentController {
     }
 
     @GetMapping("/byType/{contentType}")
-    @RoleAndPermissionCheck(RoleEnum.USER)
+    @RoleAndPermissionCheck(RoleEnum.GUEST)
     public List<ContentResponse> search(@PathVariable ContentType contentType,
                                         @RequestParam(required = false, defaultValue = "0") int page,
                                         @RequestParam(required = false, defaultValue = "10") int size) {
