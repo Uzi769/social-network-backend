@@ -294,7 +294,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
     }
 
-    @Scheduled(cron = "0 0 1 * * *")
+    @Scheduled(cron = "1 1 */1 * * *")
     public void deleteUsers() {
         LocalDateTime blockedDate = LocalDateTime.now().minusMonths(2);
         List<UserEntity> blockedUsers = userRepository.findByBlockedLessThanEqual(blockedDate);
@@ -302,9 +302,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         log.info("DELETE {} USERS how was blocked : {}", blockedUsers.size(), blockedDate);
     }
 
-    @Scheduled(cron = "0 0 1 * * *")
+    @Scheduled(cron = "1 1 */1 * * *")
     public void changeStatus() {
-        LocalDateTime eventDate = LocalDateTime.now().plusMonths(2).plusDays(1);
+        LocalDateTime eventDate = LocalDateTime.now().minusMonths(2).plusDays(1);
         List<UserEntity> users = userRepository.findByRegistrationDateLessThan(eventDate);
         for (UserEntity user : users) {
             Role role = user.getRole();
