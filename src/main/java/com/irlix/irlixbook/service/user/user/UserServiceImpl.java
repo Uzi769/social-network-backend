@@ -338,7 +338,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (userEntityForUpdate.getBirthDate() != null && !userEntityForUpdate.getBirthDate().equals(userEntity.getBirthDate())) {
             userEntity.setBirthDate(userEntityForUpdate.getBirthDate());
         }
-        if (userEntityForUpdate.getEmail() != null && !userEntityForUpdate.getEmail().equals(userEntity.getEmail())) {
+        if (userEntityForUpdate.getEmail() != null & !userEntityForUpdate.getEmail().equals(userEntity.getEmail())) {
             checkingMailForUniqueness(userEntity, userEntityForUpdate.getEmail());
         }
         if (userEntityForUpdate.getGender() != null && !userEntityForUpdate.getGender().equals(userEntity.getGender())) {
