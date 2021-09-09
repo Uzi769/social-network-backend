@@ -53,6 +53,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/all")
+    @RoleAndPermissionCheck(RoleEnum.USER)
     public List<UserEntityOutput> getUsers() {
         return userService.findUsers();
     }

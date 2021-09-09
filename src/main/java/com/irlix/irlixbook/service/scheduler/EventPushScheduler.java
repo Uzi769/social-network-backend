@@ -30,7 +30,7 @@ public class EventPushScheduler {
     @Qualifier("firebaseSender")
     private MessageSender messageSender;
 
-    @Scheduled(cron = "0 0 */1 * * *")
+    @Scheduled(cron = "1 1 */1 * * *")
     public void pushMessageAboutEventDayBefore() {
         List<Content> events = contentRepository.findByEventDateGreaterThanEqualAndEventDateLessThanAndType(
                 LocalDateTime.now().plusDays(1).minusMinutes(29).minusSeconds(59),
@@ -40,7 +40,7 @@ public class EventPushScheduler {
         pushMessage(events);
     }
 
-    @Scheduled(cron = "0 */5 * * * *")
+    @Scheduled(cron = "1 */5 * * * *")
     public void pushMessageAboutEventHourBefore() {
         List<Content> events = contentRepository.findByEventDateGreaterThanEqualAndEventDateLessThanAndType(
                 LocalDateTime.now().plusHours(1).minusSeconds(149),
