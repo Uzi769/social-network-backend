@@ -35,7 +35,7 @@ public class AvatarController {
     }
 
     @DeleteMapping
-    @RoleAndPermissionCheck(RoleEnum.ADMIN)
+    @RoleAndPermissionCheck(RoleEnum.USER)
     public void deletePicture() {
         avatarService.delete();
     }
