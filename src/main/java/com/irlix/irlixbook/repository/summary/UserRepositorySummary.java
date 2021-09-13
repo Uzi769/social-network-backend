@@ -39,6 +39,7 @@ public class UserRepositorySummary {
         if(userSearchInput.getPhone() != null){
             predicates.add(builder.like(root.get("phone"), "%" + userSearchInput.getPhone() + "%"));
         }
+
         Predicate[] predicatesArray = predicates.toArray(new Predicate[0]);
 
         query.where(builder.and(predicatesArray));

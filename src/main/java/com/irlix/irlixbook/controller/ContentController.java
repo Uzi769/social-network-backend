@@ -31,6 +31,7 @@ public class ContentController {
     private final UserService userService;
 
     @GetMapping("/{type}/important")
+    @RoleAndPermissionCheck(RoleEnum.USER)
     public ResponseEntity findImportant(@PathVariable ContentType type,
                                         @RequestParam(required = false, defaultValue = "0") int page,
                                         @RequestParam(required = false, defaultValue = "10") int size

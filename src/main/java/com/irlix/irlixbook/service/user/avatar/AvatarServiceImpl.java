@@ -9,6 +9,7 @@ import com.irlix.irlixbook.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -54,11 +56,16 @@ public class AvatarServiceImpl implements AvatarService {
     public String uploading(MultipartFile file) {
         if (file == null) {
             log.info("File of avatar is null");
-            throw new IllegalArgumentException("File of avatar is null");
+            throw new IllegalArgumentException("File of avatar is null.");
         }
         if (file.getSize() > 10485760) {
             log.info(FILE_SIZE_EXCEEDED);
             throw new MultipartException(FILE_SIZE_EXCEEDED);
+        }
+
+        String type = file.getContentType();
+        if (!MediaType.IMAGE_JPEG_VALUE.equals(type) && !MediaType.IMAGE_PNG_VALUE.equals(type)) {
+            throw new IllegalArgumentException("Wrong type of image file for avatar.");
         }
         UserEntity user = SecurityContextUtils.getUserFromContext();
 
