@@ -23,4 +23,5 @@ public class Sticker {
 
     @OneToMany(mappedBy = "sticker", cascade = CascadeType.MERGE)
     private List<Content> contents;
+
 }

@@ -14,9 +14,12 @@ public class UserPasswordWithCodeInput {
     @NotEmpty
     @Size(min = 8)
     private String password;
+
     @NotEmpty
     @Size(min = 8)
     private String verificationPassword;
+
     @NotEmpty
     private String code;
+
 }

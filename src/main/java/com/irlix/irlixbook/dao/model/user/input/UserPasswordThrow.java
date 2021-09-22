@@ -15,5 +15,6 @@ public class UserPasswordThrow extends UserPasswordInput{
 
     @NotNull
     private Long userId;
+
 }
 

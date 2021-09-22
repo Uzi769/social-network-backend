@@ -26,6 +26,7 @@ public class StickerServiceImpl implements StickerService {
 
     @Override
     public Sticker findOrCreate(String name) {
+
         if (!StringUtils.hasLength(name)) {
             throw new IllegalArgumentException("Sticker name is nul or empty");
         }
@@ -34,34 +35,44 @@ public class StickerServiceImpl implements StickerService {
                         .name(name)
                         .build()
         ));
+
     }
 
     @Override
     public StickerResponse findByName(String name) {
+
         if (!StringUtils.hasLength(name)) {
             throw new IllegalArgumentException("Sticker name is nul or empty");
         }
+
         Optional<Sticker> byName = stickerRepository.findByName(name);
         return byName.map(sticker -> conversionService.convert(sticker, StickerResponse.class)).orElse(null);
+
     }
 
     @Override
     public StickerResponse save(String stickerName) {
+
         if (Objects.isNull(stickerName)) {
             throw new IllegalArgumentException("Sticker name is null");
         }
+
         Sticker save = stickerRepository.save(Sticker.builder()
                 .name(stickerName)
                 .build());
+
         return conversionService.convert(save, StickerResponse.class);
+
     }
 
     @Override
     public List<StickerResponse> findAll() {
+
         List<Sticker> all = stickerRepository.findAll();
         return all.stream()
                 .map(s -> conversionService.convert(s, StickerResponse.class))
                 .collect(Collectors.toList());
+
     }
 
     @Override
@@ -71,10 +82,13 @@ public class StickerServiceImpl implements StickerService {
 
     @Override
     public StickerResponse update(StickerUpdateRequest request) {
+
         if (request == null || request.getId() == null) {
             throw new IllegalArgumentException("Request for update sticker or id is null: " + request);
         }
+
         Optional<Sticker> byId = stickerRepository.findById(request.getId());
+
         if (byId.isEmpty()) {
             throw new NotFoundException("Sticker with id " + request.getId() + ", not found");
         } else {
@@ -83,5 +97,7 @@ public class StickerServiceImpl implements StickerService {
             Sticker save = stickerRepository.save(sticker);
             return conversionService.convert(save, StickerResponse.class);
         }
+
     }
+
 }

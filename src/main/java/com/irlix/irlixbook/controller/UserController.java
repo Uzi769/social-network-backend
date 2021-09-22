@@ -41,8 +41,10 @@ public class UserController {
     @GetMapping("/complex/search")
     @RoleAndPermissionCheck(RoleEnum.USER)
     public List<UserEntityOutput> findComplex(UserSearchInput searchInput) {
+
         System.out.println(searchInput);
         return userService.findByComplexQuery(searchInput);
+
     }
 
     @PostMapping(value = "/create")
@@ -122,4 +124,5 @@ public class UserController {
     public void updatePassword(@RequestParam String email) {
         passwordService.sendGeneratedCode(email);
     }
+
 }

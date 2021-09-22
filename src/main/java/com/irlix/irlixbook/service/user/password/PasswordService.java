@@ -13,4 +13,5 @@ public interface PasswordService {
     UserEntityOutput updatePasswordByUser(UserPasswordWithCodeInput userPasswordInput);
 
     void sendGeneratedCode(String email);
+
 }

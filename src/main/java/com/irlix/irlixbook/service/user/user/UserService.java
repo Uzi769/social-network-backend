@@ -42,4 +42,5 @@ public interface UserService {
     UserEntity addFavorites(Long favoritesContentId);
 
     UserEntity deleteFavorites(Long favoritesContentId);
+
 }

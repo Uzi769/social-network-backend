@@ -15,7 +15,9 @@ public class PageableInput {
     @Positive
     @Schema(example = "5", required = true)
     private int size;
+
     @PositiveOrZero
     private int page;
     private boolean sort;
+
 }

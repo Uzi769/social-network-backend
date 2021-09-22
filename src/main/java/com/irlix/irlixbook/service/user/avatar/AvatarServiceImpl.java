@@ -39,21 +39,28 @@ public class AvatarServiceImpl implements AvatarService {
 
     @Override
     public String getAvatar() {
+
         UserEntity user = SecurityContextUtils.getUserFromContext();
         return user.getAvatar();
+
     }
 
     @Override
     public String getAvatarByUserID(UUID id) {
+
         Optional<UserEntity> user = userRepository.findById(id);
+
         if (user.isEmpty()) {
             throw new NotFoundException("Cannot find avatar of user with id: " + id);
         }
+
         return user.get().getAvatar();
+
     }
 
     @Override
     public String uploading(MultipartFile file) {
+
         if (file == null) {
             log.info("File of avatar is null");
             throw new IllegalArgumentException("File of avatar is null.");
@@ -64,19 +71,21 @@ public class AvatarServiceImpl implements AvatarService {
         }
 
         String type = file.getContentType();
+
         if (!MediaType.IMAGE_JPEG_VALUE.equals(type) && !MediaType.IMAGE_PNG_VALUE.equals(type)) {
             throw new IllegalArgumentException("Wrong type of image file for avatar.");
         }
-        UserEntity user = SecurityContextUtils.getUserFromContext();
 
+        UserEntity user = SecurityContextUtils.getUserFromContext();
         String folderName = user.getEmail().substring(0, user.getEmail().indexOf("@"));
         String folderPath = uploadPath + "/" + folderName;
-
         File uploadDir = new File(folderPath);
+
         if (!uploadDir.exists()) {
             boolean mkdir = uploadDir.mkdir();
             log.info("create dir: {}", mkdir);
         }
+
         String originFileName = file.getOriginalFilename();
         String fileName = UUID.randomUUID() + originFileName.substring(originFileName.lastIndexOf("."));
 
@@ -95,10 +104,12 @@ public class AvatarServiceImpl implements AvatarService {
         userRepository.save(user);
         log.info(PHOTO_UPLOADED);
         return photoName;
+
     }
 
     @Override
     public void delete() {
+
         UserEntity user = SecurityContextUtils.getUserFromContext();
         String avatar = user.getAvatar();
 
@@ -106,18 +117,24 @@ public class AvatarServiceImpl implements AvatarService {
         this.deleteFile(filepath);
         user.setAvatar(null);
         userRepository.save(user);
+
     }
 
     @Override
     public String update(MultipartFile file) {
+
         this.delete();
         return this.uploading(file);
+
     }
 
     private void deleteFile(String filepath) {
+
         File file = new File(filepath);
         log.info("File for delete: {} {} {}", file.isFile(), file.exists(), file.getAbsolutePath());
         boolean delete = file.delete();
         log.info("DELETE FILE RESULT: {}", delete);
+
     }
+
 }

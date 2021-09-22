@@ -15,4 +15,5 @@ public interface AvatarService {
     void delete();
 
     String update(MultipartFile file);
+
 }

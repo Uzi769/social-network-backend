@@ -19,12 +19,15 @@ public class ContentToContentResponse implements Converter<Content, ContentRespo
 
     @Override
     public ContentResponse convert(Content content) {
+
         List<ContentUser> contentUsers = content.getContentUsers();
         boolean isFavorite = false;
         List<UserEntity> users = null;
 
         if (!CollectionUtils.isEmpty(contentUsers)) {
+
             users = contentUsers.stream().map(ContentUser::getUser).collect(Collectors.toList());
+
             try {
                 UserEntity currentUser = SecurityContextUtils.getUserFromContext();
                 if (!CollectionUtils.isEmpty(users) && currentUser != null) {
@@ -34,6 +37,7 @@ public class ContentToContentResponse implements Converter<Content, ContentRespo
             } catch (UnauthorizedException e) {
                 log.error("Convert content to content response without authorization");
             }
+
         }
 
         return ContentResponse.builder()
@@ -59,5 +63,6 @@ public class ContentToContentResponse implements Converter<Content, ContentRespo
                 .favorite(isFavorite)
                 .createDate(content.getDateCreated())
                 .build();
+
     }
 }

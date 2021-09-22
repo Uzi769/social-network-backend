@@ -20,4 +20,5 @@ public interface ContentUserRepository extends JpaRepository<ContentUser, Conten
     List<ContentUser> findByUserId(UUID userId, Pageable pageable);
 
     List<ContentUser> findByUserIdAndContent_Type(UUID userId, ContentType contentType, Pageable pageable);
+
 }

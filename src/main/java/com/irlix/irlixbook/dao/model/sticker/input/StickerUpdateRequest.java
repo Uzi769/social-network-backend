@@ -13,4 +13,5 @@ public class StickerUpdateRequest {
 
     private Long id;
     private String name;
+
 }

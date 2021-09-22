@@ -11,8 +11,10 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class UserAuthOutput {
+
     private UUID id;
     private String surname;
     private String name;
     private String avatar;
+
 }

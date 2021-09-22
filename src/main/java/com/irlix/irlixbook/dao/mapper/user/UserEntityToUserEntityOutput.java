@@ -32,4 +32,5 @@ public class UserEntityToUserEntityOutput implements Converter<UserEntity, UserE
                 .status(userEntity.getStatus())
                 .build();
     }
+
 }

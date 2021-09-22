@@ -23,4 +23,5 @@ public class UserAppCode {
     private UUID userId;
     @ElementCollection
     private Set<String> codes;
+
 }

@@ -28,4 +28,5 @@ public class Token {
 
     @Column(name = "value",  length = 3000)
     private String value;
+
 }

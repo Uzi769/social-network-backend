@@ -45,12 +45,14 @@ public class ContentRepositorySummary {
             predicates.add(builder.like(root.get("type"), "%" + dto.getType() + "%"));
         }
 
-//        if (!pageable.isSort()) {
-//            query.orderBy(builder.desc(root.get("date")));
-//        }
-//        if (pageable.isSort()) {
-//            query.orderBy(builder.asc(root.get("date")));
-//        }
+        /*
+        if (!pageable.isSort()) {
+            query.orderBy(builder.desc(root.get("date")));
+        }
+        if (pageable.isSort()) {
+            query.orderBy(builder.asc(root.get("date")));
+        }
+        */
 
         query.where(builder.and(predicates.toArray(new Predicate[0])));
 
@@ -66,5 +68,6 @@ public class ContentRepositorySummary {
 
         log.info("Create users list for searchWithPagination. Class UserRepositorySummary, method search");
         return list;
+
     }
 }

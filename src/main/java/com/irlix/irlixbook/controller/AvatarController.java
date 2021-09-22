@@ -45,4 +45,5 @@ public class AvatarController {
     public String updateAvatar(@RequestParam("file") MultipartFile file) {
         return avatarService.update(file);
     }
+
 }
