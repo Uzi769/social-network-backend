@@ -39,6 +39,7 @@ public class ContentController {
 
         List<ContentResponse> list = contentService.findImportant(type, page, size);
         return new ResponseEntity(list, HttpStatus.OK);
+
     }
 
     @GetMapping
@@ -55,12 +56,12 @@ public class ContentController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @RoleAndPermissionCheck(RoleEnum.USER)
+    @RoleAndPermissionCheck(RoleEnum.ADMIN)
     public ContentResponse create(@RequestBody @Valid ContentPersistRequest contentPersistRequest) {
         return contentService.save(contentPersistRequest);
     }
 
-    @GetMapping("/event/{periodType}/byEventDate")//2021-07-20
+    @GetMapping("/event/{periodType}/byEventDate") //2021-07-20
     @RoleAndPermissionCheck(RoleEnum.GUEST)
     public List<ContentResponse> findByEventDateForWeek(@RequestParam(required = false)
                                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate searchDate,
@@ -68,7 +69,7 @@ public class ContentController {
         return contentService.findByEventDateForPeriod(searchDate, periodType);
     }
 
-    @GetMapping("/event/month/byEventDate/dates")//2021-07-20
+    @GetMapping("/event/month/byEventDate/dates") //2021-07-20
     @RoleAndPermissionCheck(RoleEnum.USER)
     public Collection<String> findByEventDateForMonth(@RequestParam(required = false)
                                                       @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate searchDate) {
@@ -81,8 +82,10 @@ public class ContentController {
                                         @RequestParam String name,
                                         @RequestParam(required = false, defaultValue = "0") int page,
                                         @RequestParam(required = false, defaultValue = "10") int size) {
+
         this.validateSearchName(name);
         return contentService.search(contentType, name, page, size);
+
     }
 
     @GetMapping("/byType/{contentType}")
@@ -94,7 +97,7 @@ public class ContentController {
     }
 
     @PutMapping("/{id}")
-    @RoleAndPermissionCheck(RoleEnum.USER)
+    @RoleAndPermissionCheck(RoleEnum.ADMIN)
     public ContentResponse update(
             @PathVariable("id") Long id,
             @RequestBody @Valid ContentPersistRequest contentPersistRequest) {
@@ -104,15 +107,19 @@ public class ContentController {
     @DeleteMapping("/{id}")
     @RoleAndPermissionCheck(RoleEnum.ADMIN)
     public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+
         contentService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
+
     }
 
     @DeleteMapping("/all")
     @RoleAndPermissionCheck(RoleEnum.ADMIN)
     public ResponseEntity<?> deleteAll() {
+
         contentService.deleteAll();
         return new ResponseEntity<>(HttpStatus.OK);
+
     }
 
     @GetMapping("/favorites")
@@ -136,11 +143,13 @@ public class ContentController {
     }
 
     private void validateSearchName(String name) {
-        if (!StringUtils.hasLength(name)) {
+
+        if (!StringUtils.hasLength(name))
             throw new BadRequestException("Param name is null or empty");
-        }
-        if (!Pattern.matches("[a-zA-ZА-Яа-я ]+", name.trim())) {
+
+        if (!Pattern.matches("[a-zA-ZА-Яа-я ]+", name.trim()))
             throw new BadRequestException("Search param contains not valid chars: \'" + name + "\'");
-        }
+
     }
+
 }

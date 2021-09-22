@@ -36,10 +36,12 @@ public class UserEntityOutput {
     private String instagram;
     private String role;
     private boolean blocked;
+
     @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
     @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)
     @Schema(type = "string", example = "2018-01-01T15:02:01")
     private LocalDateTime registrationDate;
+
     private StatusEnam status;
 
 }

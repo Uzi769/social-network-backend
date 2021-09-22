@@ -24,16 +24,21 @@ public class UserUpdateInput {
 
     @Size(min = 2, max = 128, message = "Surname must be in range 2 - 128")
     private String surname;
+
     @Size(min = 2, max = 128, message = "Name must be in range 2 - 128")
     private String name;
+
     @Size(min = 11, max = 12, message = "Phone must be 11 or 12 chars")
     @Pattern(regexp = "(^\\+?[78][-\\(]?\\d{3}\\)?-?\\d{3}-?\\d{2}-?\\d{2}$)", message = "Phone must start from '+7' or '8'")
     private String phone;
+
     @Length(min = 2, max = 128, message = "Email must be in range 2 - 128")
     @Email
     private String email;
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDate birthDate;
+
     private String gender;
     private String description;
     private String vk;
@@ -43,4 +48,5 @@ public class UserUpdateInput {
     private String linkedIn;
     private String instagram;
     private RoleEnum role;
+
 }

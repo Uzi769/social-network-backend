@@ -9,4 +9,5 @@ import java.util.List;
 public interface PasswordRecoveryRepository extends JpaRepository<PasswordRecoveryEntity, String> {
 
     List<PasswordRecoveryEntity> findByCreateDateLessThan(LocalDateTime date);
+
 }

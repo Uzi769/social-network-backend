@@ -19,6 +19,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addFormatters(FormatterRegistry registry) {
+
         registry.addConverter(new UserEntityToUserEntityOutput());
         registry.addConverter(new UserCreateInputToUserEntity());
         registry.addConverter(new UserEntityToUserCreateOutput());
@@ -28,6 +29,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addConverter(new PictureToPictureOutput());
         registry.addConverter(new StickerToStickerResponse());
         registry.addConverter(new PeriodConvertor());
+
     }
 
     /**
@@ -35,10 +37,13 @@ public class WebConfig implements WebMvcConfigurer {
      */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
+
         registry.addMapping("/**")
                 .allowedOrigins("*")
                 .exposedHeaders("*")
                 .allowedMethods("*")
                 .allowedHeaders("*");
+
     }
+
 }

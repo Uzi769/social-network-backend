@@ -29,5 +29,7 @@ public class CustomLocalDateTimeSerializer extends StdSerializer<LocalDateTime> 
             throws IOException, JsonProcessingException {
 
         gen.writeString(formatter.format(value));
+
     }
+
 }

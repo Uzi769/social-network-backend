@@ -66,4 +66,5 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new NotFoundException("There is no token"));
         tokenRepository.delete(token);
     }
+
 }

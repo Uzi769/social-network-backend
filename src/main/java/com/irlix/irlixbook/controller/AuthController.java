@@ -32,23 +32,29 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "You are successfully logged in!",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = AuthResponse.class))))
     })
+
     @PostMapping("/sign-in")
     public ResponseEntity<String> auth(
             @RequestHeader(value = "user-app-code", required = false) String code,
             @RequestBody AuthRequest request) {
+
         AuthResponse authResponse = authService.authUser(request, code);
+
         return ResponseEntity.ok()
                 .header("Authorization", authResponse.getToken())
                 .body(authResponse.getToken());
+
     }
 
     @Operation(summary = "Logout in POST request")
     @PostMapping("/logout")
     public ResponseEntity<String> logout(@RequestHeader("Authorization") String value) {
-        authService.logout(value);
-        return ResponseEntity.ok().body("Logout");
-    }
 
+        authService.logout(value);
+        return ResponseEntity.ok()
+                .body("Logout");
+
+    }
 
     @Autowired
     @Qualifier("firebaseSender")
@@ -59,4 +65,5 @@ public class AuthController {
         messageSender.send(title, code, text);
         return new ResponseEntity(HttpStatus.OK);
     }
+
 }

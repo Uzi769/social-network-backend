@@ -33,4 +33,5 @@ public class UserAppCodeServiceImpl implements UserAppCodeService {
         return repository.findById(email)
                 .orElseThrow(() -> new NotFoundException("User code by email: " + email + " not found!!!"));
     }
+
 }

@@ -58,17 +58,22 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public List<ContentResponse> findImportant(ContentType type, int page, int size) {
+
         PageRequest pageRequest = PageRequest.of(page, size);
         List<Content> importantContent = contentRepository.findImportantContent(type, pageRequest);
+
         return importantContent.stream()
                 .map(e -> conversionService.convert(e, ContentResponse.class))
                 .collect(Collectors.toList());
+
     }
 
     @Override
     @Transactional
     public ContentResponse save(ContentPersistRequest contentPersistRequest) {
+
         Content content = conversionService.convert(contentPersistRequest, Content.class);
+
         if (content == null) {
             log.error("ContentPersistRequest cannot be null");
             throw new NullPointerException("ContentPersistRequest cannot be null");
@@ -89,11 +94,15 @@ public class ContentServiceImpl implements ContentService {
         if (contentPersistRequest.getPicturesId() != null && !contentPersistRequest.getPicturesId().isEmpty()) {
             content.setPictures(pictureService.addContentToPicture(contentPersistRequest.getPicturesId(), savedContent));
         }
+
 //        messageSender.send("New content was created",
 //                "", //todo added logic with code of receiver
 //                "New content was created");
+
         if (savedContent.getType() == ContentType.NEWS || savedContent.getType() == ContentType.EVENT) {
+
             List<UserAppCode> listOfCodes = userAppCodeRepository.findAll();
+
             for (UserAppCode codes : listOfCodes) {
                 for (String code : codes.getCodes()) {
                     messageSender.send(savedContent.getType() + " was created."
@@ -102,17 +111,21 @@ public class ContentServiceImpl implements ContentService {
                             , savedContent.getId(), savedContent.getType());
                 }
             }
+
         }
 
         log.info("Content saved. Class ContentServiceImpl, method save");
         return conversionService.convert(savedContent, ContentResponse.class);
+
     }
 
     @Override
     public ContentResponse findById(Long id) {
+
         ContentResponse contentResponse = conversionService.convert(getById(id), ContentResponse.class);
         log.info("Return Content found by id. Class ContentServiceImpl, method findById");
         return contentResponse;
+
     }
 
     @Override
@@ -121,9 +134,12 @@ public class ContentServiceImpl implements ContentService {
     }
 
     public List<ContentResponse> findByEventDateForPeriod(LocalDate start, PeriodType periodType) {
+
         LocalDateTime startSearch;
         LocalDateTime endSearch;
+
         if (PeriodType.DAY == periodType) {
+
             if (start == null) {
                 startSearch = LocalDate.now().atStartOfDay();
                 endSearch = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
@@ -131,7 +147,9 @@ public class ContentServiceImpl implements ContentService {
                 startSearch = start.atStartOfDay();
                 endSearch = LocalDateTime.of(start, LocalTime.MAX);
             }
+
         } else if (PeriodType.WEEK == periodType) {
+
             if (start == null) {
                 LocalDate now = LocalDate.now();
                 startSearch = now.atStartOfDay();
@@ -140,7 +158,9 @@ public class ContentServiceImpl implements ContentService {
                 startSearch = start.atStartOfDay();
                 endSearch = LocalDateTime.of(start.plusDays(7), LocalTime.MAX);
             }
+
         } else if (PeriodType.MONTH == periodType) {
+
             if (start == null) {
                 LocalDate now = LocalDate.now();
                 startSearch = now.atStartOfDay();
@@ -149,6 +169,7 @@ public class ContentServiceImpl implements ContentService {
                 startSearch = start.atStartOfDay();
                 endSearch = LocalDateTime.of(start.plusDays(28), LocalTime.MAX);
             }
+
         } else {
             throw new IllegalArgumentException("PeriodType is null");
         }
@@ -157,18 +178,26 @@ public class ContentServiceImpl implements ContentService {
         return contents.stream()
                 .map(c -> conversionService.convert(c, ContentResponse.class))
                 .collect(Collectors.toList());
+
     }
 
     public Collection<String> findByEventDateForMonth(LocalDate start) {
+
         LocalDateTime startSearch;
         LocalDateTime endSearch;
+
         if (start == null) {
+
             startSearch = LocalDate.now().atStartOfDay();
             endSearch = LocalDateTime.of(LocalDate.now().plusDays(28), LocalTime.MAX);
+
         } else {
+
             startSearch = start.atStartOfDay();
             endSearch = LocalDateTime.of(start.plusDays(28), LocalTime.MAX);
+
         }
+
         List<Content> contents = contentRepository.findByEventDateGreaterThanEqualAndEventDateLessThanAndType(startSearch, endSearch, ContentType.EVENT);
         return contents.stream()
                 .map(Content::getEventDate)
@@ -176,58 +205,75 @@ public class ContentServiceImpl implements ContentService {
                 .map(LocalDateTime::toLocalDate)
                 .map(date -> date.format(DateTimeFormatter.ISO_DATE))
                 .collect(Collectors.toSet());
+
     }
 
     @Override
     public List<ContentResponse> findAll() {
-        return contentRepository.findAll().stream()
+        return contentRepository.findAll()
+                .stream()
                 .map(c -> conversionService.convert(c, ContentResponse.class))
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<ContentResponse> search(ContentType contentType, String name, int page, int size) {
+
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("dateCreated").descending());
         List<Content> contents = contentRepository.findByNameContainingIgnoreCaseAndType(name, contentType, pageRequest);
+
         return contents.stream()
                 .map(post -> conversionService.convert(post, ContentResponse.class))
                 .collect(Collectors.toList());
+
     }
 
     @Override
     public List<ContentResponse> findByType(ContentType contentType, int page, int size) {
+
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("dateCreated").descending());
         List<Content> contents = contentRepository.findByType(contentType, pageRequest);
+
         return contents.stream()
                 .map(post -> conversionService.convert(post, ContentResponse.class))
                 .collect(Collectors.toList());
+
     }
 
     @Override
     @Transactional
     public void delete(Long id) {
+
         Content contentForDelete = getById(id);
+
         if (contentForDelete != null) {
+
             contentRepository.save(contentForDelete);
             contentRepository.delete(contentForDelete);
             log.info("Content deleted. Class ContentServiceImpl, method delete");
+
         } else {
             throw new NotFoundException("Content with id nor found");
         }
+
     }
 
     @Override
     @Transactional
     public void deleteAll() {
+
         contentRepository.deleteAll();
         UserEntity user = SecurityContextUtils.getUserFromContext();
         log.info("DELETE ALL CONTENT BY: {}", user.getEmail());
+
     }
 
     @Override
     public List<ContentResponse> getFavorites(ContentType contentType, int page, int size) {
+
         UserEntity userFromContext = SecurityContextUtils.getUserFromContext();
         PageRequest pageRequest;
+
         if (Objects.nonNull(contentType) && contentType == ContentType.NEWS) {
             pageRequest = PageRequest.of(page, size, Sort.by("createdOn").descending());
         } else {
@@ -235,28 +281,41 @@ public class ContentServiceImpl implements ContentService {
         }
 
         List<Content> resultContent;
+
         if (Objects.nonNull(contentType)) {
+
             List<ContentUser> favorites = contentUserRepository.findByUserIdAndContent_Type(userFromContext.getId(), contentType, pageRequest);
             resultContent = favorites.stream().map(ContentUser::getContent).collect(Collectors.toList());
+
         } else {
+
             List<ContentUser> favorites = contentUserRepository.findByUserId(userFromContext.getId(), pageRequest);
             resultContent = favorites.stream().map(ContentUser::getContent).collect(Collectors.toList());
+
         }
         return resultContent.stream()
                 .map(post -> conversionService.convert(post, ContentResponse.class))
                 .collect(Collectors.toList());
+
     }
 
     @Override
     public ContentResponse update(Long id, @Valid ContentPersistRequest contentPersistRequest) {
+
         if (contentPersistRequest == null) {
+
             log.error("Content cannot be null, Class ContentServiceImpl, method update");
             throw new NullPointerException("Content cannot be null");
+
         }
+
         Content content = getById(id);
+
         if (Objects.isNull(content)) {
+
             log.error("Content by id: {} is absent", id);
             throw new BadRequestException("Content by id: " + id + " is absent");
+
         }
 
         this.updateContent(content, contentPersistRequest);
@@ -264,9 +323,11 @@ public class ContentServiceImpl implements ContentService {
         log.info("Update Content by id: " + id + ". Class ContentServiceImpl, method update");
 
         return conversionService.convert(content, ContentResponse.class);
+
     }
 
     private void updateContent(Content content, ContentPersistRequest newContent) {
+
         if (newContent.getEventDate() != null) {
             content.setEventDate(newContent.getEventDate());
         }
@@ -295,6 +356,7 @@ public class ContentServiceImpl implements ContentService {
             List<Picture> newPictures = pictureService.addContentToPicture(newContent.getPicturesId(), content);
             content.setPictures(newPictures);
         }
+
     }
 
     private Content getById(Long id) {
@@ -304,4 +366,5 @@ public class ContentServiceImpl implements ContentService {
                     return new NotFoundException("Content not found");
                 });
     }
+
 }

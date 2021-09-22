@@ -19,4 +19,5 @@ public interface StickerService {
     void deleteById(Long id);
 
     StickerResponse update(StickerUpdateRequest request);
+
 }

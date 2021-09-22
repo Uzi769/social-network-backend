@@ -17,6 +17,7 @@ public class FirebaseMessageSenderImpl implements MessageSender {
 
     @Override
     public void send(String title, String receiver, String text) {
+
         Notification notification = Notification
                 .builder()
                 .setTitle(LocalDateTime.now() + "-" + LocalDateTime.now() + " " + title)
@@ -46,10 +47,12 @@ public class FirebaseMessageSenderImpl implements MessageSender {
         } catch (FirebaseMessagingException e) {
             log.error("Send firebase push message error: {}", e.getMessage());
         }
+
     }
 
     @Override
     public void send(String title, String receiver, String text, Long id, ContentType type) {
+
         Notification notification = Notification
                 .builder()
                 .setTitle(LocalDateTime.now() + "-" + LocalDateTime.now() + " " + title)
@@ -75,12 +78,13 @@ public class FirebaseMessageSenderImpl implements MessageSender {
                 .setAndroidConfig(androidConfig)
                 .build();
 
-
         try {
             String send = firebaseMessaging.send(message);
             log.info("SEND" + send);
         } catch (FirebaseMessagingException e) {
             log.error("Send firebase push message error: {}", e.getMessage());
         }
+
     }
+
 }

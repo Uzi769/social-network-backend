@@ -20,15 +20,21 @@ public class UserCreateInput {
     @Length(min = 2, max = 128)
     @NotEmpty
     private String surname;
+
     @Length(min = 2, max = 128)
     @NotEmpty
     private String name;
+
     private LocalDate birthDate;
     private String gender;
+
     @Length(min = 3, max = 128)
     @Email
     private String email;
+
     @Pattern(regexp = "(^\\+?[78][-\\(]?\\d{3}\\)?-?\\d{3}-?\\d{2}-?\\d{2}$)")
     private String phone;
+
     private RoleEnum role;
+
 }

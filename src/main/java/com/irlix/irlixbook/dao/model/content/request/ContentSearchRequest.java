@@ -13,4 +13,5 @@ public class ContentSearchRequest {
 
     private String name;
     private String type;
+
 }

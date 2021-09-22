@@ -15,10 +15,13 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserPasswordInput {
+
     @NotEmpty
     @Size(min = 8)
     private String password;
+
     @NotEmpty
     @Size(min = 8)
     private String verificationPassword;
+
 }

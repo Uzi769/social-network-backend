@@ -1,2 +1,2 @@
-# sample-data-repo
+# Irlix Social Network
 

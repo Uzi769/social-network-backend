@@ -7,11 +7,15 @@ public class PeriodConvertor implements Converter<String, PeriodType>{
 
     @Override
     public PeriodType convert(String s) {
+
         try {
             return PeriodType.valueOf(s.toUpperCase());
         }catch (Exception e){
             e.printStackTrace();
         }
+
         return null;
+
     }
+
 }
