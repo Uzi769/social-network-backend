@@ -19,15 +19,17 @@ public class MailSenderImpl implements MessageSender {
     private String sender;
 
     public void send(String title, String receiver, String text){
+
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(sender);
         message.setTo(receiver);
         message.setSubject(title);
         message.setText(text);
         emailSender.send(message);
+
     }
 
     @Override
-    public void send(String title, String receiver, String text, Long id, ContentType type) {
-    }
+    public void send(String title, String receiver, String text, Long id, ContentType type) {}
+
 }

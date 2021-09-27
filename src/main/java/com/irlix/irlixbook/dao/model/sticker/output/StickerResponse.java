@@ -13,4 +13,5 @@ public class StickerResponse {
 
     private Long id;
     private String name;
+
 }

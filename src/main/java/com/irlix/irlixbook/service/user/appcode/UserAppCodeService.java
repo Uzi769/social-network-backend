@@ -7,4 +7,5 @@ public interface UserAppCodeService {
     UserAppCode addNewCode(UserAppCode appCode);
 
     UserAppCode findByEmail(String email);
+
 }

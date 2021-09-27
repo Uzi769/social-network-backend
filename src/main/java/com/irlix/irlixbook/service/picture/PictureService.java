@@ -17,4 +17,5 @@ public interface PictureService {
     List<Picture> addContentToPicture(List<UUID> pictureIdList, Content content);
 
     List<PictureOutput>  getList();
+
 }

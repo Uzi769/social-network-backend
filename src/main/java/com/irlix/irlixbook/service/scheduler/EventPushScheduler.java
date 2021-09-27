@@ -32,28 +32,35 @@ public class EventPushScheduler {
 
     @Scheduled(cron = "1 1 */1 * * *")
     public void pushMessageAboutEventDayBefore() {
+
         List<Content> events = contentRepository.findByEventDateGreaterThanEqualAndEventDateLessThanAndType(
                 LocalDateTime.now().plusDays(1).minusMinutes(29).minusSeconds(59),
                 LocalDateTime.now().plusDays(1).plusMinutes(30),
                 ContentType.EVENT);
 
         pushMessage(events);
+
     }
 
     @Scheduled(cron = "1 */5 * * * *")
     public void pushMessageAboutEventHourBefore() {
+
         List<Content> events = contentRepository.findByEventDateGreaterThanEqualAndEventDateLessThanAndType(
                 LocalDateTime.now().plusHours(1).minusSeconds(149),
                 LocalDateTime.now().plusHours(1).plusSeconds(150),
                 ContentType.EVENT);
 
         pushMessage(events);
+
     }
 
     private void pushMessage(List<Content> events) {
+
         List<UserEntity> users;
         List<Optional<UserAppCode>> listOfCodes;
+
         for (Content event : events) {
+
             List<ContentUser> contentUsers = event.getContentUsers();
             users = contentUsers.stream().map(ContentUser::getUser).collect(Collectors.toList());
             listOfCodes = users.stream()
@@ -69,6 +76,9 @@ public class EventPushScheduler {
                             , event.getType());
                 }
             }
+
         }
+
     }
+
 }

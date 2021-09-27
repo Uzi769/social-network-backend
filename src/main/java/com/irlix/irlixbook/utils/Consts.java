@@ -2,6 +2,7 @@ package com.irlix.irlixbook.utils;
 
 
 public class Consts {
+
     public static final String USER_NOT_FOUND = "User not found";
     public static final String USER_SAVED = "User saved";
     public static final String USER_WITH_EMAIL_ALREADY_EXISTS = "User with this email already exists";
@@ -23,4 +24,5 @@ public class Consts {
     public static final String PICTURE_DELETED = "Picture deleted";
     public static final String PICTURE_UPLOADED = "Picture was uploaded";
     public static final String FILE_SIZE_EXCEEDED = "File size exceeded";
+
 }

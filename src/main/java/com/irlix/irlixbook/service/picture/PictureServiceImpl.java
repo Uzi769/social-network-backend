@@ -41,6 +41,7 @@ public class PictureServiceImpl implements PictureService {
 
     @Override
     public PictureOutput uploading(MultipartFile file) {
+
         if (file == null) {
             log.error("File is null");
             throw new IllegalArgumentException("File is null");
@@ -51,16 +52,20 @@ public class PictureServiceImpl implements PictureService {
         }
 
         File uploadDir = new File(uploadPath);
+
         if (!uploadDir.exists()) {
             log.info("Create dir: {} = {}", uploadPath, uploadDir.mkdir());
         }
+
         String originFileName = file.getOriginalFilename();
         UUID id = UUID.randomUUID();
         String fileName = id + originFileName.substring(originFileName.lastIndexOf("."));
 
         try {
+
             Path write = Files.write(Path.of(uploadPath + "/" + fileName), file.getBytes());
             log.info("Save picture: {}", write);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -74,23 +79,28 @@ public class PictureServiceImpl implements PictureService {
         log.info(Consts.PICTURE_UPLOADED);
 
         return conversionService.convert(picture, PictureOutput.class);
+
     }
 
     @Override
     public void deletePicture(UUID id) {
+
         Picture picture = pictureRepository.findById(id).orElseThrow(() -> {
             log.error(Consts.PICTURE_NOT_FOUND);
             return new ConflictException(Consts.PICTURE_NOT_FOUND);
         });
+
         pictureRepository.delete(picture);
         log.info(Consts.PICTURE_DELETED);
 
         String filepath = picture.getUrl().replace(uploadRoot, uploadPath + "/");
         this.deleteFile(filepath);
+
     }
 
     @Override
     public List<Picture> addContentToPicture(List<UUID> pictureIdList, Content content) {
+
         List<Picture> pictures = new ArrayList<>();
         pictureIdList.stream()
                 .map(id -> pictureRepository.findById(id).orElseThrow(() -> {
@@ -102,19 +112,26 @@ public class PictureServiceImpl implements PictureService {
                     Picture savedPicture = pictureRepository.save(picture);
                     pictures.add(savedPicture);
                 });
+
         return pictures;
+
     }
 
     public List<PictureOutput> getList() {
-        return pictureRepository.findAll().stream()
+        return pictureRepository.findAll()
+                .stream()
                 .map(p -> conversionService.convert(p, PictureOutput.class))
                 .collect(Collectors.toList());
+
     }
 
     private void deleteFile(String filepath) {
+
         File file = new File(filepath);
         log.info("File for delete: {} {} {}", file.isFile(), file.exists(), file.getAbsolutePath());
         boolean delete = file.delete();
         log.info("DELETE FILE RESULT: {}", delete);
+
     }
+
 }

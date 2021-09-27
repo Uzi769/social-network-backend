@@ -22,6 +22,7 @@ public class UserRepositorySummary {
     private final EntityManager entityManager;
 
     public List<UserEntity> search(UserSearchInput userSearchInput) {
+
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<UserEntity> query = builder.createQuery(UserEntity.class);
         Root<UserEntity> root = query.from(UserEntity.class);
@@ -39,6 +40,7 @@ public class UserRepositorySummary {
         if(userSearchInput.getPhone() != null){
             predicates.add(builder.like(root.get("phone"), "%" + userSearchInput.getPhone() + "%"));
         }
+
         Predicate[] predicatesArray = predicates.toArray(new Predicate[0]);
 
         query.where(builder.and(predicatesArray));
@@ -47,5 +49,7 @@ public class UserRepositorySummary {
                 .setFirstResult(userSearchInput.getPage())
                 .setMaxResults(userSearchInput.getSize())
                 .getResultList();
+
     }
+
 }

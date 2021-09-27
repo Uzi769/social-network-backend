@@ -22,29 +22,37 @@ public class StickerController {
     @GetMapping("/all")
     @RoleAndPermissionCheck(RoleEnum.USER)
     public ResponseEntity<List<StickerResponse>> findAll() {
+
         List<StickerResponse> all = stickerService.findAll();
         return new ResponseEntity<>(all, HttpStatus.OK);
+
     }
 
     @GetMapping("/{name}")
     @RoleAndPermissionCheck(RoleEnum.USER)
     public ResponseEntity<StickerResponse> findByName(@PathVariable String name) {
+
         StickerResponse byName = stickerService.findByName(name);
         return new ResponseEntity<>(byName, HttpStatus.OK);
+
     }
 
     @PostMapping
     @RoleAndPermissionCheck(RoleEnum.USER)
     public ResponseEntity<StickerResponse> save(@RequestParam String name) {
+
         StickerResponse save = stickerService.save(name);
         return new ResponseEntity<>(save, HttpStatus.OK);
+
     }
 
     @PutMapping
     @RoleAndPermissionCheck(RoleEnum.USER)
     public ResponseEntity<StickerResponse> update(@RequestBody StickerUpdateRequest request) {
+
         StickerResponse update = stickerService.update(request);
         return new ResponseEntity<>(update, HttpStatus.OK);
+
     }
 
     @DeleteMapping("/{id}")
@@ -52,4 +60,5 @@ public class StickerController {
     public void delete(@PathVariable Long id) {
         stickerService.deleteById(id);
     }
+
 }

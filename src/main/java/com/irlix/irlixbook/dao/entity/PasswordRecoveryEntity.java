@@ -28,4 +28,5 @@ public class PasswordRecoveryEntity {
     private LocalDateTime createDate;
     @Column
     private UUID userId;
+
 }

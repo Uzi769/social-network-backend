@@ -25,4 +25,5 @@ public class Permission {
 
     @ManyToMany(mappedBy = "permissions", cascade = CascadeType.MERGE)
     private List<Role> roles;
+
 }

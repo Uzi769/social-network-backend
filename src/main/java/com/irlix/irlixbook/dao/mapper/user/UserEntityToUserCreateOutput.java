@@ -15,4 +15,5 @@ public class UserEntityToUserCreateOutput implements Converter<UserEntity, UserA
                 .avatar(userEntity.getAvatar())
                 .build();
     }
+
 }

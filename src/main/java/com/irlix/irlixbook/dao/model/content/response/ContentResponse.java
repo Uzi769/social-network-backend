@@ -27,17 +27,21 @@ public class ContentResponse {
     private String registrationLink;
     private String author;
     private String creator;
+
     @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
     @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)
     @Schema(type = "string", example = "2018-01-01T15:02:01")
     private LocalDateTime eventDate;
+
     @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
     @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)
     @Schema(type = "string", example = "2018-01-01T15:02:01")
     private LocalDateTime createDate;
+
     private List<String> users;
     private String stickerName;
     private List<String> pictures;
     private String deeplink;
     private boolean favorite;
+
 }

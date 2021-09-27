@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.List;
 
 public interface ContentService {
+
     ContentResponse save(ContentPersistRequest contentPersistRequest);
 
     ContentResponse findById(Long id);
@@ -37,4 +38,5 @@ public interface ContentService {
     List<ContentResponse> getFavorites(ContentType contentType, int page, int size);
 
     List<ContentResponse> findImportant(ContentType type, int page, int size);
+
 }

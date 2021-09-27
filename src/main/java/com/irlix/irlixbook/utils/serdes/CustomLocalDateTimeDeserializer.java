@@ -32,7 +32,10 @@ public class CustomLocalDateTimeDeserializer extends StdDeserializer<LocalDateTi
     @Override
     public LocalDateTime deserialize(JsonParser jsonparser, DeserializationContext context)
             throws IOException {
+
         String date = jsonparser.getText();
         return LocalDateTime.parse(date, formatter);
+
     }
+
 }

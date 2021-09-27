@@ -12,9 +12,9 @@ import java.util.List;
 
 public interface ContentRepository extends JpaRepository<Content, Long> {
 
-    List<Content> findByNameContainingIgnoreCaseAndType(String name, ContentType contentType, Pageable pageable);
+    List<Content> findByNameContainingIgnoreCaseAndType(String name, ContentType type, Pageable pageable);
 
-    List<Content> findByType(ContentType contentType, Pageable pageable);
+    List<Content> findByType(ContentType type, Pageable pageable);
 
     List<Content> findByType(ContentType contentType);
 
@@ -22,4 +22,5 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
 
     @Query(value = "select c from Content c where c.type = :contentType order by case c.sticker.name when 'Важное' then 0 else 1 end")
     List<Content> findImportantContent(@Param("contentType") ContentType contentType, Pageable pageable);
+
 }

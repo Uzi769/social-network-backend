@@ -69,4 +69,5 @@ public class Content {
 
     @OneToMany(mappedBy = "content", cascade = CascadeType.REMOVE)
     private List<Picture> pictures;
+
 }

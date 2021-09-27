@@ -12,4 +12,5 @@ public enum PeriodType {
 
     @JsonProperty("month")
     MONTH
+
 }

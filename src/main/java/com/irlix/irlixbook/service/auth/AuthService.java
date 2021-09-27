@@ -8,4 +8,5 @@ public interface AuthService {
     AuthResponse authUser(AuthRequest request, String appCode);
 
     void logout(String value);
+
 }

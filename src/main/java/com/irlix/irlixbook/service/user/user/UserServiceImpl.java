@@ -60,21 +60,31 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @PostConstruct
     private void init() {
+
         List<UserEntity> users = userRepository.findByStatus(null);
+
         for (UserEntity byStatus : users) {
+
             Role role = byStatus.getRole();
+
             if (role != null) {
+
                 StatusEnam status = role.getName().getStatus(byStatus.getRegistrationDate());
                 byStatus.setStatus(status);
+
             } else {
+
                 Optional<Role> byName = roleRepository.findByName(RoleEnum.USER);
                 Role newRole = byName.get();
                 StatusEnam status = newRole.getName().getStatus(byStatus.getRegistrationDate());
                 byStatus.setStatus(status);
                 byStatus.setRole(newRole);
+
             }
         }
+
         userRepository.saveAll(users);
+
     }
 
     @Override
@@ -98,9 +108,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public UserEntityOutput findUserFromContext() {
+
         UUID id = SecurityContextUtils.getUserFromContext().getId();
         UserEntity user = findById(id);
+
         return conversionService.convert(user, UserEntityOutput.class);
+
     }
 
     @Override
@@ -119,8 +132,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public List<UserEntityOutput> findUsers() {
-        return userRepository.findAll().stream()
-                .filter(userEntity -> userEntity.getBlocked() == null)
+        return userRepository.findAll()
+                .stream()
                 .map(user -> conversionService.convert(user, UserEntityOutput.class))
                 .collect(Collectors.toList());
     }
@@ -128,6 +141,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     @Transactional
     public UserEntityOutput updateUser(UserUpdateInput userUpdateInput, UUID id) {
+
         UserEntity userEntity;
         if (id == null) {
             userEntity = SecurityContextUtils.getUserFromContext();
@@ -149,57 +163,69 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         UserEntity user = userRepository.save(userEntity);
         log.info(USER_UPDATED);
         return conversionService.convert(user, UserEntityOutput.class);
+
     }
 
     @Override
     @Transactional
     public UserEntityOutput blockedUser(UUID id) {
+
         UserEntity userEntity = findById(id);
         userEntity.setBlocked(LocalDateTime.now());
         UserEntity savedUser = userRepository.save(userEntity);
         log.info(USER_BLOCKED);
         return conversionService.convert(savedUser, UserEntityOutput.class);
+
     }
 
     @Override
     @Transactional
     public UserEntityOutput unblockedUser(UUID id) {
+
         UserEntity userEntity = findById(id);
         userEntity.setBlocked(null);
         UserEntity savedUser = userRepository.save(userEntity);
         log.info(USER_UNBLOCKED);
         return conversionService.convert(savedUser, UserEntityOutput.class);
+
     }
 
     @Override
     @Transactional
     public UserEntityOutput deletedUser(UUID id) {
-        UserEntity userEntity = findById(id);
 
+        UserEntity userEntity = findById(id);
         log.info(USER_DELETED);
         userRepository.delete(userEntity);
         return conversionService.convert(userEntity, UserEntityOutput.class);
+
     }
 
     @Override
     public List<UserEntityOutput> search(String surname, String name, int page, int size) {
+
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("id").ascending());
         List<UserEntity> userEntityList;
+
         if (StringUtils.hasLength(surname)) {
             userEntityList = userRepository.findByNameContainingIgnoreCase(name, pageRequest);
         } else {
             userEntityList = userRepository.findByNameContainingIgnoreCaseAndSurnameContainingIgnoreCase(name, surname, pageRequest);
         }
+
         return userEntityList.stream()
                 .map(userEntity -> conversionService.convert(userEntity, UserEntityOutput.class))
                 .collect(Collectors.toList());
+
     }
 
     @Override
     @Transactional
     public UserEntityOutput assignRole(RoleEnum roleEnum) {
+
         UserEntity user = SecurityContextUtils.getUserFromContext();
         Optional<UserEntity> persistedUserOptional = userRepository.findById(user.getId());
+
         if (persistedUserOptional.isPresent()) {
             UserEntity persistedUser = persistedUserOptional.get();
 
@@ -210,47 +236,63 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             persistedUser.setStatus(newStatus);
 
             return conversionService.convert(persistedUser, UserEntityOutput.class);
+
         } else {
+
             log.error("User with id : {}, and email: {}, not found!!!", user.getId(), user.getEmail());
             throw new NotFoundException("User with id : " + user.getId() + ", and email: " + user.getEmail() + " not found!!!");
+
         }
+
     }
 
 
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email) {
+
         UserDetails userDetails = userRepository.findByEmail(email).orElseThrow(() -> {
             log.error(USER_NOT_FOUND);
             return new NotFoundException(USER_NOT_FOUND);
         });
+
         userDetails.getAuthorities();
         return userDetails;
+
     }
 
     @Override
     public UserEntity findUserForAuth(AuthRequest request) {
+
         String email = request.getEmail();
+
         if (email != null) {
             return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
         }
+
         return null;
+
     }
 
     @Override
     @Transactional
     public UserEntity addFavorites(Long favoritesContentId) {
+
         Content content = contentService.findByIdOriginal(favoritesContentId);
         UserEntity userFromContext = SecurityContextUtils.getUserFromContext();
         Optional<UserEntity> currentUser = userRepository.findById(userFromContext.getId());
+
         if (currentUser.isPresent()) {
+
             UserEntity userEntity = currentUser.get();
             List<ContentUser> contentUsers = userEntity.getContentUsers();
             List<Content> favoritesContents = contentUsers != null ? contentUsers.stream().map(ContentUser::getContent).collect(Collectors.toList()) : new ArrayList<>();
             boolean alreadyFavorites = favoritesContents.stream().anyMatch(c -> c.getId().equals(favoritesContentId));
+
             if (alreadyFavorites) {
                 throw new BadRequestException("Content with id: " + favoritesContentId + " already added to favorites");
             } else {
+
                 contentUserRepository.save(ContentUser.builder()
                         .content(content)
                         .user(userEntity)
@@ -258,71 +300,94 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                         .id(new ContentUserId(content.getId(), userEntity.getId()))
                         .build());
                 return userRepository.findById(userFromContext.getId()).get();
+
             }
+
         } else {
             throw new NotFoundException("User with id : " + userFromContext.getId() + " doesn't exist");
         }
+
     }
 
     @Override
     @Transactional
     public UserEntity deleteFavorites(Long favoritesContentId) {
+
         Content content = contentService.findByIdOriginal(favoritesContentId);
+
         if (content != null) {
+
             UserEntity userFromContext = SecurityContextUtils.getUserFromContext();
             Optional<UserEntity> currentUser = userRepository.findById(userFromContext.getId());
+
             if (currentUser.isPresent()) {
+
                 UserEntity userEntity = currentUser.get();
                 List<ContentUser> contentUsers = userEntity.getContentUsers();
 
                 Optional<ContentUser> first = contentUsers.stream().filter(c -> c.getContent().getId().equals(favoritesContentId)).findFirst();
+
                 if (first.isPresent()) {
+
                     ContentUser contentUser = first.get();
                     contentUsers.remove(contentUser);
                     content.getContentUsers().remove(contentUser);
                     contentUser.setContent(null);
                     contentUser.setUser(null);
                     return userRepository.save(userEntity);
+
                 } else {
                     throw new BadRequestException("Content with id: " + favoritesContentId + " is not favorite");
                 }
+
             } else {
                 throw new NotFoundException("User with id : " + userFromContext.getId() + " doesn't exist");
             }
+
         } else {
             throw new NotFoundException("Content with id : " + favoritesContentId + " doesn't exist");
         }
+
     }
 
     @Scheduled(cron = "1 1 */1 * * *")
     public void deleteUsers() {
+
         LocalDateTime blockedDate = LocalDateTime.now().minusMonths(2);
         List<UserEntity> blockedUsers = userRepository.findByBlockedLessThanEqual(blockedDate);
         userRepository.deleteAll(blockedUsers);
         log.info("DELETE {} USERS how was blocked : {}", blockedUsers.size(), blockedDate);
+
     }
 
     @Scheduled(cron = "1 1 */1 * * *")
     public void changeStatus() {
+
         LocalDateTime eventDate = LocalDateTime.now().minusMonths(2).plusDays(1);
         List<UserEntity> users = userRepository.findByRegistrationDateLessThan(eventDate);
+
         for (UserEntity user : users) {
             Role role = user.getRole();
             StatusEnam status = role.getName().getStatus(user.getRegistrationDate());
             user.setStatus(status);
         }
+
         userRepository.saveAll(users);
+
     }
 
     private void checkingPhoneForUniqueness(UserEntity userEntity, String phone) {
+
         if (userRepository.findByPhone(phone).orElse(null) != null) {
             throw new BadRequestException(USER_WITH_PHONE_ALREADY_EXISTS);
         } else {
             userEntity.setPhone(phone);
         }
+
     }
 
     private void checkingUpdatedData(UserEntity userEntity, UserEntity userEntityForUpdate) {
+
         if (userEntityForUpdate.getSurname() != null && !userEntityForUpdate.getSurname().equals(userEntity.getSurname())) {
             userEntity.setSurname(userEntityForUpdate.getSurname());
         }
@@ -366,10 +431,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (userEntityForUpdate.getLinkedIn() != null && !userEntityForUpdate.getLinkedIn().equals(userEntity.getLinkedIn())) {
             userEntity.setLinkedIn(userEntityForUpdate.getLinkedIn());
         }
+
     }
 
     private UserEntityOutput create(UserCreateInput userCreateInput) {
+
         UserEntity userEntity = conversionService.convert(userCreateInput, UserEntity.class);
+
         if (userEntity == null) {
             throw new ConflictException("Error conversion user. Class UserServiceImpl, method createUser");
         }
@@ -388,18 +456,22 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         UserEntity savedUser = userRepository.save(userEntity);
         log.info(USER_SAVED);
         return conversionService.convert(savedUser, UserEntityOutput.class);
+
     }
 
     private void checkingMailForUniqueness(UserEntity userEntity, String email) {
+
         if (userRepository.findByEmail(email).orElse(null) != null) {
             throw new BadRequestException(USER_WITH_EMAIL_ALREADY_EXISTS);
         } else {
             userEntity.setEmail(email);
         }
+
     }
 
     private String createPassword() {
         return new Random().ints(8, 48, 57)
                 .mapToObj(i -> String.valueOf((char) i)).collect(Collectors.joining());
     }
+
 }
