@@ -12,7 +12,6 @@ public class CommunityPersistRequestToCommunity implements Converter<CommunityPe
                 .name(request.getName())
                 .shortDescription(request.getShortDescription())
                 .description(request.getDescription())
-                .registrationLink(request.getRegistrationLink())
                 .build();
     }
 }

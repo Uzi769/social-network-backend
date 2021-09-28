@@ -24,4 +24,6 @@ public interface CommunityService {
     CommunityResponse addUsers(CommunityPersistRequest communityPersistRequest);
 
     void delete(String name);
+
+    CommunityResponse addContents(CommunityPersistRequest communityPersistRequest);
 }

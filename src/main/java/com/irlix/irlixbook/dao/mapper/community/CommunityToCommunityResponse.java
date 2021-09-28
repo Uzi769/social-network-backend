@@ -47,15 +47,22 @@ public class CommunityToCommunityResponse implements Converter<Community, Commun
                 .description(community.getDescription())
                 .registrationLink(community.getRegistrationLink())
                 .deepLink(community.getDeeplink())
-                .admin(community.getAdmin())
+                .admin(community.getCreator() != null
+                        ? community.getCreator().getName()
+                        : null)
                 .contents(contents != null
                         ? contents.stream()
                         .map(Content::getId)
-                        .collect(Collectors.toList()) : null)
+                        .collect(Collectors.toList())
+                        : null)
                 .users(users != null
                         ? users.stream()
                         .map(user -> user.getId().toString())
-                        .collect(Collectors.toList()) : null)
+                        .collect(Collectors.toList())
+                        : null)
+                .creator(community.getCreator() != null
+                        ? community.getCreator().getId().toString()
+                        : null)
                 .build();
     }
 }

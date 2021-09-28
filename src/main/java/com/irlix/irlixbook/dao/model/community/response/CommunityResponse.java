@@ -22,4 +22,5 @@ public class CommunityResponse {
     private List<Long> contents;
     private String admin;
     private List<String> users;
+    private String creator;
 }

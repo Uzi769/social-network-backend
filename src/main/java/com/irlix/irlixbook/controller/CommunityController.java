@@ -54,16 +54,24 @@ public class CommunityController {
         return communityService.findCommunityUsers(name);
     }
 
-    @GetMapping("/{name}/all")
+    @GetMapping("/{name}/users")
     @RoleAndPermissionCheck(RoleEnum.USER)
     public List<ContentResponse> findCommunityContents(@PathVariable("name")String name) {
         return communityService.findCommunityContents(name);
     }
 
+    //todo parameter users
     @PostMapping("/users")
     @RoleAndPermissionCheck(RoleEnum.ADMIN)
     public CommunityResponse addUsers(@RequestBody @Valid CommunityPersistRequest communityPersistRequest) {
         return communityService.addUsers(communityPersistRequest);
+    }
+
+    //todo parameter contents
+    @PostMapping("/contents")
+    @RoleAndPermissionCheck(RoleEnum.ADMIN)
+    public CommunityResponse addContents(@RequestBody @Valid CommunityPersistRequest communityPersistRequest) {
+        return communityService.addContents(communityPersistRequest);
     }
 
     @DeleteMapping("/{name}")

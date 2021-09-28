@@ -29,7 +29,6 @@ public class ContentPersistRequest {
 
     private String shortDescription;
     private String description;
-    private String registrationLink;
     private String stickerName;
 
     @JsonSerialize(using = CustomLocalDateTimeSerializer.class)

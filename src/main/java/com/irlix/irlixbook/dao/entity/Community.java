@@ -41,4 +41,8 @@ public class Community {
 
     @OneToMany(mappedBy = "community")
     private List<UserContentCommunity> userContentCommunities;
+
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "user_id")
+    private UserEntity creator;
 }
