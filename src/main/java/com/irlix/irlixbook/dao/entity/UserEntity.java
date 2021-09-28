@@ -103,6 +103,9 @@ public class UserEntity implements UserDetails {
             orphanRemoval = true)
     private List<ContentUser> contentUsers;
 
+    @OneToMany(mappedBy = "user")
+    private List<UserContentCommunity> userContentCommunities;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority(role.getName().name()));
