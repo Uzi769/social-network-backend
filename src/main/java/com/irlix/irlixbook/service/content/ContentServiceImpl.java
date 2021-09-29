@@ -7,6 +7,7 @@ import com.irlix.irlixbook.dao.entity.enams.PeriodType;
 import com.irlix.irlixbook.dao.model.content.request.ContentPersistRequest;
 import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 import com.irlix.irlixbook.exception.BadRequestException;
+import com.irlix.irlixbook.exception.ConflictException;
 import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.ContentRepository;
 import com.irlix.irlixbook.repository.ContentUserRepository;
@@ -32,10 +33,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.irlix.irlixbook.utils.Consts.CONTENT_NOT_FOUND;
+import static com.irlix.irlixbook.utils.Consts.USER_NOT_FOUND;
 
 @Log4j2
 @Service
@@ -367,4 +369,20 @@ public class ContentServiceImpl implements ContentService {
                 });
     }
 
-}
+    @Override
+    public List<Content> addContentsToUserContentCommunity(List<Long> contentsIdList,
+                                                           UserContentCommunity userContentCommunity) {
+        List<Content> contents = new ArrayList<>();
+        contentsIdList.stream()
+                .map(id -> contentRepository.findById(id).orElseThrow(() -> {
+                    log.error(CONTENT_NOT_FOUND);
+                    return new ConflictException(CONTENT_NOT_FOUND);
+                }))
+                .forEach(content -> {
+                    content.getUserContentCommunities().add(userContentCommunity);
+                    Content savedContent = contentRepository.save(content);
+                    contents.add(savedContent);
+                });
+        return contents;
+    }
+    }

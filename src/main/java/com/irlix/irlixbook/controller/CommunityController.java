@@ -50,14 +50,18 @@ public class CommunityController {
 
     @GetMapping("/{name}/all")
     @RoleAndPermissionCheck(RoleEnum.USER)
-    public List<UserEntityOutput> findCommunityUsers(@PathVariable("name")String name) {
-        return communityService.findCommunityUsers(name);
+    public List<UserEntityOutput> findCommunityUsers(@PathVariable("name")String name,
+                                                     @RequestParam(required = false, defaultValue = "0") int page,
+                                                     @RequestParam(required = false, defaultValue = "0") int size) {
+        return communityService.findCommunityUsers(name, page, size);
     }
 
     @GetMapping("/{name}/users")
     @RoleAndPermissionCheck(RoleEnum.USER)
-    public List<ContentResponse> findCommunityContents(@PathVariable("name")String name) {
-        return communityService.findCommunityContents(name);
+    public List<ContentResponse> findCommunityContents(@PathVariable("name")String name,
+                                                       @RequestParam(required = false, defaultValue = "0") int page,
+                                                       @RequestParam(required = false, defaultValue = "0") int size) {
+        return communityService.findCommunityContents(name, page, size);
     }
 
     //todo parameter users

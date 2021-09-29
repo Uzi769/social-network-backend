@@ -30,6 +30,7 @@ public class ContentPersistRequest {
     private String shortDescription;
     private String description;
     private String stickerName;
+    private String registrationLink;
 
     @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
     @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)

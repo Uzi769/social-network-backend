@@ -24,5 +24,7 @@ public class Consts {
     public static final String PICTURE_DELETED = "Picture deleted";
     public static final String PICTURE_UPLOADED = "Picture was uploaded";
     public static final String FILE_SIZE_EXCEEDED = "File size exceeded";
+    public static final String CONTENT_NOT_FOUND = "Content not found";
+
 
 }

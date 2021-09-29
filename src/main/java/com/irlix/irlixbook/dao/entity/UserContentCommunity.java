@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Table(name = "user_content_community")
 @Getter
 @Setter
+@Builder
 public class UserContentCommunity {
 
     @EmbeddedId

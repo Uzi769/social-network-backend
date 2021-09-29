@@ -17,9 +17,9 @@ public interface CommunityService {
 
     CommunityResponse findByName(String name);
 
-    List<UserEntityOutput> findCommunityUsers(String name);
+    List<UserEntityOutput> findCommunityUsers(String name, int page, int size);
 
-    List<ContentResponse> findCommunityContents(String name);
+    List<ContentResponse> findCommunityContents(String name, int page, int size);
 
     CommunityResponse addUsers(CommunityPersistRequest communityPersistRequest);
 

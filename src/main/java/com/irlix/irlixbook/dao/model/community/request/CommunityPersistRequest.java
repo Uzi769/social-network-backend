@@ -1,13 +1,13 @@
 package com.irlix.irlixbook.dao.model.community.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
+import java.util.List;
+import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -15,8 +15,11 @@ public class CommunityPersistRequest {
 
     @NotBlank
     private String name;
+
     private String shortDescription;
     private String description;
     private String registrationLink;
     private String admin;
+    private List<UUID> usersId;
+    private List<Long> contentsId;
 }
