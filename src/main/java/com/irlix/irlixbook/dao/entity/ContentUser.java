@@ -30,4 +30,5 @@ public class ContentUser {
     @Column(name = "created_on")
     @Builder.Default
     private LocalDateTime createdOn = LocalDateTime.now();
+
 }
