@@ -8,7 +8,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,9 +38,15 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
     }
 
     @ExceptionHandler({MultipartException.class})
-    protected ResponseEntity<ApiError> handlePasswordActiveException(MultipartException ex) {
+    protected ResponseEntity<ApiError> handleMultipartException(MultipartException ex) {
         ApiError apiError = new ApiError("Exception", ex.getMessage());
         return new ResponseEntity<>(apiError, HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
+    }
+
+    @ExceptionHandler({MaxUploadSizeExceededException.class})
+    public String handleError2(MaxUploadSizeExceededException e, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("message", e.getCause().getMessage());
+        return "redirect:/uploadStatus";
     }
 
     @ExceptionHandler({NotFoundException.class})
@@ -68,6 +77,18 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
     protected ResponseEntity<ApiError> handleAlreadyExistException(AlreadyExistException ex) {
         ApiError apiError = new ApiError("AlreadyExistException", ex.getMessage());
         return new ResponseEntity<>(apiError, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler({FileNullPointerException.class})
+    protected ResponseEntity<ApiError> handleFileNullPointerException(FileNullPointerException ex) {
+        ApiError apiError = new ApiError("FileNullPointerException", ex.getMessage());
+        return new ResponseEntity<>(apiError, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMissingServletRequestPart(MissingServletRequestPartException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        ApiError apiError = new ApiError("FileNullPointerException", "File of avatar is null.");
+        return handleExceptionInternal(ex, apiError, headers, HttpStatus.UNSUPPORTED_MEDIA_TYPE, request);
     }
 
     @Override

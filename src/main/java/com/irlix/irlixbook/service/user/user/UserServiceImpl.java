@@ -18,6 +18,7 @@ import com.irlix.irlixbook.repository.UserRepository;
 import com.irlix.irlixbook.repository.summary.UserRepositorySummary;
 import com.irlix.irlixbook.service.content.ContentService;
 import com.irlix.irlixbook.service.messaging.MessageSender;
+import com.irlix.irlixbook.utils.Consts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -466,7 +467,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         } else {
             userEntity.setEmail(email);
         }
-
     }
 
     private String createPassword() {
@@ -474,4 +474,19 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 .mapToObj(i -> String.valueOf((char) i)).collect(Collectors.joining());
     }
 
+    @Override
+    public List<UserEntity> addUsersToUserContentCommunity(List<UUID> usersIdList, UserContentCommunity userContentCommunity) {
+        List<UserEntity> users = new ArrayList<>();
+        usersIdList.stream()
+                .map(id -> userRepository.findById(id).orElseThrow(() -> {
+                    log.error(USER_NOT_FOUND);
+                    return new ConflictException(USER_NOT_FOUND);
+                }))
+                .forEach(user -> {
+                    user.getUserContentCommunities().add(userContentCommunity);
+                    UserEntity savedUser = userRepository.save(user);
+                    users.add(savedUser);
+                });
+        return users;
+    }
 }

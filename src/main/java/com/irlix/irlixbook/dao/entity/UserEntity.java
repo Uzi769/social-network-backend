@@ -94,6 +94,9 @@ public class UserEntity implements UserDetails {
     @OneToMany(mappedBy = "creator", cascade = CascadeType.MERGE)
     private List<Content> contents;
 
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.MERGE)
+    private List<Community> communities;
+
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "role_id")
     private Role role;
@@ -102,6 +105,9 @@ public class UserEntity implements UserDetails {
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<ContentUser> contentUsers;
+
+    @OneToMany(mappedBy = "user")
+    private List<UserContentCommunity> userContentCommunities;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

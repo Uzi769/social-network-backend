@@ -3,6 +3,7 @@ package com.irlix.irlixbook.service.user.avatar;
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
 import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.exception.AlreadyExistException;
+import com.irlix.irlixbook.exception.FileNullPointerException;
 import com.irlix.irlixbook.exception.MultipartException;
 import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.UserRepository;
@@ -63,7 +64,7 @@ public class AvatarServiceImpl implements AvatarService {
 
         if (file == null) {
             log.info("File of avatar is null");
-            throw new IllegalArgumentException("File of avatar is null.");
+            throw new FileNullPointerException("File of avatar is null.");
         }
         if (file.getSize() > 10485760) {
             log.info(FILE_SIZE_EXCEEDED);

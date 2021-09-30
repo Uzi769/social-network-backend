@@ -11,5 +11,4 @@ public class IrlixbookApplication {
     public static void main(String[] args) {
         SpringApplication.run(IrlixbookApplication.class, args);
     }
-
 }
