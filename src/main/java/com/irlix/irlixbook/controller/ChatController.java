@@ -2,12 +2,17 @@ package com.irlix.irlixbook.controller;
 
 import com.irlix.irlixbook.config.security.annotation.RoleAndPermissionCheck;
 import com.irlix.irlixbook.dao.entity.enams.RoleEnum;
+import com.irlix.irlixbook.dao.model.chat.request.MessageRequest;
+import com.irlix.irlixbook.dao.model.chat.response.ChatOutput;
+import com.irlix.irlixbook.dao.model.chat.response.MessageOutput;
 import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
+import com.irlix.irlixbook.service.chat.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,8 +25,8 @@ public class ChatController {
 
     @GetMapping
     @RoleAndPermissionCheck(RoleEnum.USER)
-    public ChatOutput getAll() {
-        return chatService.getChats();
+    public List<ChatOutput> getAll() {
+        return messageService.getChats();
     }
 
     @GetMapping("messages/{chatId}")
@@ -30,20 +35,20 @@ public class ChatController {
                                             @RequestParam(required = false, defaultValue = "0") int page,
                                             @RequestParam(required = false, defaultValue = "10") int size)
     {
-        List<ContentResponse> list = messageService.getLastMessages(page, size);
+        List<MessageOutput> list = messageService.getLastMessages(chatId, page, size);
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
     @PostMapping("messages/{chatId}")
     @RoleAndPermissionCheck(RoleEnum.USER)
-    public MessageOutput sendMessage(@PathVariable("localId") UUID localId) {
-        return messageService.send(localId);
+    public MessageOutput sendMessage(@Nullable @PathVariable("chatId") UUID chatId, MessageRequest messageRequest) {
+        return messageService.send(chatId, messageRequest);
     }
 
-    @PutMapping("messages/{id}")
+    @PutMapping("messages/{chatId}")
     @RoleAndPermissionCheck(RoleEnum.USER)
-    public void update(@PathVariable("id") UUID id) {
-        messageService.update(id);
+    public MessageOutput update(@PathVariable("chatId") UUID chatId, MessageRequest messageRequest) {
+        return messageService.update(chatId, messageRequest);
     }
 
 }

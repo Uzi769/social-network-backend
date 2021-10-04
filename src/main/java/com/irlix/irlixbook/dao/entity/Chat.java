@@ -5,9 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,14 +15,20 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(name = "chat")
 public class Chat {
 
     @Id
+    @GeneratedValue(generator = "UUID")
     private UUID chatId;
 
     @Column(name = "title", nullable = false, length = 1500)
+    @NotEmpty
     private String title;
 
+    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL)
     private List<UserEntity> users;
 
+    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL)
+    private List<ChatMessage> chatMessages;
 }

@@ -1,13 +1,10 @@
 package com.irlix.irlixbook.dao.entity;
 
 import com.irlix.irlixbook.dao.entity.enams.MessageStatus;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
@@ -16,17 +13,32 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(name = "chat_message")
+@Builder
 public class ChatMessage {
 
     @Id
+    @GeneratedValue(generator = "UUID")
     private UUID id;
 
-    private UUID chatId;
-    private UUID senderId;
-    private UUID localId;
-    private MessageStatus status;
-    private Date timestamp;
-    private String content;
-    // private MessageBody body;
+    @ManyToOne
+    @JoinColumn(name = "chat_id")
+    private Chat chat;
 
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private UserEntity sender;
+
+    @Column(name = "local_id")
+    private Long localId;
+
+    @Column(name = "message_status")
+    @Enumerated(EnumType.STRING)
+    private MessageStatus status;
+
+    @Column(name = "timestamp")
+    private LocalDateTime timestamp;
+
+    @Column(name = "content")
+    private String content;
 }
