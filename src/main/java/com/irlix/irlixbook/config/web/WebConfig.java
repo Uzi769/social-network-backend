@@ -1,5 +1,7 @@
 package com.irlix.irlixbook.config.web;
 
+import com.irlix.irlixbook.dao.mapper.community.CommunityPersistRequestToCommunity;
+import com.irlix.irlixbook.dao.mapper.community.CommunityToCommunityResponse;
 import com.irlix.irlixbook.dao.mapper.content.ContentPersistRequestToContent;
 import com.irlix.irlixbook.dao.mapper.content.ContentToContentResponse;
 import com.irlix.irlixbook.dao.mapper.picture.PictureToPictureOutput;
@@ -29,6 +31,8 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addConverter(new PictureToPictureOutput());
         registry.addConverter(new StickerToStickerResponse());
         registry.addConverter(new PeriodConvertor());
+        registry.addConverter(new CommunityPersistRequestToCommunity());
+        registry.addConverter(new CommunityToCommunityResponse());
 
     }
 
