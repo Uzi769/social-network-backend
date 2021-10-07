@@ -8,4 +8,5 @@ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
     <include file="2021/07/changelog-cumulative.xml" relativeToChangelogFile="true"/>
     <include file="2021/08/changelog-cumulative.xml" relativeToChangelogFile="true"/>
     <include file="2021/09/changelog-cumulative.xml" relativeToChangelogFile="true"/>
+    <include file="2021/10/changelog-cumulative.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

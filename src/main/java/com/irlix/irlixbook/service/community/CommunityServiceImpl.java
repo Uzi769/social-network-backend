@@ -8,7 +8,9 @@ import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
 import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.CommunityRepository;
+import com.irlix.irlixbook.repository.ContentRepository;
 import com.irlix.irlixbook.repository.UserContentCommunityRepository;
+import com.irlix.irlixbook.repository.UserRepository;
 import com.irlix.irlixbook.service.content.ContentService;
 import com.irlix.irlixbook.service.user.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -33,6 +38,8 @@ public class CommunityServiceImpl implements CommunityService{
     private final ConversionService conversionService;
     private final UserService userService;
     private final ContentService contentService;
+    private final ContentRepository contentRepository;
+    private final UserRepository userRepository;
 
     @Value("${url.root}")
     private String urlRoot;
@@ -57,7 +64,36 @@ public class CommunityServiceImpl implements CommunityService{
         savedCommunity.setRegistrationLink(urlRoot + savedCommunity.getName() + "/" + savedCommunity.getId());
         communityRepository.save(savedCommunity);
 
-        List<UserContentCommunity> userContentCommunities = community.getUserContentCommunities();
+        List<UserContentCommunity> userContentCommunities = savedCommunity.getUserContentCommunities();
+
+        if (userContentCommunities == null) {
+            List<Long> contentsId = communityPersistRequest.getContentsId();
+            if (contentsId == null) {
+                contentsId = new ArrayList<>();
+                contentsId.add(0L);
+            }
+            List<UUID> usersId = communityPersistRequest.getUsersId();
+            if (usersId == null) {
+                usersId = new ArrayList<>();
+                usersId.add(new UUID(0,0));
+            }
+            for (Long contentId : contentsId) {
+                for (UUID userId : usersId) {
+                    Content content = contentRepository.findById(contentId).orElse(null);
+                    UserContentCommunity userContentCommunity = UserContentCommunity.builder()
+                            .community(savedCommunity)
+                            .content(contentRepository.findById(contentId).orElse(null))
+                            .user(userRepository.findById(userId).orElse(null))
+                            .dateCreated(LocalDateTime.now())
+                            .id(new UserContentCommunityId(savedCommunity.getId()
+                                    , contentId
+                                    , userId))
+                            .build();
+                    userContentCommunityRepository.save(userContentCommunity);
+                    userContentCommunities.add(userContentCommunity);
+                }
+            }
+        }
 
         for (UserContentCommunity userContentCommunity : userContentCommunities) {
             if (communityPersistRequest.getUsersId() != null && !communityPersistRequest.getUsersId().isEmpty()) {

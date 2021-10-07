@@ -477,16 +477,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public List<UserEntity> addUsersToUserContentCommunity(List<UUID> usersIdList, UserContentCommunity userContentCommunity) {
         List<UserEntity> users = new ArrayList<>();
-        usersIdList.stream()
-                .map(id -> userRepository.findById(id).orElseThrow(() -> {
-                    log.error(USER_NOT_FOUND);
-                    return new ConflictException(USER_NOT_FOUND);
-                }))
-                .forEach(user -> {
-                    user.getUserContentCommunities().add(userContentCommunity);
-                    UserEntity savedUser = userRepository.save(user);
-                    users.add(savedUser);
-                });
+        if (usersIdList != null) {
+            usersIdList.stream()
+                    .map(id -> userRepository.findById(id).orElseThrow(() -> {
+                        log.error(USER_NOT_FOUND);
+                        return new ConflictException(USER_NOT_FOUND);
+                    }))
+                    .forEach(user -> {
+                        user.getUserContentCommunities().add(userContentCommunity);
+                        UserEntity savedUser = userRepository.save(user);
+                        users.add(savedUser);
+                    });
+        }
         return users;
     }
 }
