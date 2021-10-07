@@ -2,7 +2,6 @@ package com.irlix.irlixbook.repository;
 
 import com.irlix.irlixbook.dao.entity.UserContentCommunity;
 import com.irlix.irlixbook.dao.entity.UserContentCommunityId;
-import com.irlix.irlixbook.dao.entity.UserEntity;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
