@@ -3,7 +3,6 @@ package com.irlix.irlixbook.dao.entity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @AllArgsConstructor

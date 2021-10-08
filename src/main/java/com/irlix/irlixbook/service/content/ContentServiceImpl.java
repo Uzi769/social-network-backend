@@ -9,6 +9,7 @@ import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 import com.irlix.irlixbook.exception.BadRequestException;
 import com.irlix.irlixbook.exception.ConflictException;
 import com.irlix.irlixbook.exception.NotFoundException;
+import com.irlix.irlixbook.repository.ContentCommunityRepository;
 import com.irlix.irlixbook.repository.ContentRepository;
 import com.irlix.irlixbook.repository.ContentUserRepository;
 import com.irlix.irlixbook.repository.UserAppCodeRepository;
@@ -49,6 +50,7 @@ public class ContentServiceImpl implements ContentService {
     private final PictureService pictureService;
     private final ContentUserRepository contentUserRepository;
     private final UserAppCodeRepository userAppCodeRepository;
+    private final ContentCommunityRepository contentCommunityRepository;
 
     @Autowired
     @Qualifier("firebaseSender")
@@ -369,19 +371,24 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public List<Content> addContentsToUserContentCommunity(List<Long> contentsIdList,
-                                                           ContentCommunity contentCommunity) {
-        List<Content> contents = new ArrayList<>();
+    public List<ContentCommunity> addContentsToContentCommunity(List<Long> contentsIdList,
+                                                       Community community) {
+        List<ContentCommunity> contentCommunities = new ArrayList<>();
         contentsIdList.stream()
                 .map(id -> contentRepository.findById(id).orElseThrow(() -> {
                     log.error(CONTENT_NOT_FOUND);
                     return new ConflictException(CONTENT_NOT_FOUND);
                 }))
                 .forEach(content -> {
-                    content.getContentCommunities().add(contentCommunity);
-                    Content savedContent = contentRepository.save(content);
-                    contents.add(savedContent);
+                    ContentCommunity contentCommunity =ContentCommunity.builder()
+                            .community(community)
+                            .content(content)
+                            .id(new ContentCommunityId(community.getId(), content.getId()))
+                            .build();
+                    contentCommunityRepository.save(contentCommunity);
+                    contentRepository.save(content);
+                    contentCommunities.add(contentCommunity);
                 });
-        return contents;
+        return contentCommunities;
     }
-    }
+}

@@ -14,6 +14,7 @@ import com.irlix.irlixbook.exception.ConflictException;
 import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.ContentUserRepository;
 import com.irlix.irlixbook.repository.RoleRepository;
+import com.irlix.irlixbook.repository.RoleStatusUserCommunityRepository;
 import com.irlix.irlixbook.repository.UserRepository;
 import com.irlix.irlixbook.repository.summary.UserRepositorySummary;
 import com.irlix.irlixbook.service.content.ContentService;
@@ -53,6 +54,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final ContentService contentService;
     private final UserRepositorySummary userRepositorySummary;
     private final ContentUserRepository contentUserRepository;
+    private final RoleStatusUserCommunityRepository roleStatusUserCommunityRepository;
 
     @Autowired
     @Qualifier("mailSenderImpl")
@@ -471,5 +473,33 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private String createPassword() {
         return new Random().ints(8, 48, 57)
                 .mapToObj(i -> String.valueOf((char) i)).collect(Collectors.joining());
+    }
+
+    @Override
+    public List<RoleStatusUserCommunity> addUsersToRoleStatusUserCommunity(List<UUID> usersIdList,
+                                                                Community community) {
+        List<RoleStatusUserCommunity> roleStatusUserCommunities = new ArrayList<>();
+        usersIdList.stream()
+                .map(id -> userRepository.findById(id).orElseThrow(() -> {
+                    log.error(USER_NOT_FOUND);
+                    return new ConflictException(USER_NOT_FOUND);
+                }))
+                .forEach(user -> {
+                    RoleStatusUserCommunity roleStatusUserCommunity =RoleStatusUserCommunity.builder()
+                            .role(user.getRole())
+                            .status(user.getStatus())
+                            .user(user)
+                            .community(community)
+                            .Id(new RoleStatusUserCommunityId(
+                                    user.getRole().getId(),
+                                    user.getStatus().getId(),
+                                    user.getId(),
+                                    community.getId()))
+                            .build();
+                    roleStatusUserCommunityRepository.save(roleStatusUserCommunity);
+                    userRepository.save(user);
+                    roleStatusUserCommunities.add(roleStatusUserCommunity);
+                });
+        return roleStatusUserCommunities;
     }
 }

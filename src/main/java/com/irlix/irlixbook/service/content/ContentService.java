@@ -1,5 +1,6 @@
 package com.irlix.irlixbook.service.content;
 
+import com.irlix.irlixbook.dao.entity.Community;
 import com.irlix.irlixbook.dao.entity.Content;
 import com.irlix.irlixbook.dao.entity.ContentCommunity;
 import com.irlix.irlixbook.dao.entity.enams.ContentType;
@@ -40,6 +41,6 @@ public interface ContentService {
 
     List<ContentResponse> findImportant(ContentType type, int page, int size);
 
-    List<Content> addContentsToUserContentCommunity(List<Long> contentsIdList, ContentCommunity contentCommunity);
+    List<ContentCommunity> addContentsToContentCommunity(List<Long> contentsIdList, Community community);
 
 }

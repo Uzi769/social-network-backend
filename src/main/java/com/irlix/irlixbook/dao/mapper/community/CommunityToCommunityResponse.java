@@ -1,10 +1,7 @@
 package com.irlix.irlixbook.dao.mapper.community;
 
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
-import com.irlix.irlixbook.dao.entity.Community;
-import com.irlix.irlixbook.dao.entity.Content;
-import com.irlix.irlixbook.dao.entity.ContentCommunity;
-import com.irlix.irlixbook.dao.entity.UserEntity;
+import com.irlix.irlixbook.dao.entity.*;
 import com.irlix.irlixbook.dao.model.community.response.CommunityResponse;
 import com.irlix.irlixbook.exception.UnauthorizedException;
 import lombok.extern.slf4j.Slf4j;
@@ -20,17 +17,18 @@ public class CommunityToCommunityResponse implements Converter<Community, Commun
     @Override
     public CommunityResponse convert(Community community) {
 
-        List<ContentCommunity> userContentCommunities = community.getUserContentCommunities();
+        List<ContentCommunity> contentCommunities = community.getContentCommunities();
+        List<RoleStatusUserCommunity> roleStatusUserCommunities = community.getRoleStatusUserCommunities();
         List<Content> contents = null;
         List<UserEntity> users = null;
 
-        if (!CollectionUtils.isEmpty(userContentCommunities)) {
+        if (!CollectionUtils.isEmpty(contentCommunities)) {
 
-            contents = userContentCommunities.stream()
+            contents = contentCommunities.stream()
                     .map(ContentCommunity::getContent)
                     .collect(Collectors.toList());
-            users = userContentCommunities.stream()
-                    .map(ContentCommunity::getUser)
+            users = roleStatusUserCommunities.stream()
+                    .map(RoleStatusUserCommunity::getUser)
                     .collect(Collectors.toList());
 
             try {

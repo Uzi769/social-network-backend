@@ -1,6 +1,8 @@
 package com.irlix.irlixbook.service.user.user;
 
+import com.irlix.irlixbook.dao.entity.Community;
 import com.irlix.irlixbook.dao.entity.ContentCommunity;
+import com.irlix.irlixbook.dao.entity.RoleStatusUserCommunity;
 import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.entity.enams.RoleEnum;
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
@@ -43,4 +45,7 @@ public interface UserService {
     UserEntity addFavorites(Long favoritesContentId);
 
     UserEntity deleteFavorites(Long favoritesContentId);
+
+    List<RoleStatusUserCommunity> addUsersToRoleStatusUserCommunity(List<UUID> usersIdList,
+                                                                    Community community);
 }
