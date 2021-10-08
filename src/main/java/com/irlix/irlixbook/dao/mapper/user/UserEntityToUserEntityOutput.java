@@ -29,7 +29,7 @@ public class UserEntityToUserEntityOutput implements Converter<UserEntity, UserE
                 .role(userEntity.getRole().getName() != null ? userEntity.getRole().getName().name() : null)
                 .blocked(userEntity.getBlocked() != null)
                 .registrationDate(userEntity.getRegistrationDate())
-                .status(userEntity.getStatus())
+                .status(userEntity.getStatus().getName())
                 .build();
     }
 

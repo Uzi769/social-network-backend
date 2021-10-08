@@ -7,7 +7,7 @@
     <changeSet id="06102021-1" author="Kurkin">
         <addForeignKeyConstraint baseColumnNames="community_id"
                                  baseTableName="user_content_community"
-                                 constraintName="FK_USER_CONTENT_COMMUNITY_ON_COMMUNITY"
+                                 constraintName="FK_CONTENT_COMMUNITY_ON_COMMUNITY"
                                  referencedColumnNames="id"
                                  referencedTableName="community"/>
     </changeSet>
