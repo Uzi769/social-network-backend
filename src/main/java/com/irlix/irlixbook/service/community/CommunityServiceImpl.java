@@ -8,11 +8,9 @@ import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
 import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.CommunityRepository;
+import com.irlix.irlixbook.repository.ContentCommunityRepository;
 import com.irlix.irlixbook.repository.ContentRepository;
-import com.irlix.irlixbook.repository.UserContentCommunityRepository;
-import com.irlix.irlixbook.repository.UserRepository;
 import com.irlix.irlixbook.service.content.ContentService;
-import com.irlix.irlixbook.service.user.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -34,12 +31,10 @@ import java.util.stream.Collectors;
 public class CommunityServiceImpl implements CommunityService{
 
     private final CommunityRepository communityRepository;
-    private final UserContentCommunityRepository userContentCommunityRepository;
+    private final ContentCommunityRepository contentCommunityRepository;
     private final ConversionService conversionService;
-    private final UserService userService;
     private final ContentService contentService;
     private final ContentRepository contentRepository;
-    private final UserRepository userRepository;
 
     @Value("${url.root}")
     private String urlRoot;
@@ -64,41 +59,22 @@ public class CommunityServiceImpl implements CommunityService{
         savedCommunity.setRegistrationLink(urlRoot + savedCommunity.getName() + "/" + savedCommunity.getId());
         communityRepository.save(savedCommunity);
 
-        List<UserContentCommunity> userContentCommunities = savedCommunity.getUserContentCommunities();
+        List<ContentCommunity> contentCommunities = savedCommunity.getContentCommunities();
 
-        if (userContentCommunities == null) {
+        if (contentCommunities == null) {
             List<Long> contentsId = communityPersistRequest.getContentsId();
             if (contentsId == null) {
                 contentsId = new ArrayList<>();
                 contentsId.add(0L);
             }
-            List<UUID> usersId = communityPersistRequest.getUsersId();
-            if (usersId == null) {
-                usersId = new ArrayList<>();
-                usersId.add(new UUID(0,0));
-            }
             for (Long contentId : contentsId) {
-                for (UUID userId : usersId) {
-                    Content content = contentRepository.findById(contentId).orElse(null);
-                    UserContentCommunity userContentCommunity = UserContentCommunity.builder()
-                            .community(savedCommunity)
-                            .content(contentRepository.findById(contentId).orElse(null))
-                            .user(userRepository.findById(userId).orElse(null))
-                            .dateCreated(LocalDateTime.now())
-                            .id(new UserContentCommunityId(savedCommunity.getId()
-                                    , contentId
-                                    , userId))
-                            .build();
-                    userContentCommunityRepository.save(userContentCommunity);
-                    userContentCommunities.add(userContentCommunity);
-                }
-            }
-        }
-
-        for (UserContentCommunity userContentCommunity : userContentCommunities) {
-            if (communityPersistRequest.getUsersId() != null && !communityPersistRequest.getUsersId().isEmpty()) {
-                userService.addUsersToUserContentCommunity(communityPersistRequest.getUsersId(), userContentCommunity);
-                userContentCommunityRepository.save(userContentCommunity);
+                ContentCommunity contentCommunity = ContentCommunity.builder()
+                        .community(savedCommunity)
+                        .content(contentRepository.findById(contentId).orElse(null))
+                        .id(new ContentCommunityId(savedCommunity.getId(), contentId))
+                        .build();
+                contentCommunityRepository.save(contentCommunity);
+                contentCommunities.add(contentCommunity);
             }
         }
 
@@ -129,9 +105,9 @@ public class CommunityServiceImpl implements CommunityService{
 
     @Override
     public List<UserEntityOutput> findCommunityUsers(String name, int page, int size) {
-        List<UserContentCommunity> userContentCommunities = getUserContentCommunities(name, page, size);
-        List<UserEntity> userEntities = userContentCommunities.stream()
-                .map(UserContentCommunity::getUser)
+        List<ContentCommunity> contentCommunities = getContentCommunities(name, page, size);
+        List<UserEntity> userEntities = contentCommunities.stream()
+                .map(ContentCommunity::getUser)
                 .collect(Collectors.toList());
         return userEntities.stream()
                 .map(u -> conversionService.convert(u, UserEntityOutput.class))
@@ -140,9 +116,9 @@ public class CommunityServiceImpl implements CommunityService{
 
     @Override
     public List<ContentResponse> findCommunityContents(String name, int page, int size) {
-        List<UserContentCommunity> userContentCommunities = getUserContentCommunities(name, page, size);
+        List<ContentCommunity> userContentCommunities = getContentCommunities(name, page, size);
         List<Content> contents = userContentCommunities.stream()
-                .map(UserContentCommunity::getContent)
+                .map(ContentCommunity::getContent)
                 .collect(Collectors.toList());
         return contents.stream()
                 .map(u -> conversionService.convert(u, ContentResponse.class))
@@ -158,14 +134,7 @@ public class CommunityServiceImpl implements CommunityService{
             throw new NullPointerException("CommunityPersistRequest cannot be null.");
         }
 
-        List<UserContentCommunity> userContentCommunities = community.getUserContentCommunities();
-
-        for (UserContentCommunity userContentCommunity : userContentCommunities) {
-            if (communityPersistRequest.getUsersId() != null && !communityPersistRequest.getUsersId().isEmpty()) {
-                userService.addUsersToUserContentCommunity(communityPersistRequest.getUsersId(), userContentCommunity);
-                userContentCommunityRepository.save(userContentCommunity);
-            }
-        }
+        List<ContentCommunity> userContentCommunities = community.getContentCommunities();
 
         log.info("Users added to community. Class CommunityServiceImpl, method addUsers");
         return conversionService.convert(community, CommunityResponse.class);
@@ -185,12 +154,12 @@ public class CommunityServiceImpl implements CommunityService{
             throw new NullPointerException("CommunityPersistRequest cannot be null.");
         }
 
-        List<UserContentCommunity> userContentCommunities = community.getUserContentCommunities();
+        List<ContentCommunity> userContentCommunities = community.getContentCommunities();
 
-        for (UserContentCommunity userContentCommunity : userContentCommunities) {
+        for (ContentCommunity contentCommunity : userContentCommunities) {
             if (communityPersistRequest.getUsersId() != null && !communityPersistRequest.getUsersId().isEmpty()) {
-                contentService.addContentsToUserContentCommunity(communityPersistRequest.getContentsId(), userContentCommunity);
-                userContentCommunityRepository.save(userContentCommunity);
+                contentService.addContentsToUserContentCommunity(communityPersistRequest.getContentsId(), contentCommunity);
+                contentCommunityRepository.save(contentCommunity);
             }
         }
 
@@ -215,9 +184,9 @@ public class CommunityServiceImpl implements CommunityService{
         }
     }
 
-    private List<UserContentCommunity> getUserContentCommunities(String name, int page, int size) {
+    private List<ContentCommunity> getContentCommunities(String name, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
-        return userContentCommunityRepository
+        return contentCommunityRepository
                 .findAllByCommunityName(name, pageRequest);
     }
 }

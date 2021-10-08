@@ -3,7 +3,7 @@ package com.irlix.irlixbook.dao.mapper.community;
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
 import com.irlix.irlixbook.dao.entity.Community;
 import com.irlix.irlixbook.dao.entity.Content;
-import com.irlix.irlixbook.dao.entity.UserContentCommunity;
+import com.irlix.irlixbook.dao.entity.ContentCommunity;
 import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.model.community.response.CommunityResponse;
 import com.irlix.irlixbook.exception.UnauthorizedException;
@@ -20,17 +20,17 @@ public class CommunityToCommunityResponse implements Converter<Community, Commun
     @Override
     public CommunityResponse convert(Community community) {
 
-        List<UserContentCommunity> userContentCommunities = community.getUserContentCommunities();
+        List<ContentCommunity> userContentCommunities = community.getUserContentCommunities();
         List<Content> contents = null;
         List<UserEntity> users = null;
 
         if (!CollectionUtils.isEmpty(userContentCommunities)) {
 
             contents = userContentCommunities.stream()
-                    .map(UserContentCommunity::getContent)
+                    .map(ContentCommunity::getContent)
                     .collect(Collectors.toList());
             users = userContentCommunities.stream()
-                    .map(UserContentCommunity::getUser)
+                    .map(ContentCommunity::getUser)
                     .collect(Collectors.toList());
 
             try {

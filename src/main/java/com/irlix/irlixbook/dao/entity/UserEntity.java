@@ -1,6 +1,6 @@
 package com.irlix.irlixbook.dao.entity;
 
-import com.irlix.irlixbook.dao.entity.enams.StatusEnam;
+import com.irlix.irlixbook.dao.entity.enams.StatusEnum;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -87,9 +87,9 @@ public class UserEntity implements UserDetails {
     @Column(name = "registration_date")
     private LocalDateTime registrationDate;
 
-    @Enumerated(EnumType.STRING)
-    @Column
-    private StatusEnam status;
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "status_id")
+    private Status status;
 
     @OneToMany(mappedBy = "creator", cascade = CascadeType.MERGE)
     private List<Content> contents;
@@ -105,9 +105,6 @@ public class UserEntity implements UserDetails {
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<ContentUser> contentUsers;
-
-    @OneToMany(mappedBy = "user")
-    private List<UserContentCommunity> userContentCommunities;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

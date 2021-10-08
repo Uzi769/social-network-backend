@@ -8,10 +8,10 @@ public enum RoleEnum {
     USER,
     GUEST;
 
-    public StatusEnam getStatus(LocalDateTime registrationDate) {
+    public StatusEnum getStatus(LocalDateTime registrationDate) {
 
         if (this == ADMIN) {
-            return StatusEnam.COMMUNITY_LEADER;
+            return StatusEnum.COMMUNITY_LEADER;
         } else {
 
             if (registrationDate != null) {
@@ -19,13 +19,13 @@ public enum RoleEnum {
                 LocalDateTime eventDate = LocalDateTime.now().minusMonths(2);
 
                 if (registrationDate.isBefore(eventDate)) {
-                    return StatusEnam.COMMUNITY_MEMBER;
+                    return StatusEnum.COMMUNITY_MEMBER;
                 } else {
-                    return StatusEnam.NEW_MEMBER;
+                    return StatusEnum.NEW_MEMBER;
                 }
 
             } else {
-                return StatusEnam.NEW_MEMBER;
+                return StatusEnum.NEW_MEMBER;
             }
 
         }

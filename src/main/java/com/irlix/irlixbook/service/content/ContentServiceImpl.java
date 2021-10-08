@@ -37,7 +37,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.irlix.irlixbook.utils.Consts.CONTENT_NOT_FOUND;
-import static com.irlix.irlixbook.utils.Consts.USER_NOT_FOUND;
 
 @Log4j2
 @Service
@@ -371,7 +370,7 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public List<Content> addContentsToUserContentCommunity(List<Long> contentsIdList,
-                                                           UserContentCommunity userContentCommunity) {
+                                                           ContentCommunity contentCommunity) {
         List<Content> contents = new ArrayList<>();
         contentsIdList.stream()
                 .map(id -> contentRepository.findById(id).orElseThrow(() -> {
@@ -379,7 +378,7 @@ public class ContentServiceImpl implements ContentService {
                     return new ConflictException(CONTENT_NOT_FOUND);
                 }))
                 .forEach(content -> {
-                    content.getUserContentCommunities().add(userContentCommunity);
+                    content.getContentCommunities().add(contentCommunity);
                     Content savedContent = contentRepository.save(content);
                     contents.add(savedContent);
                 });

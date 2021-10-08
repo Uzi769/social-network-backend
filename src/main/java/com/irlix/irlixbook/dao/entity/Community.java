@@ -40,7 +40,7 @@ public class Community {
     private String admin;
 
     @OneToMany(mappedBy = "community")
-    private List<UserContentCommunity> userContentCommunities;
+    private List<ContentCommunity> contentCommunities;
 
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "user_id")

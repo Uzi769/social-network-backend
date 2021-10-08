@@ -71,5 +71,5 @@ public class Content {
     private List<Picture> pictures;
 
     @OneToMany(mappedBy = "content")
-    private List<UserContentCommunity> userContentCommunities;
+    private List<ContentCommunity> contentCommunities;
 }
