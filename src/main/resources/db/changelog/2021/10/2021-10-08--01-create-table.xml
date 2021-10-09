@@ -79,6 +79,12 @@
                                  referencedColumnNames="id"
                                  referencedTableName="role"/>
     </changeSet>
+    <changeSet author="Kurkin" id="08102021-5">
+        <insert tableName="community">
+            <column name="name" value="start"/>
+            <column name="short_description" value="General community for everyone"/>
+        </insert>
+    </changeSet>
 
 </databaseChangeLog>
 

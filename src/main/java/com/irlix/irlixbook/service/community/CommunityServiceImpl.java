@@ -2,14 +2,13 @@ package com.irlix.irlixbook.service.community;
 
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
 import com.irlix.irlixbook.dao.entity.*;
+import com.irlix.irlixbook.dao.entity.enams.StatusEnum;
 import com.irlix.irlixbook.dao.model.community.request.CommunityPersistRequest;
 import com.irlix.irlixbook.dao.model.community.response.CommunityResponse;
 import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
 import com.irlix.irlixbook.exception.NotFoundException;
-import com.irlix.irlixbook.repository.CommunityRepository;
-import com.irlix.irlixbook.repository.ContentCommunityRepository;
-import com.irlix.irlixbook.repository.ContentRepository;
+import com.irlix.irlixbook.repository.*;
 import com.irlix.irlixbook.service.content.ContentService;
 import com.irlix.irlixbook.service.user.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +35,8 @@ public class CommunityServiceImpl implements CommunityService{
     private final ContentService contentService;
     private final ContentRepository contentRepository;
     private final UserService userService;
+    private final StatusRepository statusRepository;
+    private final RoleStatusUserCommunityRepository roleStatusUserCommunityRepository;
 
     @Value("${url.root}")
     private String urlRoot;
@@ -67,12 +68,12 @@ public class CommunityServiceImpl implements CommunityService{
 
         RoleStatusUserCommunity roleStatusUserCommunity = RoleStatusUserCommunity.builder()
                 .role(userFromContext.getRole())
-                .status(userFromContext.getStatus())
+                .status(statusRepository.findByName(StatusEnum.COMMUNITY_LEADER))
                 .user(userFromContext)
                 .community(savedCommunity)
                 .Id(new RoleStatusUserCommunityId(
                         userFromContext.getRole().getId(),
-                        userFromContext.getStatus().getId(),
+                        statusRepository.findByName(StatusEnum.COMMUNITY_LEADER).getId(),
                         userFromContext.getId(),
                         savedCommunity.getId()))
                 .build();
@@ -108,9 +109,9 @@ public class CommunityServiceImpl implements CommunityService{
 
     @Override
     public List<UserEntityOutput> findCommunityUsers(String name, int page, int size) {
-        List<RoleStatusUserCommunity> roleStatusUserCommunities = getContentCommunities(name, page, size);
+        List<RoleStatusUserCommunity> roleStatusUserCommunities = getRoleStatusUserCommunities(name, page, size);
         List<UserEntity> userEntities = roleStatusUserCommunities.stream()
-                .map(ContentCommunity::getUser)
+                .map(RoleStatusUserCommunity::getUser)
                 .collect(Collectors.toList());
         return userEntities.stream()
                 .map(u -> conversionService.convert(u, UserEntityOutput.class))
@@ -137,7 +138,7 @@ public class CommunityServiceImpl implements CommunityService{
             throw new NullPointerException("CommunityPersistRequest cannot be null.");
         }
 
-        List<ContentCommunity> userContentCommunities = community.getContentCommunities();
+        userService.addUsersToRoleStatusUserCommunity(communityPersistRequest.getUsersId(), community);
 
         log.info("Users added to community. Class CommunityServiceImpl, method addUsers");
         return conversionService.convert(community, CommunityResponse.class);
@@ -178,7 +179,7 @@ public class CommunityServiceImpl implements CommunityService{
                 });
     }
 
-    private List<Community> getByName(String name) {
+    private Community getByName(String name) {
         try {
             return communityRepository.findByName(name);
         } catch (IllegalArgumentException e) {
@@ -191,5 +192,11 @@ public class CommunityServiceImpl implements CommunityService{
         PageRequest pageRequest = PageRequest.of(page, size);
         return contentCommunityRepository
                 .findAllByCommunityName(name, pageRequest);
+    }
+
+    private List<RoleStatusUserCommunity> getRoleStatusUserCommunities(String name, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return roleStatusUserCommunityRepository
+                .findByCommunityName(name, pageRequest);
     }
 }

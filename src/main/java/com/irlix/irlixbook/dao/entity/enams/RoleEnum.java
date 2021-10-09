@@ -10,7 +10,7 @@ public enum RoleEnum {
 
     public StatusEnum getStatus(LocalDateTime registrationDate) {
 
-        if (this == ADMIN) {
+        if (this == ADMIN) { //todo delete status from role
             return StatusEnum.COMMUNITY_LEADER;
         } else {
 

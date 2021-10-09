@@ -12,10 +12,7 @@ import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
 import com.irlix.irlixbook.exception.BadRequestException;
 import com.irlix.irlixbook.exception.ConflictException;
 import com.irlix.irlixbook.exception.NotFoundException;
-import com.irlix.irlixbook.repository.ContentUserRepository;
-import com.irlix.irlixbook.repository.RoleRepository;
-import com.irlix.irlixbook.repository.RoleStatusUserCommunityRepository;
-import com.irlix.irlixbook.repository.UserRepository;
+import com.irlix.irlixbook.repository.*;
 import com.irlix.irlixbook.repository.summary.UserRepositorySummary;
 import com.irlix.irlixbook.service.content.ContentService;
 import com.irlix.irlixbook.service.messaging.MessageSender;
@@ -55,6 +52,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final UserRepositorySummary userRepositorySummary;
     private final ContentUserRepository contentUserRepository;
     private final RoleStatusUserCommunityRepository roleStatusUserCommunityRepository;
+    private final CommunityRepository communityRepository;
+    private final StatusRepository statusRepository;
+
+    private final Community START_COMMUNITY = communityRepository.findByName("start");
+    private final Status NEW_MEMBER_STATUS = statusRepository.findByName(StatusEnum.NEW_MEMBER);
 
     @Autowired
     @Qualifier("mailSenderImpl")
@@ -71,15 +73,39 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
             if (role != null) {
 
-                StatusEnum status = role.getName().getStatus(byStatus.getRegistrationDate());
-                byStatus.setStatus(status);
+                RoleStatusUserCommunity roleStatusUserCommunity = RoleStatusUserCommunity.builder()
+                        .role(role)
+                        .status(NEW_MEMBER_STATUS)
+                        .user(byStatus)
+                        .community(START_COMMUNITY)
+                        .Id(new RoleStatusUserCommunityId(
+                                role.getId(),
+                                NEW_MEMBER_STATUS.getId(),
+                                byStatus.getId(),
+                                START_COMMUNITY.getId()))
+                        .build();
+                roleStatusUserCommunityRepository.save(roleStatusUserCommunity);
+
+                byStatus.setStatus(roleStatusUserCommunity.getStatus());
 
             } else {
 
-                Optional<Role> byName = roleRepository.findByName(RoleEnum.USER);
+                Optional<Role> byName = roleRepository.findByName(RoleEnum.GUEST);
                 Role newRole = byName.get();
-                StatusEnum status = newRole.getName().getStatus(byStatus.getRegistrationDate());
-                byStatus.setStatus(status);
+                RoleStatusUserCommunity roleStatusUserCommunity = RoleStatusUserCommunity.builder()
+                        .role(newRole)
+                        .status(NEW_MEMBER_STATUS)
+                        .user(byStatus)
+                        .community(START_COMMUNITY)
+                        .Id(new RoleStatusUserCommunityId(
+                                newRole.getId(),
+                                NEW_MEMBER_STATUS.getId(),
+                                byStatus.getId(),
+                                START_COMMUNITY.getId()))
+                        .build();
+                roleStatusUserCommunityRepository.save(roleStatusUserCommunity);
+
+                byStatus.setStatus(roleStatusUserCommunity.getStatus());
                 byStatus.setRole(newRole);
 
             }
@@ -234,8 +260,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             roleRepository.findByName(roleEnum).ifPresent(user::setRole);
             userRepository.save(user);
             log.info("User : {} assigned role: {}", persistedUser.getEmail(), roleEnum);
-            StatusEnum newStatus = roleEnum.getStatus(persistedUser.getRegistrationDate());
-            persistedUser.setStatus(newStatus);
+//            StatusEnum newStatus = roleEnum.getStatus(persistedUser.getRegistrationDate());
+//            persistedUser.setStatus(newStatus);
 
             return conversionService.convert(persistedUser, UserEntityOutput.class);
 
@@ -370,8 +396,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         for (UserEntity user : users) {
             Role role = user.getRole();
-            StatusEnum status = role.getName().getStatus(user.getRegistrationDate());
-            user.setStatus(status);
+//            StatusEnum status = role.getName().getStatus(user.getRegistrationDate());
+//            user.setStatus(status);
+            //todo scheduling changing of status
         }
 
         userRepository.saveAll(users);
@@ -452,8 +479,21 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         roleRepository.findByName(userCreateInput.getRole()).ifPresent(userEntity::setRole);
 
         Role role = userEntity.getRole();
-        StatusEnum status = role.getName().getStatus(null);
-        userEntity.setStatus(status);
+
+        RoleStatusUserCommunity roleStatusUserCommunity = RoleStatusUserCommunity.builder()
+                .role(role)
+                .status(NEW_MEMBER_STATUS)
+                .user(userEntity)
+                .community(START_COMMUNITY)
+                .Id(new RoleStatusUserCommunityId(
+                        role.getId(),
+                        NEW_MEMBER_STATUS.getId(),
+                        userEntity.getId(),
+                        START_COMMUNITY.getId()))
+                .build();
+        roleStatusUserCommunityRepository.save(roleStatusUserCommunity);
+
+        userEntity.setStatus(roleStatusUserCommunity.getStatus());
         userEntity.setRegistrationDate(LocalDateTime.now());
         UserEntity savedUser = userRepository.save(userEntity);
         log.info(USER_SAVED);
@@ -487,12 +527,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 .forEach(user -> {
                     RoleStatusUserCommunity roleStatusUserCommunity =RoleStatusUserCommunity.builder()
                             .role(user.getRole())
-                            .status(user.getStatus())
+                            .status(statusRepository.findByName(StatusEnum.NEW_MEMBER))
                             .user(user)
                             .community(community)
                             .Id(new RoleStatusUserCommunityId(
                                     user.getRole().getId(),
-                                    user.getStatus().getId(),
+                                    statusRepository.findByName(StatusEnum.NEW_MEMBER).getId(),
                                     user.getId(),
                                     community.getId()))
                             .build();
