@@ -55,9 +55,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final CommunityRepository communityRepository;
     private final StatusRepository statusRepository;
 
-    private final Community START_COMMUNITY = communityRepository.findByName("start");
-    private final Status NEW_MEMBER_STATUS = statusRepository.findByName(StatusEnum.NEW_MEMBER);
-
     @Autowired
     @Qualifier("mailSenderImpl")
     private MessageSender messageSender;
@@ -75,14 +72,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
                 RoleStatusUserCommunity roleStatusUserCommunity = RoleStatusUserCommunity.builder()
                         .role(role)
-                        .status(NEW_MEMBER_STATUS)
+                        .status(statusRepository.findByName(StatusEnum.NEW_MEMBER))
                         .user(byStatus)
-                        .community(START_COMMUNITY)
+                        .community(communityRepository.findByName("start"))
                         .Id(new RoleStatusUserCommunityId(
                                 role.getId(),
-                                NEW_MEMBER_STATUS.getId(),
+                                statusRepository.findByName(StatusEnum.NEW_MEMBER).getId(),
                                 byStatus.getId(),
-                                START_COMMUNITY.getId()))
+                                communityRepository.findByName("start").getId()))
                         .build();
                 roleStatusUserCommunityRepository.save(roleStatusUserCommunity);
 
@@ -94,14 +91,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 Role newRole = byName.get();
                 RoleStatusUserCommunity roleStatusUserCommunity = RoleStatusUserCommunity.builder()
                         .role(newRole)
-                        .status(NEW_MEMBER_STATUS)
+                        .status(statusRepository.findByName(StatusEnum.NEW_MEMBER))
                         .user(byStatus)
-                        .community(START_COMMUNITY)
+                        .community(communityRepository.findByName("start"))
                         .Id(new RoleStatusUserCommunityId(
                                 newRole.getId(),
-                                NEW_MEMBER_STATUS.getId(),
+                                statusRepository.findByName(StatusEnum.NEW_MEMBER).getId(),
                                 byStatus.getId(),
-                                START_COMMUNITY.getId()))
+                                communityRepository.findByName("start").getId()))
                         .build();
                 roleStatusUserCommunityRepository.save(roleStatusUserCommunity);
 
@@ -482,14 +479,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         RoleStatusUserCommunity roleStatusUserCommunity = RoleStatusUserCommunity.builder()
                 .role(role)
-                .status(NEW_MEMBER_STATUS)
+                .status(statusRepository.findByName(StatusEnum.NEW_MEMBER))
                 .user(userEntity)
-                .community(START_COMMUNITY)
+                .community(communityRepository.findByName("start"))
                 .Id(new RoleStatusUserCommunityId(
                         role.getId(),
-                        NEW_MEMBER_STATUS.getId(),
+                        statusRepository.findByName(StatusEnum.NEW_MEMBER).getId(),
                         userEntity.getId(),
-                        START_COMMUNITY.getId()))
+                        communityRepository.findByName("start").getId()))
                 .build();
         roleStatusUserCommunityRepository.save(roleStatusUserCommunity);
 
