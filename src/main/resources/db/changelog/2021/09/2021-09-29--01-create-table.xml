@@ -20,22 +20,42 @@
         </createTable>
     </changeSet>
     <changeSet author="Kurkin" id="29092021-2">
-        <createTable tableName="content_community">
+        <createTable tableName="user_content_community">
             <column name="community_id" type="UUID">
-                <constraints nullable="true" primaryKey="true" primaryKeyName="pk_content_community"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_content_community"/>
             </column>
             <column name="content_id" type="BIGINT">
-                <constraints nullable="true" primaryKey="true" primaryKeyName="pk_content_community"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_content_community"/>
+            </column>
+            <column name="user_id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_content_community"/>
+            </column>
+            <column name="created_on" type="DATETIME">
             </column>
         </createTable>
     </changeSet>
+    <changeSet id="29092021-3" author="Kurkin">
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="community"
+                                 constraintName="FK_COMMUNITY_ON_USER"
+                                 referencedColumnNames="id"
+                                 referencedTableName="user_entity"/>
+    </changeSet>
     <changeSet id="29092021-4" author="Kurkin">
         <addForeignKeyConstraint baseColumnNames="content_id"
-                                  baseTableName="content_community"
-                                  constraintName="FK_CONTENT_COMMUNITY_ON_CONTENT"
-                                  referencedColumnNames="id"
-                                  referencedTableName="content"/>
+                                 baseTableName="user_content_community"
+                                 constraintName="FK_USER_CONTENT_COMMUNITY_ON_CONTENT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="content"/>
     </changeSet>
+    <changeSet id="29092021-5" author="Kurkin">
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="user_content_community"
+                                 constraintName="FK_USER_CONTENT_COMMUNITY_ON_USER"
+                                 referencedColumnNames="id"
+                                 referencedTableName="user_entity"/>
+    </changeSet>
+
 </databaseChangeLog>
 
 
