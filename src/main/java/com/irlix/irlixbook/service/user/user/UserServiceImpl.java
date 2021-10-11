@@ -215,9 +215,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             throw new NotFoundException("User with id : " + user.getId() + ", and email: " + user.getEmail() + " not found!!!");
 
         }
-
     }
-
 
     @Override
     @Transactional(readOnly = true)
@@ -335,18 +333,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Scheduled(cron = "1 1 */1 * * *")
     public void changeStatus() {
 
-        LocalDateTime eventDate = LocalDateTime.now().minusMonths(2).plusDays(1);
-        List<UserEntity> users = userRepository.findByRegistrationDateLessThan(eventDate);
+        LocalDateTime limitDate = LocalDateTime.now().minusMonths(2).plusDays(1);
+        List<RoleStatusUserCommunity> users = roleStatusUserCommunityRepository.findByDateJoinedBefore(limitDate);
 
-        for (UserEntity user : users) {
-            Role role = user.getRole();
-//            StatusEnum status = role.getName().getStatus(user.getRegistrationDate());
-//            user.setStatus(status);
-            //todo scheduling changing of status
-        }
-
-        userRepository.saveAll(users);
-
+        users.forEach(u -> u.setStatus(statusRepository.findByName(StatusEnum.COMMUNITY_MEMBER)));
+        roleStatusUserCommunityRepository.saveAll(users);
     }
 
     private void checkingPhoneForUniqueness(UserEntity userEntity, String phone) {

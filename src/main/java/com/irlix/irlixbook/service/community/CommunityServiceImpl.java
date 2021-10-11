@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -60,6 +61,7 @@ public class CommunityServiceImpl implements CommunityService{
         Community savedCommunity = communityRepository.save(community);
         savedCommunity.setDeeplink(urlRoot + savedCommunity.getName() + "/" + savedCommunity.getId());
         savedCommunity.setRegistrationLink(urlRoot + savedCommunity.getName() + "/" + savedCommunity.getId());
+        savedCommunity.setCreatingDate(LocalDateTime.now());
         communityRepository.save(savedCommunity);
 
         if (communityPersistRequest.getContentsId() != null) {
@@ -77,6 +79,7 @@ public class CommunityServiceImpl implements CommunityService{
                         userFromContext.getId(),
                         savedCommunity.getId()))
                 .build();
+        roleStatusUserCommunityRepository.save(roleStatusUserCommunity);
 
         if (communityPersistRequest.getUsersId() != null) {
             userService.addUsersToRoleStatusUserCommunity(communityPersistRequest.getUsersId(), savedCommunity);

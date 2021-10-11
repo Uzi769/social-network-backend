@@ -1,9 +1,11 @@
 package com.irlix.irlixbook.dao.entity;
 
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -48,4 +50,8 @@ public class Community {
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "user_id")
     private UserEntity creator;
+
+    @Column(name = "date_of_creation")
+    @Builder.Default
+    private LocalDateTime creatingDate = LocalDateTime.now();;
 }
