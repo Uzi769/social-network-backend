@@ -24,6 +24,4 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
 
     List<UserEntity> findByNameContainingIgnoreCaseAndSurnameContainingIgnoreCase(String name, String surname, Pageable pageable);
 
-    List<UserEntity> findByStatus(StatusEnum statusEnum);
-
 }

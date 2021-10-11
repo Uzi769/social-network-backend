@@ -108,6 +108,7 @@ public class CommunityServiceImpl implements CommunityService{
     }
 
     @Override
+    @Transactional
     public List<UserEntityOutput> findCommunityUsers(String name, int page, int size) {
         List<RoleStatusUserCommunity> roleStatusUserCommunities = getRoleStatusUserCommunities(name, page, size);
         List<UserEntity> userEntities = roleStatusUserCommunities.stream()
@@ -119,6 +120,7 @@ public class CommunityServiceImpl implements CommunityService{
     }
 
     @Override
+    @Transactional
     public List<ContentResponse> findCommunityContents(String name, int page, int size) {
         List<ContentCommunity> userContentCommunities = getContentCommunities(name, page, size);
         List<Content> contents = userContentCommunities.stream()
@@ -145,11 +147,20 @@ public class CommunityServiceImpl implements CommunityService{
     }
 
     @Override
+    @Transactional
     public void delete(String name) {
 
+        Community communityForDelete = getByName(name);
+        if (communityForDelete != null) {
+            communityRepository.delete(communityForDelete);
+            log.info("Community deleted. Class CommunityServiceImpl, method delete");
+        } else {
+            throw new NotFoundException("Community with name " + name +  "not found.");
+        }
     }
 
     @Override
+    @Transactional
     public CommunityResponse addContents(CommunityPersistRequest communityPersistRequest) {
         Community community = conversionService.convert(communityPersistRequest, Community.class);
 

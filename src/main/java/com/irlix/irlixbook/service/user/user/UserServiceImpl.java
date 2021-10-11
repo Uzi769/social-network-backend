@@ -59,59 +59,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Qualifier("mailSenderImpl")
     private MessageSender messageSender;
 
-    @PostConstruct
-    private void init() {
-
-        List<UserEntity> users = userRepository.findByStatus(null);
-
-        for (UserEntity byStatus : users) {
-
-            Role role = byStatus.getRole();
-
-            if (role != null) {
-
-                RoleStatusUserCommunity roleStatusUserCommunity = RoleStatusUserCommunity.builder()
-                        .role(role)
-                        .status(statusRepository.findByName(StatusEnum.NEW_MEMBER))
-                        .user(byStatus)
-                        .community(communityRepository.findByName("start"))
-                        .Id(new RoleStatusUserCommunityId(
-                                role.getId(),
-                                statusRepository.findByName(StatusEnum.NEW_MEMBER).getId(),
-                                byStatus.getId(),
-                                communityRepository.findByName("start").getId()))
-                        .build();
-                roleStatusUserCommunityRepository.save(roleStatusUserCommunity);
-
-                byStatus.setStatus(roleStatusUserCommunity.getStatus());
-
-            } else {
-
-                Optional<Role> byName = roleRepository.findByName(RoleEnum.GUEST);
-                Role newRole = byName.get();
-                RoleStatusUserCommunity roleStatusUserCommunity = RoleStatusUserCommunity.builder()
-                        .role(newRole)
-                        .status(statusRepository.findByName(StatusEnum.NEW_MEMBER))
-                        .user(byStatus)
-                        .community(communityRepository.findByName("start"))
-                        .Id(new RoleStatusUserCommunityId(
-                                newRole.getId(),
-                                statusRepository.findByName(StatusEnum.NEW_MEMBER).getId(),
-                                byStatus.getId(),
-                                communityRepository.findByName("start").getId()))
-                        .build();
-                roleStatusUserCommunityRepository.save(roleStatusUserCommunity);
-
-                byStatus.setStatus(roleStatusUserCommunity.getStatus());
-                byStatus.setRole(newRole);
-
-            }
-        }
-
-        userRepository.saveAll(users);
-
-    }
-
     @Override
     public UserEntity findById(UUID id) {
         return userRepository.findById(id).orElseThrow(() -> {
@@ -490,7 +437,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 .build();
         roleStatusUserCommunityRepository.save(roleStatusUserCommunity);
 
-        userEntity.setStatus(roleStatusUserCommunity.getStatus());
         userEntity.setRegistrationDate(LocalDateTime.now());
         UserEntity savedUser = userRepository.save(userEntity);
         log.info(USER_SAVED);

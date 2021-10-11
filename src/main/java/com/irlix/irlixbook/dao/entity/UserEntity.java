@@ -87,10 +87,6 @@ public class UserEntity implements UserDetails {
     @Column(name = "registration_date")
     private LocalDateTime registrationDate;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "status_id")
-    private Status status;
-
     @OneToMany(mappedBy = "creator", cascade = CascadeType.MERGE)
     private List<Content> contents;
 

@@ -23,9 +23,6 @@ public class Status {
     @Column
     private StatusEnum name;
 
-    @OneToMany(mappedBy = "status", cascade = CascadeType.MERGE)
-    private List<UserEntity> users;
-
     @ManyToMany(cascade = CascadeType.MERGE)
     @JoinTable(name = "role_permission",
             joinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")},
