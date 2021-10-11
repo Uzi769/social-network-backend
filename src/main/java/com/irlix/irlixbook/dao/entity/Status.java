@@ -1,6 +1,6 @@
 package com.irlix.irlixbook.dao.entity;
 
-import com.irlix.irlixbook.dao.entity.enams.RoleEnum;
+import com.irlix.irlixbook.dao.entity.enams.StatusEnum;
 import lombok.*;
 
 import javax.persistence.*;
@@ -9,11 +9,11 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "role")
+@Table(name = "status")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Role {
+public class Status {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,10 +21,7 @@ public class Role {
 
     @Enumerated(EnumType.STRING)
     @Column
-    private RoleEnum name;
-
-    @OneToMany(mappedBy = "role", cascade = CascadeType.MERGE)
-    private List<UserEntity> users;
+    private StatusEnum name;
 
     @ManyToMany(cascade = CascadeType.MERGE)
     @JoinTable(name = "role_permission",
@@ -32,6 +29,7 @@ public class Role {
             inverseJoinColumns = {@JoinColumn(name = "permission_id", referencedColumnName = "id")})
     private List<Permission> permissions;
 
-    @OneToMany(mappedBy = "role", cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "status")
     private List<RoleStatusUserCommunity> roleStatusUserCommunities;
+
 }

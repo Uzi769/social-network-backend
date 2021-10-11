@@ -1,7 +1,7 @@
 package com.irlix.irlixbook.repository;
 
 import com.irlix.irlixbook.dao.entity.UserEntity;
-import com.irlix.irlixbook.dao.entity.enams.StatusEnam;
+import com.irlix.irlixbook.dao.entity.enams.StatusEnum;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -23,7 +23,5 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
     List<UserEntity> findByNameContainingIgnoreCase(String name, Pageable pageable);
 
     List<UserEntity> findByNameContainingIgnoreCaseAndSurnameContainingIgnoreCase(String name, String surname, Pageable pageable);
-
-    List<UserEntity> findByStatus(StatusEnam statusEnam);
 
 }

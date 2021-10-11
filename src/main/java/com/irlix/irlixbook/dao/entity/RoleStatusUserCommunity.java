@@ -5,29 +5,33 @@ import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
-@Table(name = "user_content_community")
+@Table(name = "role_status_user_community")
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @Builder
-public class UserContentCommunity {
+public class RoleStatusUserCommunity {
 
     @EmbeddedId
-    private UserContentCommunityId id;
+    private RoleStatusUserCommunityId Id;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @MapsId("communityId")
-    private Community community;
+    @MapsId("roleId")
+    private Role role;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @MapsId("statusId")
+    private Status status;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @MapsId("userId")
     private UserEntity user;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @MapsId("contentId")
-    private Content content;
+    @MapsId("communityId")
+    private Community community;
 
     @Column(name = "created_on")
     @Builder.Default

@@ -8,5 +8,5 @@ import java.util.UUID;
 
 public interface CommunityRepository extends JpaRepository<Community, UUID> {
 
-    List<Community> findByName(String name);
+    Community findByName(String name);
 }

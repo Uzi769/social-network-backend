@@ -1,9 +1,6 @@
 package com.irlix.irlixbook.dao.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -15,14 +12,12 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
-public class UserContentCommunityId implements Serializable {
+@EqualsAndHashCode
+public class ContentCommunityId implements Serializable {
 
     @Column(name = "community_id")
     private UUID communityId;
 
     @Column(name = "content_id")
     private Long contentId;
-
-    @Column(name = "user_id")
-    private UUID userId;
 }

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet id="11102021-1" author="Kurkin">
+        <insert tableName="status">
+            <column name="id" value="1"/>
+            <column name="name" value="COMMUNITY_LEADER"/>
+        </insert>
+        <insert tableName="status">
+            <column name="id" value="2"/>
+            <column name="name" value="COMMUNITY_MEMBER"/>
+        </insert>
+        <insert tableName="status">
+            <column name="id" value="3"/>
+            <column name="name" value="NEW_MEMBER"/>
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>

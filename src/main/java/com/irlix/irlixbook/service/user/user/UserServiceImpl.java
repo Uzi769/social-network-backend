@@ -3,7 +3,7 @@ package com.irlix.irlixbook.service.user.user;
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
 import com.irlix.irlixbook.dao.entity.*;
 import com.irlix.irlixbook.dao.entity.enams.RoleEnum;
-import com.irlix.irlixbook.dao.entity.enams.StatusEnam;
+import com.irlix.irlixbook.dao.entity.enams.StatusEnum;
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
 import com.irlix.irlixbook.dao.model.user.input.UserCreateInput;
 import com.irlix.irlixbook.dao.model.user.input.UserSearchInput;
@@ -12,13 +12,10 @@ import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
 import com.irlix.irlixbook.exception.BadRequestException;
 import com.irlix.irlixbook.exception.ConflictException;
 import com.irlix.irlixbook.exception.NotFoundException;
-import com.irlix.irlixbook.repository.ContentUserRepository;
-import com.irlix.irlixbook.repository.RoleRepository;
-import com.irlix.irlixbook.repository.UserRepository;
+import com.irlix.irlixbook.repository.*;
 import com.irlix.irlixbook.repository.summary.UserRepositorySummary;
 import com.irlix.irlixbook.service.content.ContentService;
 import com.irlix.irlixbook.service.messaging.MessageSender;
-import com.irlix.irlixbook.utils.Consts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,39 +51,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final ContentService contentService;
     private final UserRepositorySummary userRepositorySummary;
     private final ContentUserRepository contentUserRepository;
+    private final RoleStatusUserCommunityRepository roleStatusUserCommunityRepository;
+    private final CommunityRepository communityRepository;
+    private final StatusRepository statusRepository;
 
     @Autowired
     @Qualifier("mailSenderImpl")
     private MessageSender messageSender;
-
-    @PostConstruct
-    private void init() {
-
-        List<UserEntity> users = userRepository.findByStatus(null);
-
-        for (UserEntity byStatus : users) {
-
-            Role role = byStatus.getRole();
-
-            if (role != null) {
-
-                StatusEnam status = role.getName().getStatus(byStatus.getRegistrationDate());
-                byStatus.setStatus(status);
-
-            } else {
-
-                Optional<Role> byName = roleRepository.findByName(RoleEnum.USER);
-                Role newRole = byName.get();
-                StatusEnam status = newRole.getName().getStatus(byStatus.getRegistrationDate());
-                byStatus.setStatus(status);
-                byStatus.setRole(newRole);
-
-            }
-        }
-
-        userRepository.saveAll(users);
-
-    }
 
     @Override
     public UserEntity findById(UUID id) {
@@ -233,8 +204,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             roleRepository.findByName(roleEnum).ifPresent(user::setRole);
             userRepository.save(user);
             log.info("User : {} assigned role: {}", persistedUser.getEmail(), roleEnum);
-            StatusEnam newStatus = roleEnum.getStatus(persistedUser.getRegistrationDate());
-            persistedUser.setStatus(newStatus);
+//            StatusEnum newStatus = roleEnum.getStatus(persistedUser.getRegistrationDate());
+//            persistedUser.setStatus(newStatus);
 
             return conversionService.convert(persistedUser, UserEntityOutput.class);
 
@@ -369,8 +340,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         for (UserEntity user : users) {
             Role role = user.getRole();
-            StatusEnam status = role.getName().getStatus(user.getRegistrationDate());
-            user.setStatus(status);
+//            StatusEnum status = role.getName().getStatus(user.getRegistrationDate());
+//            user.setStatus(status);
+            //todo scheduling changing of status
         }
 
         userRepository.saveAll(users);
@@ -451,8 +423,20 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         roleRepository.findByName(userCreateInput.getRole()).ifPresent(userEntity::setRole);
 
         Role role = userEntity.getRole();
-        StatusEnam status = role.getName().getStatus(null);
-        userEntity.setStatus(status);
+
+        RoleStatusUserCommunity roleStatusUserCommunity = RoleStatusUserCommunity.builder()
+                .role(role)
+                .status(statusRepository.findByName(StatusEnum.NEW_MEMBER))
+                .user(userEntity)
+                .community(communityRepository.findByName("start"))
+                .Id(new RoleStatusUserCommunityId(
+                        role.getId(),
+                        statusRepository.findByName(StatusEnum.NEW_MEMBER).getId(),
+                        userEntity.getId(),
+                        communityRepository.findByName("start").getId()))
+                .build();
+        roleStatusUserCommunityRepository.save(roleStatusUserCommunity);
+
         userEntity.setRegistrationDate(LocalDateTime.now());
         UserEntity savedUser = userRepository.save(userEntity);
         log.info(USER_SAVED);
@@ -475,18 +459,30 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public List<UserEntity> addUsersToUserContentCommunity(List<UUID> usersIdList, UserContentCommunity userContentCommunity) {
-        List<UserEntity> users = new ArrayList<>();
+    public List<RoleStatusUserCommunity> addUsersToRoleStatusUserCommunity(List<UUID> usersIdList,
+                                                                Community community) {
+        List<RoleStatusUserCommunity> roleStatusUserCommunities = new ArrayList<>();
         usersIdList.stream()
                 .map(id -> userRepository.findById(id).orElseThrow(() -> {
                     log.error(USER_NOT_FOUND);
                     return new ConflictException(USER_NOT_FOUND);
                 }))
                 .forEach(user -> {
-                    user.getUserContentCommunities().add(userContentCommunity);
-                    UserEntity savedUser = userRepository.save(user);
-                    users.add(savedUser);
+                    RoleStatusUserCommunity roleStatusUserCommunity =RoleStatusUserCommunity.builder()
+                            .role(user.getRole())
+                            .status(statusRepository.findByName(StatusEnum.NEW_MEMBER))
+                            .user(user)
+                            .community(community)
+                            .Id(new RoleStatusUserCommunityId(
+                                    user.getRole().getId(),
+                                    statusRepository.findByName(StatusEnum.NEW_MEMBER).getId(),
+                                    user.getId(),
+                                    community.getId()))
+                            .build();
+                    roleStatusUserCommunityRepository.save(roleStatusUserCommunity);
+                    userRepository.save(user);
+                    roleStatusUserCommunities.add(roleStatusUserCommunity);
                 });
-        return users;
+        return roleStatusUserCommunities;
     }
 }

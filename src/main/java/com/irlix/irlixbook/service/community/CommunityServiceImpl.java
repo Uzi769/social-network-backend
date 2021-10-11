@@ -2,13 +2,13 @@ package com.irlix.irlixbook.service.community;
 
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
 import com.irlix.irlixbook.dao.entity.*;
+import com.irlix.irlixbook.dao.entity.enams.StatusEnum;
 import com.irlix.irlixbook.dao.model.community.request.CommunityPersistRequest;
 import com.irlix.irlixbook.dao.model.community.response.CommunityResponse;
 import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
 import com.irlix.irlixbook.exception.NotFoundException;
-import com.irlix.irlixbook.repository.CommunityRepository;
-import com.irlix.irlixbook.repository.UserContentCommunityRepository;
+import com.irlix.irlixbook.repository.*;
 import com.irlix.irlixbook.service.content.ContentService;
 import com.irlix.irlixbook.service.user.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -29,10 +30,13 @@ import java.util.stream.Collectors;
 public class CommunityServiceImpl implements CommunityService{
 
     private final CommunityRepository communityRepository;
-    private final UserContentCommunityRepository userContentCommunityRepository;
+    private final ContentCommunityRepository contentCommunityRepository;
     private final ConversionService conversionService;
-    private final UserService userService;
     private final ContentService contentService;
+    private final ContentRepository contentRepository;
+    private final UserService userService;
+    private final StatusRepository statusRepository;
+    private final RoleStatusUserCommunityRepository roleStatusUserCommunityRepository;
 
     @Value("${url.root}")
     private String urlRoot;
@@ -50,20 +54,32 @@ public class CommunityServiceImpl implements CommunityService{
 
         //todo add sticker
 
-        community.setCreator(SecurityContextUtils.getUserFromContext());
+        UserEntity userFromContext = SecurityContextUtils.getUserFromContext();
+        community.setCreator(userFromContext);
 
         Community savedCommunity = communityRepository.save(community);
         savedCommunity.setDeeplink(urlRoot + savedCommunity.getName() + "/" + savedCommunity.getId());
         savedCommunity.setRegistrationLink(urlRoot + savedCommunity.getName() + "/" + savedCommunity.getId());
         communityRepository.save(savedCommunity);
 
-        List<UserContentCommunity> userContentCommunities = community.getUserContentCommunities();
+        if (communityPersistRequest.getContentsId() != null) {
+            contentService.addContentsToContentCommunity(communityPersistRequest.getContentsId(), savedCommunity);
+        }
 
-        for (UserContentCommunity userContentCommunity : userContentCommunities) {
-            if (communityPersistRequest.getUsersId() != null && !communityPersistRequest.getUsersId().isEmpty()) {
-                userService.addUsersToUserContentCommunity(communityPersistRequest.getUsersId(), userContentCommunity);
-                userContentCommunityRepository.save(userContentCommunity);
-            }
+        RoleStatusUserCommunity roleStatusUserCommunity = RoleStatusUserCommunity.builder()
+                .role(userFromContext.getRole())
+                .status(statusRepository.findByName(StatusEnum.COMMUNITY_LEADER))
+                .user(userFromContext)
+                .community(savedCommunity)
+                .Id(new RoleStatusUserCommunityId(
+                        userFromContext.getRole().getId(),
+                        statusRepository.findByName(StatusEnum.COMMUNITY_LEADER).getId(),
+                        userFromContext.getId(),
+                        savedCommunity.getId()))
+                .build();
+
+        if (communityPersistRequest.getUsersId() != null) {
+            userService.addUsersToRoleStatusUserCommunity(communityPersistRequest.getUsersId(), savedCommunity);
         }
 
         log.info("Community saved. Class CommunityServiceImpl, method save");
@@ -92,10 +108,11 @@ public class CommunityServiceImpl implements CommunityService{
     }
 
     @Override
+    @Transactional
     public List<UserEntityOutput> findCommunityUsers(String name, int page, int size) {
-        List<UserContentCommunity> userContentCommunities = getUserContentCommunities(name, page, size);
-        List<UserEntity> userEntities = userContentCommunities.stream()
-                .map(UserContentCommunity::getUser)
+        List<RoleStatusUserCommunity> roleStatusUserCommunities = getRoleStatusUserCommunities(name, page, size);
+        List<UserEntity> userEntities = roleStatusUserCommunities.stream()
+                .map(RoleStatusUserCommunity::getUser)
                 .collect(Collectors.toList());
         return userEntities.stream()
                 .map(u -> conversionService.convert(u, UserEntityOutput.class))
@@ -103,10 +120,11 @@ public class CommunityServiceImpl implements CommunityService{
     }
 
     @Override
+    @Transactional
     public List<ContentResponse> findCommunityContents(String name, int page, int size) {
-        List<UserContentCommunity> userContentCommunities = getUserContentCommunities(name, page, size);
+        List<ContentCommunity> userContentCommunities = getContentCommunities(name, page, size);
         List<Content> contents = userContentCommunities.stream()
-                .map(UserContentCommunity::getContent)
+                .map(ContentCommunity::getContent)
                 .collect(Collectors.toList());
         return contents.stream()
                 .map(u -> conversionService.convert(u, ContentResponse.class))
@@ -122,25 +140,27 @@ public class CommunityServiceImpl implements CommunityService{
             throw new NullPointerException("CommunityPersistRequest cannot be null.");
         }
 
-        List<UserContentCommunity> userContentCommunities = community.getUserContentCommunities();
-
-        for (UserContentCommunity userContentCommunity : userContentCommunities) {
-            if (communityPersistRequest.getUsersId() != null && !communityPersistRequest.getUsersId().isEmpty()) {
-                userService.addUsersToUserContentCommunity(communityPersistRequest.getUsersId(), userContentCommunity);
-                userContentCommunityRepository.save(userContentCommunity);
-            }
-        }
+        userService.addUsersToRoleStatusUserCommunity(communityPersistRequest.getUsersId(), community);
 
         log.info("Users added to community. Class CommunityServiceImpl, method addUsers");
         return conversionService.convert(community, CommunityResponse.class);
     }
 
     @Override
+    @Transactional
     public void delete(String name) {
 
+        Community communityForDelete = getByName(name);
+        if (communityForDelete != null) {
+            communityRepository.delete(communityForDelete);
+            log.info("Community deleted. Class CommunityServiceImpl, method delete");
+        } else {
+            throw new NotFoundException("Community with name " + name +  "not found.");
+        }
     }
 
     @Override
+    @Transactional
     public CommunityResponse addContents(CommunityPersistRequest communityPersistRequest) {
         Community community = conversionService.convert(communityPersistRequest, Community.class);
 
@@ -149,12 +169,12 @@ public class CommunityServiceImpl implements CommunityService{
             throw new NullPointerException("CommunityPersistRequest cannot be null.");
         }
 
-        List<UserContentCommunity> userContentCommunities = community.getUserContentCommunities();
+        List<ContentCommunity> userContentCommunities = community.getContentCommunities();
 
-        for (UserContentCommunity userContentCommunity : userContentCommunities) {
+        for (ContentCommunity contentCommunity : userContentCommunities) {
             if (communityPersistRequest.getUsersId() != null && !communityPersistRequest.getUsersId().isEmpty()) {
-                contentService.addContentsToUserContentCommunity(communityPersistRequest.getContentsId(), userContentCommunity);
-                userContentCommunityRepository.save(userContentCommunity);
+                contentService.addContentsToContentCommunity(communityPersistRequest.getContentsId(), community);
+                contentCommunityRepository.save(contentCommunity);
             }
         }
 
@@ -170,7 +190,7 @@ public class CommunityServiceImpl implements CommunityService{
                 });
     }
 
-    private List<Community> getByName(String name) {
+    private Community getByName(String name) {
         try {
             return communityRepository.findByName(name);
         } catch (IllegalArgumentException e) {
@@ -179,9 +199,15 @@ public class CommunityServiceImpl implements CommunityService{
         }
     }
 
-    private List<UserContentCommunity> getUserContentCommunities(String name, int page, int size) {
+    private List<ContentCommunity> getContentCommunities(String name, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
-        return userContentCommunityRepository
+        return contentCommunityRepository
                 .findAllByCommunityName(name, pageRequest);
+    }
+
+    private List<RoleStatusUserCommunity> getRoleStatusUserCommunities(String name, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return roleStatusUserCommunityRepository
+                .findByCommunityName(name, pageRequest);
     }
 }

@@ -31,7 +31,7 @@
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_content_community"/>
             </column>
             <column name="created_on" type="DATETIME">
-            </column>  
+            </column>
         </createTable>
     </changeSet>
     <changeSet id="29092021-3" author="Kurkin">
@@ -43,10 +43,10 @@
     </changeSet>
     <changeSet id="29092021-4" author="Kurkin">
         <addForeignKeyConstraint baseColumnNames="content_id"
-                                  baseTableName="user_content_community"
-                                  constraintName="FK_USER_CONTENT_COMMUNITY_ON_CONTENT"
-                                  referencedColumnNames="id"
-                                  referencedTableName="content"/>
+                                 baseTableName="user_content_community"
+                                 constraintName="FK_USER_CONTENT_COMMUNITY_ON_CONTENT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="content"/>
     </changeSet>
     <changeSet id="29092021-5" author="Kurkin">
         <addForeignKeyConstraint baseColumnNames="user_id"
