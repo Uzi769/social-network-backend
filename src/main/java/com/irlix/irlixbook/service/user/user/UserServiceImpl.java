@@ -59,6 +59,36 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Qualifier("mailSenderImpl")
     private MessageSender messageSender;
 
+    @PostConstruct
+    public void init() {
+
+        List<UserEntity> users = roleStatusUserCommunityRepository.findByCommunityName("start").stream()
+                .map(RoleStatusUserCommunity::getUser).collect(Collectors.toList());
+
+        List<UserEntity> allUsers = userRepository.findAll();
+
+        boolean raper = allUsers.removeAll(users);
+
+        if (raper & allUsers.size() != 0) {
+            for (UserEntity user : allUsers) {
+                RoleStatusUserCommunity roleStatusUserCommunity = RoleStatusUserCommunity.builder()
+                        .role(user.getRole())
+                        .status(statusRepository.findByName(StatusEnum.NEW_MEMBER))
+                        .user(user)
+                        .community(communityRepository.findByName("start"))
+                        .Id(new RoleStatusUserCommunityId(
+                                user.getRole().getId(),
+                                statusRepository.findByName(StatusEnum.NEW_MEMBER).getId(),
+                                user.getId(),
+                                communityRepository.findByName("start").getId()))
+                        .build();
+                roleStatusUserCommunityRepository.save(roleStatusUserCommunity);
+                UserEntity savedUser = userRepository.save(user);
+                log.info(allUsers.size() + " users added to \"start\" community");
+            }
+        }
+    }
+
     @Override
     public UserEntity findById(UUID id) {
         return userRepository.findById(id).orElseThrow(() -> {

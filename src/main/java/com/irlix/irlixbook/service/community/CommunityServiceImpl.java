@@ -7,6 +7,7 @@ import com.irlix.irlixbook.dao.model.community.request.CommunityPersistRequest;
 import com.irlix.irlixbook.dao.model.community.response.CommunityResponse;
 import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
+import com.irlix.irlixbook.exception.AlreadyExistException;
 import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.*;
 import com.irlix.irlixbook.service.content.ContentService;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +53,10 @@ public class CommunityServiceImpl implements CommunityService{
         if (community == null) {
             log.error("CommunityPersistRequest cannot be null.");
             throw new NullPointerException("CommunityPersistRequest cannot be null.");
+        }
+
+        if (communityRepository.findByName(community.getName()) != null) {
+            throw new AlreadyExistException("Community with name " + community.getName() + " already exist.");
         }
 
         //todo add sticker
@@ -154,6 +160,11 @@ public class CommunityServiceImpl implements CommunityService{
     public void delete(String name) {
 
         Community communityForDelete = getByName(name);
+
+        if (name.equals("start")) {
+            throw new IllegalArgumentException("You can't delete \"start\" community");
+        }
+
         if (communityForDelete != null) {
             communityRepository.delete(communityForDelete);
             log.info("Community deleted. Class CommunityServiceImpl, method delete");

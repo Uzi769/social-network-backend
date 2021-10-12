@@ -3,9 +3,11 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.10.xsd">
 
     <include file="2021-10-06--01-change-table.xml" relativeToChangelogFile="true"/>
     <include file="2021-10-08--01-create-table.xml" relativeToChangelogFile="true"/>
     <include file="2021-10-11--01-add-data.xml" relativeToChangelogFile="true"/>
+    <include file="2021-10-11--02-changetable.xml" relativeToChangelogFile="true"/>
+    <include file="2021-10-12--01-changetable.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

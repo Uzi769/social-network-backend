@@ -33,7 +33,7 @@ public class RoleStatusUserCommunity {
     @MapsId("communityId")
     private Community community;
 
-    @Column(name = "join-date")
+    @Column(name = "join_date")
     @Builder.Default
     private LocalDateTime dateJoined = LocalDateTime.now();
 }
