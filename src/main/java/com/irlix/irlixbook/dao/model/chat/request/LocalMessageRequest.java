@@ -1,4 +1,4 @@
-package com.irlix.irlixbook.dao.model.chat.response;
+package com.irlix.irlixbook.dao.model.chat.request;
 
 import lombok.*;
 
@@ -7,13 +7,13 @@ import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
 @Setter
+@Getter
 @Builder
-public class MessageOutput {
+public class LocalMessageRequest {
 
-    private UUID id;
     private Long localId;
+    private UUID userId;
     private LocalDateTime timeStamp;
     private String content;
 

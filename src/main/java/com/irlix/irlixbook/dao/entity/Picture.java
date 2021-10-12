@@ -23,8 +23,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "picture")
 @Builder
+@Table(name = "picture")
 public class Picture {
 
     @Id

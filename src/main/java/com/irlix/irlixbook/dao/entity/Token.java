@@ -18,8 +18,8 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "token")
 @Builder
+@Table(name = "token")
 public class Token {
 
     @Id

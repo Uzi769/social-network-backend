@@ -12,8 +12,9 @@ import java.util.UUID;
 @Builder
 public class MessageRequest {
 
-    private Long localId;
+    private UUID id;
+    private UUID userId;
     private LocalDateTime timeStamp;
     private String content;
-    private UUID userId;
+
 }

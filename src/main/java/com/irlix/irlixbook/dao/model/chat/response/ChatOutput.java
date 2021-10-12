@@ -16,4 +16,5 @@ public class ChatOutput {
     private UUID chatId;
     private String title;
     List<UserEntityOutput> users;
+
 }

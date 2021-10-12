@@ -1,0 +1,46 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+
+    <changeSet id="1625832244511-20" author="aleksey (generated)">
+        <createTable tableName="chat_message">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_chat_message"/>
+            </column>
+            <column name="local_id" type="BIGINT"/>
+            <column name="chat_id" type="UUID"/>
+            <column name="user_id" type="UUID"/>
+            <column name="message_status" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="timestamp" type="DATETIME"/>
+            <column name="content" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1625832244511-21" author="aleksey (generated)">
+        <createTable tableName="chat">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_chat"/>
+            </column>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1625832244511-22" author="aleksey (generated)">
+        <addForeignKeyConstraint baseColumnNames="chat_id" baseTableName="chat_message"
+                                 constraintName="fk_message_on_chat"
+                                 referencedColumnNames="id" referencedTableName="chat"/>
+    </changeSet>
+
+    <changeSet id="1625832244511-23" author="aleksey (generated)">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="chat_message"
+                                 constraintName="fk_message_on_user"
+                                 referencedColumnNames="id" referencedTableName="user_entity"/>
+    </changeSet>
+
+</databaseChangeLog>

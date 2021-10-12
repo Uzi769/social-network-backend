@@ -5,13 +5,15 @@ import com.irlix.irlixbook.dao.model.chat.response.MessageOutput;
 import org.springframework.core.convert.converter.Converter;
 
 public class ChatMessageToMessageOutput implements Converter<ChatMessage, MessageOutput> {
+
     @Override
     public MessageOutput convert(ChatMessage chatMessage) {
         return MessageOutput.builder()
                 .localId(chatMessage.getLocalId())
-                .messageId(chatMessage.getId())
+                .id(chatMessage.getId())
                 .timeStamp(chatMessage.getTimestamp())
                 .content(chatMessage.getContent())
                 .build();
     }
+
 }

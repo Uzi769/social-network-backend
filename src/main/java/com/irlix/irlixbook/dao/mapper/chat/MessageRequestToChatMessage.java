@@ -9,9 +9,10 @@ public class MessageRequestToChatMessage implements Converter<MessageRequest, Ch
     @Override
     public ChatMessage convert(MessageRequest messageRequest) {
         return ChatMessage.builder()
-                .localId(messageRequest.getLocalId())
+                .id(messageRequest.getId())
                 .timestamp(messageRequest.getTimeStamp())
                 .content(messageRequest.getContent())
                 .build();
     }
+
 }

@@ -13,13 +13,16 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "chat_message")
 @Builder
+@Table(name = "chat_message")
 public class ChatMessage {
 
     @Id
     @GeneratedValue(generator = "UUID")
     private UUID id;
+
+    @Column(name = "local_id")
+    private Long localId;
 
     @ManyToOne
     @JoinColumn(name = "chat_id")
@@ -28,9 +31,6 @@ public class ChatMessage {
     @OneToOne
     @JoinColumn(name = "user_id")
     private UserEntity sender;
-
-    @Column(name = "local_id")
-    private Long localId;
 
     @Column(name = "message_status")
     @Enumerated(EnumType.STRING)
@@ -41,4 +41,5 @@ public class ChatMessage {
 
     @Column(name = "content")
     private String content;
+
 }

@@ -20,7 +20,7 @@ public class Chat {
 
     @Id
     @GeneratedValue(generator = "UUID")
-    private UUID chatId;
+    private UUID id;
 
     @Column(name = "title", nullable = false, length = 1500)
     @NotEmpty
@@ -31,4 +31,5 @@ public class Chat {
 
     @OneToMany(mappedBy = "id", cascade = CascadeType.ALL)
     private List<ChatMessage> chatMessages;
+
 }

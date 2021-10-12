@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "user_content")
 @Builder
+@Table(name = "user_content")
 public class ContentUser {
 
     @EmbeddedId

@@ -15,6 +15,7 @@ import javax.persistence.Id;
 @AllArgsConstructor
 @Entity
 public class MessageBody {
+
     @Id
     @Column(name = "id", nullable = false)
     private Long id;

@@ -11,10 +11,10 @@ import java.util.List;
 
 @Data
 @Entity
-@Table(name = "role")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Table(name = "role")
 public class Role {
 
     @Id

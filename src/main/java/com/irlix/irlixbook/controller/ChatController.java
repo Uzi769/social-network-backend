@@ -2,6 +2,7 @@ package com.irlix.irlixbook.controller;
 
 import com.irlix.irlixbook.config.security.annotation.RoleAndPermissionCheck;
 import com.irlix.irlixbook.dao.entity.enams.RoleEnum;
+import com.irlix.irlixbook.dao.model.chat.request.LocalMessageRequest;
 import com.irlix.irlixbook.dao.model.chat.request.MessageRequest;
 import com.irlix.irlixbook.dao.model.chat.response.ChatOutput;
 import com.irlix.irlixbook.dao.model.chat.response.MessageOutput;
@@ -41,8 +42,8 @@ public class ChatController {
 
     @PostMapping("messages/{chatId}")
     @RoleAndPermissionCheck(RoleEnum.USER)
-    public MessageOutput sendMessage(@Nullable @PathVariable("chatId") UUID chatId, MessageRequest messageRequest) {
-        return messageService.send(chatId, messageRequest);
+    public MessageOutput sendMessage(@Nullable @PathVariable("chatId") UUID chatId, LocalMessageRequest localMessageRequest) {
+        return messageService.send(chatId, localMessageRequest);
     }
 
     @PutMapping("messages/{chatId}")
