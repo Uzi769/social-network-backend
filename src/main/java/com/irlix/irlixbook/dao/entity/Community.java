@@ -44,7 +44,7 @@ public class Community {
     @OneToMany(mappedBy = "community")
     private List<ContentCommunity> contentCommunities;
 
-    @OneToMany(mappedBy = "community")
+    @OneToMany(mappedBy = "community", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<RoleStatusUserCommunity> roleStatusUserCommunities;
 
     @ManyToOne(cascade = CascadeType.MERGE)

@@ -1,9 +1,11 @@
 package com.irlix.irlixbook.service.community;
 
+import com.irlix.irlixbook.dao.model.community.request.CommunityContentsRequest;
 import com.irlix.irlixbook.dao.model.community.request.CommunityPersistRequest;
+import com.irlix.irlixbook.dao.model.community.request.CommunityUsersRequest;
 import com.irlix.irlixbook.dao.model.community.response.CommunityResponse;
 import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
-import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
+import com.irlix.irlixbook.dao.model.user.output.UserEntityOutputWithStatus;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,13 +19,13 @@ public interface CommunityService {
 
     CommunityResponse findByName(String name);
 
-    List<UserEntityOutput> findCommunityUsers(String name, int page, int size);
+    List<UserEntityOutputWithStatus> findCommunityUsers(String name, int page, int size);
 
     List<ContentResponse> findCommunityContents(String name, int page, int size);
 
-    CommunityResponse addUsers(CommunityPersistRequest communityPersistRequest);
+    CommunityResponse addUsers(CommunityUsersRequest communityUsersRequest);
 
     void delete(String name);
 
-    CommunityResponse addContents(CommunityPersistRequest communityPersistRequest);
+    CommunityResponse addContents(CommunityContentsRequest communityContentsRequest);
 }

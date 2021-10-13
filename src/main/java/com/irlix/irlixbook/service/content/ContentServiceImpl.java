@@ -374,21 +374,29 @@ public class ContentServiceImpl implements ContentService {
     public List<ContentCommunity> addContentsToContentCommunity(List<Long> contentsIdList,
                                                        Community community) {
         List<ContentCommunity> contentCommunities = new ArrayList<>();
-        contentsIdList.stream()
-                .map(id -> contentRepository.findById(id).orElseThrow(() -> {
-                    log.error(CONTENT_NOT_FOUND);
-                    return new ConflictException(CONTENT_NOT_FOUND);
-                }))
-                .forEach(content -> {
-                    ContentCommunity contentCommunity =ContentCommunity.builder()
-                            .community(community)
-                            .content(content)
-                            .id(new ContentCommunityId(community.getId(), content.getId()))
-                            .build();
-                    contentCommunityRepository.save(contentCommunity);
-                    contentRepository.save(content);
-                    contentCommunities.add(contentCommunity);
-                });
+        List<Long> allContentsOfCommunity = contentCommunityRepository.findByCommunityName(community.getName()).stream()
+                .map(r -> r.getContent().getId()).collect(Collectors.toList());
+        contentsIdList.removeAll(allContentsOfCommunity);
+        if (contentsIdList.size() != 0) {
+            contentsIdList.stream()
+                    .map(id -> contentRepository.findById(id).orElseThrow(() -> {
+                        log.error(CONTENT_NOT_FOUND);
+                        return new ConflictException(CONTENT_NOT_FOUND);
+                    }))
+                    .forEach(content -> {
+                        ContentCommunity contentCommunity =ContentCommunity.builder()
+                                .community(community)
+                                .content(content)
+                                .id(new ContentCommunityId(community.getId(), content.getId()))
+                                .build();
+                        contentCommunityRepository.save(contentCommunity);
+                        contentRepository.save(content);
+                        contentCommunities.add(contentCommunity);
+                    });
+        } else {
+            log.error("All these contents are exist in community.");
+            throw new BadRequestException("All these contents are exist in community.");
+        }
         return contentCommunities;
     }
 }

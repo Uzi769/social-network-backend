@@ -372,7 +372,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     private void checkingPhoneForUniqueness(UserEntity userEntity, String phone) {
 
-        if (userRepository.findByPhone(phone).orElse(null) != null) {
+        if (userRepository.findByPhone(phone).orElse(null) != null) { //todo add exception handling if a lot users with same number
             throw new BadRequestException(USER_WITH_PHONE_ALREADY_EXISTS);
         } else {
             userEntity.setPhone(phone);
@@ -483,27 +483,36 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public List<RoleStatusUserCommunity> addUsersToRoleStatusUserCommunity(List<UUID> usersIdList,
                                                                 Community community) {
         List<RoleStatusUserCommunity> roleStatusUserCommunities = new ArrayList<>();
-        usersIdList.stream()
-                .map(id -> userRepository.findById(id).orElseThrow(() -> {
-                    log.error(USER_NOT_FOUND);
-                    return new ConflictException(USER_NOT_FOUND);
-                }))
-                .forEach(user -> {
-                    RoleStatusUserCommunity roleStatusUserCommunity =RoleStatusUserCommunity.builder()
-                            .role(user.getRole())
-                            .status(statusRepository.findByName(StatusEnum.NEW_MEMBER))
-                            .user(user)
-                            .community(community)
-                            .Id(new RoleStatusUserCommunityId(
-                                    user.getRole().getId(),
-                                    statusRepository.findByName(StatusEnum.NEW_MEMBER).getId(),
-                                    user.getId(),
-                                    community.getId()))
-                            .build();
-                    roleStatusUserCommunityRepository.save(roleStatusUserCommunity);
-                    userRepository.save(user);
-                    roleStatusUserCommunities.add(roleStatusUserCommunity);
-                });
+        List<UUID> allUsersOfCommunity = roleStatusUserCommunityRepository.findByCommunityName(community.getName()).stream()
+                        .map(r -> r.getUser().getId()).collect(Collectors.toList());
+        usersIdList.removeAll(allUsersOfCommunity);
+
+        if (usersIdList.size() != 0) {
+            usersIdList.stream()
+                    .map(id -> userRepository.findById(id).orElseThrow(() -> {
+                        log.error(USER_NOT_FOUND);
+                        return new ConflictException(USER_NOT_FOUND);
+                    }))
+                    .forEach(user -> {
+                        RoleStatusUserCommunity roleStatusUserCommunity = RoleStatusUserCommunity.builder()
+                                .role(user.getRole())
+                                .status(statusRepository.findByName(StatusEnum.NEW_MEMBER))
+                                .user(user)
+                                .community(community)
+                                .Id(new RoleStatusUserCommunityId(
+                                        user.getRole().getId(),
+                                        statusRepository.findByName(StatusEnum.NEW_MEMBER).getId(),
+                                        user.getId(),
+                                        community.getId()))
+                                .build();
+                        roleStatusUserCommunityRepository.save(roleStatusUserCommunity);
+                        userRepository.save(user);
+                        roleStatusUserCommunities.add(roleStatusUserCommunity);
+                    });
+        } else {
+            log.error("All these users are members of community.");
+            throw new BadRequestException("All these users are members of community.");
+        }
         return roleStatusUserCommunities;
     }
 }

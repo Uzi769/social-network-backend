@@ -6,10 +6,7 @@ import com.irlix.irlixbook.dao.mapper.content.ContentPersistRequestToContent;
 import com.irlix.irlixbook.dao.mapper.content.ContentToContentResponse;
 import com.irlix.irlixbook.dao.mapper.picture.PictureToPictureOutput;
 import com.irlix.irlixbook.dao.mapper.sticker.StickerToStickerResponse;
-import com.irlix.irlixbook.dao.mapper.user.UserCreateInputToUserEntity;
-import com.irlix.irlixbook.dao.mapper.user.UserEntityToUserCreateOutput;
-import com.irlix.irlixbook.dao.mapper.user.UserEntityToUserEntityOutput;
-import com.irlix.irlixbook.dao.mapper.user.UserUpdateInputToUserEntity;
+import com.irlix.irlixbook.dao.mapper.user.*;
 import com.irlix.irlixbook.dao.mapper.util.PeriodConvertor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
@@ -33,7 +30,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addConverter(new PeriodConvertor());
         registry.addConverter(new CommunityPersistRequestToCommunity());
         registry.addConverter(new CommunityToCommunityResponse());
-
+        registry.addConverter(new UserStatusDTOToUserEntityOutputWithStatus());
     }
 
     /**
