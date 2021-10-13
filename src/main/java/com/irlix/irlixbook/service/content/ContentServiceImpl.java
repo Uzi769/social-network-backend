@@ -253,7 +253,7 @@ public class ContentServiceImpl implements ContentService {
             log.info("Content deleted. Class ContentServiceImpl, method delete");
 
         } else {
-            throw new NotFoundException("Content with id nor found");
+            throw new NotFoundException("Content with id not found");
         }
 
     }

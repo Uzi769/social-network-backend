@@ -1,12 +1,15 @@
 package com.irlix.irlixbook.service.chat;
 
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
+import com.irlix.irlixbook.dao.entity.Chat;
 import com.irlix.irlixbook.dao.entity.ChatMessage;
+import com.irlix.irlixbook.dao.model.chat.request.ChatRequest;
 import com.irlix.irlixbook.dao.model.chat.request.LocalMessageRequest;
 import com.irlix.irlixbook.dao.model.chat.request.MessageRequest;
 import com.irlix.irlixbook.dao.model.chat.response.ChatOutput;
 import com.irlix.irlixbook.dao.model.chat.response.MessageOutput;
 import com.irlix.irlixbook.exception.NotFoundException;
+import com.irlix.irlixbook.repository.ChatRepository;
 import com.irlix.irlixbook.repository.MessageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -16,7 +19,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -26,8 +28,49 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MessageServiceImpl implements MessageService {
 
+    private final ChatRepository chatRepository;
     private final MessageRepository messageRepository;
     private final ConversionService conversionService;
+
+    // ================================================================================ CHAT METHODS
+
+    @Override
+    public ChatOutput createChat(ChatRequest chatRequest) {
+
+        Chat chat = conversionService.convert(chatRequest, Chat.class);
+
+        if (chat == null) {
+            log.error("ChatRequest cannot be null");
+            throw new NullPointerException("ChatRequest cannot be null");
+        }
+
+        chat.setTitle(chatRequest.getTitle());
+        chat.setUsers(chatRequest.getUsers());
+
+        chatRepository.save(chat);
+        log.info("Chat created");
+
+        return conversionService.convert(chat, ChatOutput.class);
+
+    }
+
+    @Override
+    @Transactional
+    public void deleteChat(UUID chatId) {
+
+        Chat chatForDelete = chatRepository.getById(chatId);
+
+        if (chatForDelete != null) {
+
+            chatRepository.save(chatForDelete);
+            chatRepository.delete(chatForDelete);
+            log.info("Chat deleted");
+
+        } else {
+            throw new NotFoundException("Chat with " + chatId + " id not found");
+        }
+
+    }
 
     @Override
     public List<ChatOutput> getChats() {
@@ -37,14 +80,16 @@ public class MessageServiceImpl implements MessageService {
                 .collect(Collectors.toList());
     }
 
+    // ================================================================================ MESSAGES METHODS
+
     @Override
     public List<MessageOutput> getLastMessages(UUID chatId, int page, int size) {
 
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("timestamp").descending());
 
-        return messageRepository.findByChat(chatId, pageRequest)
+        return messageRepository.findByChatId(chatId, pageRequest)
                 .stream()
-                .map(c -> conversionService.convert(c, MessageOutput.class))
+                .map(message -> conversionService.convert(message, MessageOutput.class))
                 .collect(Collectors.toList());
 
     }
@@ -60,7 +105,8 @@ public class MessageServiceImpl implements MessageService {
         }
 
         chatMessage.setSender(SecurityContextUtils.getUserFromContext());
-        chatMessage.setTimestamp(LocalDateTime.now());
+        chatMessage.setTimestamp(localMessageRequest.getTimeStamp());
+        chatMessage.setChat(chatRepository.getById(chatId));
 
         messageRepository.save(chatMessage);
         log.info("Message sent");
@@ -70,7 +116,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public MessageOutput update(UUID chatId, MessageRequest messageRequest) {
+    public MessageOutput update(MessageRequest messageRequest) {
 
         ChatMessage chatMessage = messageRepository.findById(messageRequest.getId())
                 .orElseThrow(() -> {
@@ -81,7 +127,7 @@ public class MessageServiceImpl implements MessageService {
         chatMessage.setContent(messageRequest.getContent());
 
         messageRepository.save(chatMessage);
-        log.info("Message [" + chatMessage.getId() + "] from chat [" + chatId + "] was updated");
+        log.info("Message [" + chatMessage.getId() + "] was updated");
 
         return conversionService.convert(chatMessage, MessageOutput.class);
 
