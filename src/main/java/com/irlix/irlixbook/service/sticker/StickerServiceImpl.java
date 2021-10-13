@@ -67,12 +67,10 @@ public class StickerServiceImpl implements StickerService {
 
     @Override
     public List<StickerResponse> findAll() {
-
-        List<Sticker> all = stickerRepository.findAll();
-        return all.stream()
+        return stickerRepository.findAll()
+                .stream()
                 .map(s -> conversionService.convert(s, StickerResponse.class))
                 .collect(Collectors.toList());
-
     }
 
     @Override

@@ -10,8 +10,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "sticker")
 @Builder
+@Table(name = "sticker")
 public class Sticker {
 
     @Id

@@ -58,6 +58,7 @@
             <column name="role_id" value="2"/>
         </insert>
     </changeSet>
+
 </databaseChangeLog>
 
 

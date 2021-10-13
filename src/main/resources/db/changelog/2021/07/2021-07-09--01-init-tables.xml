@@ -5,6 +5,8 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.10.xsd"
         objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <!-- CONTENT TABLE -->
     <changeSet id="1625832244511-1" author="aleksey (generated)">
         <createTable tableName="content">
             <column autoIncrement="true" name="id" type="BIGINT">
@@ -24,6 +26,8 @@
             <column name="is_deleted" type="BOOLEAN"/>
         </createTable>
     </changeSet>
+
+    <!-- PICTURES TABLE -->
     <changeSet id="1625832244511-2" author="aleksey (generated)">
         <createTable tableName="picture">
             <column name="id" type="UUID">
@@ -33,6 +37,8 @@
             <column name="content_id" type="BIGINT"/>
         </createTable>
     </changeSet>
+
+    <!-- ROLES TABLE -->
     <changeSet id="1625832244511-3" author="aleksey (generated)">
         <createTable tableName="role">
             <column autoIncrement="true" name="id" type="INT">
@@ -41,6 +47,8 @@
             <column name="name" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
+
+    <!-- PERMISSIONS TABLE -->
     <changeSet id="1625832244511-4" author="aleksey (generated)">
         <createTable tableName="role_permission">
             <column name="permission_id" type="BIGINT">
@@ -51,6 +59,8 @@
             </column>
         </createTable>
     </changeSet>
+
+    <!-- STICKERS TABLE -->
     <changeSet id="1625832244511-5" author="aleksey (generated)">
         <createTable tableName="sticker">
             <column autoIncrement="true" name="id" type="BIGINT">
@@ -61,6 +71,8 @@
             </column>
         </createTable>
     </changeSet>
+
+    <!-- TOCKENS TABLE -->
     <changeSet id="1625832244511-6" author="aleksey (generated)">
         <createTable tableName="token">
             <column autoIncrement="true" name="id" type="BIGINT">
@@ -69,6 +81,8 @@
             <column name="value" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
+
+    <!-- USER-CONTENT TABLE -->
     <changeSet id="1625832244511-7" author="aleksey (generated)">
         <createTable tableName="user_content">
             <column name="content_id" type="BIGINT">
@@ -79,6 +93,8 @@
             </column>
         </createTable>
     </changeSet>
+
+    <!-- USER ENTITY TABLE -->
     <changeSet id="1625832244511-8" author="aleksey (generated)">
         <createTable tableName="user_entity">
             <column name="id" type="UUID">
@@ -102,6 +118,7 @@
             <column name="avatar" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
+
     <changeSet id="1625832244511-9" author="aleksey (generated)">
         <createTable tableName="user_role">
             <column name="role_id" type="INT">
@@ -112,52 +129,63 @@
             </column>
         </createTable>
     </changeSet>
+
     <changeSet id="1625832244511-10" author="aleksey (generated)">
         <addUniqueConstraint columnNames="name" constraintName="uc_sticker_name" tableName="sticker"/>
     </changeSet>
+
     <changeSet id="1625832244511-11" author="aleksey (generated)">
         <addForeignKeyConstraint baseColumnNames="sticker_id" baseTableName="content"
-                                 constraintName="FK_CONTENT_ON_STICKER" referencedColumnNames="id"
-                                 referencedTableName="sticker"/>
+                                 constraintName="FK_CONTENT_ON_STICKER"
+                                 referencedColumnNames="id" referencedTableName="sticker"/>
     </changeSet>
+
     <changeSet id="1625832244511-12" author="aleksey (generated)">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="content" constraintName="FK_CONTENT_ON_USER"
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="content"
+                                 constraintName="FK_CONTENT_ON_USER"
                                  referencedColumnNames="id" referencedTableName="user_entity"/>
     </changeSet>
+
     <changeSet id="1625832244511-13" author="aleksey (generated)">
         <addForeignKeyConstraint baseColumnNames="content_id" baseTableName="picture"
-                                 constraintName="FK_PICTURE_ON_CONTENT" referencedColumnNames="id"
-                                 referencedTableName="content"/>
+                                 constraintName="FK_PICTURE_ON_CONTENT"
+                                 referencedColumnNames="id" referencedTableName="content"/>
     </changeSet>
+
     <changeSet id="1625832244511-14" author="aleksey (generated)">
         <addForeignKeyConstraint baseColumnNames="permission_id" baseTableName="role_permission"
-                                 constraintName="fk_rolper_on_permission" referencedColumnNames="id"
-                                 referencedTableName="sticker"/>
+                                 constraintName="fk_rolper_on_permission"
+                                 referencedColumnNames="id" referencedTableName="sticker"/>
     </changeSet>
+
     <changeSet id="1625832244511-15" author="aleksey (generated)">
         <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="role_permission"
-                                 constraintName="fk_rolper_on_role" referencedColumnNames="id"
-                                 referencedTableName="role"/>
+                                 constraintName="fk_rolper_on_role"
+                                 referencedColumnNames="id" referencedTableName="role"/>
     </changeSet>
+
     <changeSet id="1625832244511-16" author="aleksey (generated)">
         <addForeignKeyConstraint baseColumnNames="content_id" baseTableName="user_content"
-                                 constraintName="fk_usecon_on_content" referencedColumnNames="id"
-                                 referencedTableName="content"/>
+                                 constraintName="fk_usecon_on_content"
+                                 referencedColumnNames="id" referencedTableName="content"/>
     </changeSet>
+
     <changeSet id="1625832244511-17" author="aleksey (generated)">
         <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_content"
-                                 constraintName="fk_usecon_on_user_entity" referencedColumnNames="id"
-                                 referencedTableName="user_entity"/>
+                                 constraintName="fk_usecon_on_user_entity"
+                                 referencedColumnNames="id" referencedTableName="user_entity"/>
     </changeSet>
+
     <changeSet id="1625832244511-18" author="aleksey (generated)">
         <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="user_role"
-                                 constraintName="fk_user_role_on_role" referencedColumnNames="id"
-                                 referencedTableName="role"/>
+                                 constraintName="fk_user_role_on_role"
+                                 referencedColumnNames="id" referencedTableName="role"/>
     </changeSet>
+
     <changeSet id="1625832244511-19" author="aleksey (generated)">
         <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_role"
-                                 constraintName="fk_user_role_on_user_entity" referencedColumnNames="id"
-                                 referencedTableName="user_entity"/>
+                                 constraintName="fk_user_role_on_user_entity"
+                                 referencedColumnNames="id" referencedTableName="user_entity"/>
     </changeSet>
 
 </databaseChangeLog>
