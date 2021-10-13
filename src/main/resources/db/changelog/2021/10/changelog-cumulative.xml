@@ -10,4 +10,6 @@
     <include file="2021-10-11--01-add-data.xml" relativeToChangelogFile="true"/>
     <include file="2021-10-11--02-changetable.xml" relativeToChangelogFile="true"/>
     <include file="2021-10-12--01-changetable.xml" relativeToChangelogFile="true"/>
+    <include file="2021-10-10--create-table.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>
