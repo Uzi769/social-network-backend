@@ -74,9 +74,9 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public List<ChatOutput> getChats() {
-        return messageRepository.findAll()
+        return chatRepository.findAll()
                 .stream()
-                .map(c -> conversionService.convert(c, ChatOutput.class))
+                .map(chat -> conversionService.convert(chat, ChatOutput.class))
                 .collect(Collectors.toList());
     }
 
