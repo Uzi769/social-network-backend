@@ -32,6 +32,6 @@ public class Role {
             inverseJoinColumns = {@JoinColumn(name = "permission_id", referencedColumnName = "id")})
     private List<Permission> permissions;
 
-    @OneToMany(mappedBy = "role", cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "role")
     private List<RoleStatusUserCommunity> roleStatusUserCommunities;
 }

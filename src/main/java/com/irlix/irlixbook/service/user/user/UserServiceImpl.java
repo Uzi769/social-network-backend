@@ -59,6 +59,36 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Qualifier("mailSenderImpl")
     private MessageSender messageSender;
 
+    @PostConstruct
+    public void init() {
+
+        List<UserEntity> users = roleStatusUserCommunityRepository.findByCommunityName("start").stream()
+                .map(RoleStatusUserCommunity::getUser).collect(Collectors.toList());
+
+        List<UserEntity> allUsers = userRepository.findAll();
+
+        boolean raper = allUsers.removeAll(users);
+
+        if (raper & allUsers.size() != 0) {
+            for (UserEntity user : allUsers) {
+                RoleStatusUserCommunity roleStatusUserCommunity = RoleStatusUserCommunity.builder()
+                        .role(user.getRole())
+                        .status(statusRepository.findByName(StatusEnum.NEW_MEMBER))
+                        .user(user)
+                        .community(communityRepository.findByName("start"))
+                        .Id(new RoleStatusUserCommunityId(
+                                user.getRole().getId(),
+                                statusRepository.findByName(StatusEnum.NEW_MEMBER).getId(),
+                                user.getId(),
+                                communityRepository.findByName("start").getId()))
+                        .build();
+                roleStatusUserCommunityRepository.save(roleStatusUserCommunity);
+                UserEntity savedUser = userRepository.save(user);
+                log.info(allUsers.size() + " users added to \"start\" community");
+            }
+        }
+    }
+
     @Override
     public UserEntity findById(UUID id) {
         return userRepository.findById(id).orElseThrow(() -> {
@@ -215,9 +245,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             throw new NotFoundException("User with id : " + user.getId() + ", and email: " + user.getEmail() + " not found!!!");
 
         }
-
     }
-
 
     @Override
     @Transactional(readOnly = true)
@@ -335,23 +363,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Scheduled(cron = "1 1 */1 * * *")
     public void changeStatus() {
 
-        LocalDateTime eventDate = LocalDateTime.now().minusMonths(2).plusDays(1);
-        List<UserEntity> users = userRepository.findByRegistrationDateLessThan(eventDate);
+        LocalDateTime limitDate = LocalDateTime.now().minusMonths(2).plusDays(1);
+        List<RoleStatusUserCommunity> users = roleStatusUserCommunityRepository.findByDateJoinedBefore(limitDate);
 
-        for (UserEntity user : users) {
-            Role role = user.getRole();
-//            StatusEnum status = role.getName().getStatus(user.getRegistrationDate());
-//            user.setStatus(status);
-            //todo scheduling changing of status
-        }
-
-        userRepository.saveAll(users);
-
+        users.forEach(u -> u.setStatus(statusRepository.findByName(StatusEnum.COMMUNITY_MEMBER)));
+        roleStatusUserCommunityRepository.saveAll(users);
     }
 
     private void checkingPhoneForUniqueness(UserEntity userEntity, String phone) {
 
-        if (userRepository.findByPhone(phone).orElse(null) != null) {
+        if (userRepository.findByPhone(phone).orElse(null) != null) { //todo add exception handling if a lot users with same number
             throw new BadRequestException(USER_WITH_PHONE_ALREADY_EXISTS);
         } else {
             userEntity.setPhone(phone);
@@ -462,27 +483,36 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public List<RoleStatusUserCommunity> addUsersToRoleStatusUserCommunity(List<UUID> usersIdList,
                                                                 Community community) {
         List<RoleStatusUserCommunity> roleStatusUserCommunities = new ArrayList<>();
-        usersIdList.stream()
-                .map(id -> userRepository.findById(id).orElseThrow(() -> {
-                    log.error(USER_NOT_FOUND);
-                    return new ConflictException(USER_NOT_FOUND);
-                }))
-                .forEach(user -> {
-                    RoleStatusUserCommunity roleStatusUserCommunity =RoleStatusUserCommunity.builder()
-                            .role(user.getRole())
-                            .status(statusRepository.findByName(StatusEnum.NEW_MEMBER))
-                            .user(user)
-                            .community(community)
-                            .Id(new RoleStatusUserCommunityId(
-                                    user.getRole().getId(),
-                                    statusRepository.findByName(StatusEnum.NEW_MEMBER).getId(),
-                                    user.getId(),
-                                    community.getId()))
-                            .build();
-                    roleStatusUserCommunityRepository.save(roleStatusUserCommunity);
-                    userRepository.save(user);
-                    roleStatusUserCommunities.add(roleStatusUserCommunity);
-                });
+        List<UUID> allUsersOfCommunity = roleStatusUserCommunityRepository.findByCommunityName(community.getName()).stream()
+                        .map(r -> r.getUser().getId()).collect(Collectors.toList());
+        usersIdList.removeAll(allUsersOfCommunity);
+
+        if (usersIdList.size() != 0) {
+            usersIdList.stream()
+                    .map(id -> userRepository.findById(id).orElseThrow(() -> {
+                        log.error(USER_NOT_FOUND);
+                        return new ConflictException(USER_NOT_FOUND);
+                    }))
+                    .forEach(user -> {
+                        RoleStatusUserCommunity roleStatusUserCommunity = RoleStatusUserCommunity.builder()
+                                .role(user.getRole())
+                                .status(statusRepository.findByName(StatusEnum.NEW_MEMBER))
+                                .user(user)
+                                .community(community)
+                                .Id(new RoleStatusUserCommunityId(
+                                        user.getRole().getId(),
+                                        statusRepository.findByName(StatusEnum.NEW_MEMBER).getId(),
+                                        user.getId(),
+                                        community.getId()))
+                                .build();
+                        roleStatusUserCommunityRepository.save(roleStatusUserCommunity);
+                        userRepository.save(user);
+                        roleStatusUserCommunities.add(roleStatusUserCommunity);
+                    });
+        } else {
+            log.error("All these users are members of community.");
+            throw new BadRequestException("All these users are members of community.");
+        }
         return roleStatusUserCommunities;
     }
 }

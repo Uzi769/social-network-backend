@@ -17,7 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserEntityOutput {
+public class UserEntityOutputWithStatus {
 
     private UUID id;
     private String surname;
@@ -41,4 +41,6 @@ public class UserEntityOutput {
     @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)
     @Schema(type = "string", example = "2018-01-01T15:02:01")
     private LocalDateTime registrationDate;
+
+    private StatusEnum status;
 }

@@ -11,4 +11,6 @@ public interface ContentCommunityRepository extends JpaRepository<ContentCommuni
 
     List<ContentCommunity> findAllByCommunityName(String name, Pageable pageable);
 
+    List<ContentCommunity> findByCommunityName(String name);
+
 }
