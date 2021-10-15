@@ -106,6 +106,9 @@ public class UserEntity implements UserDetails {
             fetch = FetchType.EAGER)
     private List<RoleStatusUserCommunity> roleStatusUserCommunities;
 
+    @OneToMany(mappedBy = "author", cascade = CascadeType.MERGE)
+    private List<Comment> comments;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority(role.getName().name()));
