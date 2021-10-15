@@ -2,12 +2,13 @@ package com.irlix.irlixbook.service.content;
 
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
 import com.irlix.irlixbook.dao.entity.Content;
-import com.irlix.irlixbook.dao.entity.Picture;
+import com.irlix.irlixbook.dao.entity.ContentUser;
+import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.entity.enams.ContentType;
 import com.irlix.irlixbook.dao.entity.enams.HelperEnum;
 import com.irlix.irlixbook.dao.model.content.helper.request.HelperRequest;
+import com.irlix.irlixbook.dao.model.content.helper.request.HelperSearchRequest;
 import com.irlix.irlixbook.dao.model.content.helper.response.HelperResponse;
-import com.irlix.irlixbook.dao.model.content.request.ContentPersistRequest;
 import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 import com.irlix.irlixbook.exception.BadRequestException;
 import com.irlix.irlixbook.exception.NotFoundException;
@@ -16,14 +17,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Service
@@ -68,16 +74,67 @@ public class ContentHelperServiceImpl implements ContentHelperService{
             throw new NullPointerException("HelperRequest cannot be null");
         }
 
-        Content content = contentRepository.findById(id).orElseThrow(() -> {
-            log.error("Content not found");
-            return new NotFoundException("Content not found");
-        });
+        Content content = getById(id);
 
         this.updateContent(content, helperRequest);
         contentRepository.save(content);
         log.info("Update Helper by id: " + id + ". Class ContentHelperServiceImpl, method update");
 
         return conversionService.convert(content, HelperResponse.class);
+    }
+
+    @Override
+    public HelperResponse findById(Long id) {
+
+        Content content = getById(id);
+
+        if (content.getType() != ContentType.HELPER) {
+            log.error("This belongs not for a helper.");
+            throw new BadRequestException("This belongs not for a helper.");
+        }
+
+        return conversionService.convert(content, HelperResponse.class);
+
+    }
+
+    @Override
+    public List<HelperResponse> findHelpers(HelperEnum helperType, HelperSearchRequest helperRequest, int page, int size) {
+
+        UserEntity userFromContext = SecurityContextUtils.getUserFromContext();
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdOn").descending());
+
+        List<Content> resultContent;
+
+        if (helperRequest.isShowMyHelpers()) {
+            resultContent = contentRepository.findByTypeAndAndHelperTypeAndCreator(ContentType.HELPER,
+                    helperType,
+                    pageRequest);
+        } else if (helperRequest.isShowTodayHelpers()) {//todo need to check
+            LocalDate day = LocalDate.now();
+            resultContent = contentRepository.findByTypeAndAndHelperTypeAndAndDateCreatedStartingWith(ContentType.HELPER,
+                    helperType,
+                    day,
+                    pageRequest);
+        }
+
+        List<Content> resultContent;
+
+        if (Objects.nonNull(contentType)) {
+
+            List<ContentUser> favorites = contentUserRepository.findByUserIdAndContent_Type(userFromContext.getId(), contentType, pageRequest);
+            resultContent = favorites.stream().map(ContentUser::getContent).collect(Collectors.toList());
+
+        } else {
+
+            List<ContentUser> favorites = contentUserRepository.findByUserId(userFromContext.getId(), pageRequest);
+            resultContent = favorites.stream().map(ContentUser::getContent).collect(Collectors.toList());
+
+        }
+        return resultContent.stream()
+                .map(post -> conversionService.convert(post, ContentResponse.class))
+                .collect(Collectors.toList());
+
+        return null;
     }
 
     private void updateContent(Content content, HelperRequest newContent) {
@@ -93,6 +150,11 @@ public class ContentHelperServiceImpl implements ContentHelperService{
         content.setLike(newContent.getLike());
     }
 
-
-
+    private Content getById(Long id) {
+        return contentRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("Helper not found");
+                    return new NotFoundException("Helper not found");
+                });
+    }
 }

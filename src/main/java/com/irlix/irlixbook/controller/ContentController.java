@@ -6,6 +6,7 @@ import com.irlix.irlixbook.dao.entity.enams.HelperEnum;
 import com.irlix.irlixbook.dao.entity.enams.PeriodType;
 import com.irlix.irlixbook.dao.entity.enams.RoleEnum;
 import com.irlix.irlixbook.dao.model.content.helper.request.HelperRequest;
+import com.irlix.irlixbook.dao.model.content.helper.request.HelperSearchRequest;
 import com.irlix.irlixbook.dao.model.content.helper.response.HelperResponse;
 import com.irlix.irlixbook.dao.model.content.request.ContentPersistRequest;
 import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
@@ -13,6 +14,7 @@ import com.irlix.irlixbook.exception.BadRequestException;
 import com.irlix.irlixbook.service.content.ContentHelperService;
 import com.irlix.irlixbook.service.content.ContentService;
 import com.irlix.irlixbook.service.user.user.UserService;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -168,6 +170,28 @@ public class ContentController {
                                        @RequestBody @Valid HelperRequest helperRequest) {
         return contentHelperService.update(id, helperRequest);
     }
+
+    @GetMapping("/helper/{id}")
+    @RoleAndPermissionCheck(RoleEnum.USER)
+    public HelperResponse findHelperById(@NonNull @PathVariable("id") Long id) {
+        return contentHelperService.findById(id);
+    }
+
+    @GetMapping("/helper/{helperType}")
+    @RoleAndPermissionCheck(RoleEnum.USER)
+    public List<HelperResponse> findHelpers(@PathVariable("helperType") HelperEnum helperType,
+                                      @RequestBody(required = false) @Valid HelperSearchRequest helperRequest,
+                                      @RequestParam(required = false, defaultValue = "0") int page,
+                                      @RequestParam(required = false, defaultValue = "10") int size) {
+        return contentHelperService.findHelpers(helperType, helperRequest, page, size);
+    }
+
+    /*
+    * get my
+    * get today
+    * get sort by date
+    * get all*/
+
     // ================================================================================ COMMENT METHODS
 
 
@@ -175,14 +199,14 @@ public class ContentController {
     * post comment
     * update comment
     * reply comment?
-    * delete comment
+    * delete list comment
+    * get comments of helper
     *
     * post helper check
     * update helper check
     * get helper by name with comments  checkoo
     * get helper by id with comment    checkoo
     * get helper by type   checkoo
-    * get comments of helper
     * get helper of user
     * get helper for today
     * */

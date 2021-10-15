@@ -2,11 +2,13 @@ package com.irlix.irlixbook.repository;
 
 import com.irlix.irlixbook.dao.entity.Content;
 import com.irlix.irlixbook.dao.entity.enams.ContentType;
+import com.irlix.irlixbook.dao.entity.enams.HelperEnum;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -23,4 +25,12 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
     @Query(value = "select c from Content c where c.type = :contentType order by case c.sticker.name when 'Важное' then 0 else 1 end")
     List<Content> findImportantContent(@Param("contentType") ContentType contentType, Pageable pageable);
 
+    List<Content> findByTypeAndAndHelperTypeAndAndDateCreatedStartingWith(ContentType contentType,
+                                                                    HelperEnum helperType,
+                                                                    LocalDate day,
+                                                                    Pageable pageable);
+
+    List<Content> findByTypeAndAndHelperTypeAndCreator(ContentType contentType,
+                                                       HelperEnum helperType,
+                                                       Pageable pageable);
 }
