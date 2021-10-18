@@ -8,8 +8,8 @@ public class HelperRequestToContent implements Converter<HelperRequest, Content>
     @Override
     public Content convert(HelperRequest helperRequest) {
         return Content.builder()
-                .name(helperRequest.getName())
-                .description(helperRequest.getText())
+                .name(helperRequest.getTitle())
+                .description(helperRequest.getDescription())
                 .build();
     }
 }

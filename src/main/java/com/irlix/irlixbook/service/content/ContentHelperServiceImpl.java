@@ -2,14 +2,12 @@ package com.irlix.irlixbook.service.content;
 
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
 import com.irlix.irlixbook.dao.entity.Content;
-import com.irlix.irlixbook.dao.entity.ContentUser;
 import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.entity.enams.ContentType;
 import com.irlix.irlixbook.dao.entity.enams.HelperEnum;
 import com.irlix.irlixbook.dao.model.content.helper.request.HelperRequest;
 import com.irlix.irlixbook.dao.model.content.helper.request.HelperSearchRequest;
 import com.irlix.irlixbook.dao.model.content.helper.response.HelperResponse;
-import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 import com.irlix.irlixbook.exception.BadRequestException;
 import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.ContentRepository;
@@ -25,10 +23,8 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -89,8 +85,8 @@ public class ContentHelperServiceImpl implements ContentHelperService{
         Content content = getById(id);
 
         if (content.getType() != ContentType.HELPER) {
-            log.error("This belongs not for a helper.");
-            throw new BadRequestException("This belongs not for a helper.");
+            log.error("This content belongs not for a helper.");
+            throw new BadRequestException("This content belongs not for a helper.");
         }
 
         return conversionService.convert(content, HelperResponse.class);
@@ -103,51 +99,49 @@ public class ContentHelperServiceImpl implements ContentHelperService{
         UserEntity userFromContext = SecurityContextUtils.getUserFromContext();
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdOn").descending());
 
-        List<Content> resultContent;
+        List<Content> resultContent = new ArrayList<>();
 
         if (helperRequest.isShowMyHelpers()) {
-            resultContent = contentRepository.findByTypeAndAndHelperTypeAndCreator(ContentType.HELPER,
+            resultContent = contentRepository.findByTypeAndHelperTypeAndCreator(ContentType.HELPER,
                     helperType,
+                    userFromContext,
                     pageRequest);
-        } else if (helperRequest.isShowTodayHelpers()) {//todo need to check
+            log.info("Found all helper's of current user.");
+        } else if (helperRequest.isShowTodayHelpers()) {//todo need to check date
             LocalDate day = LocalDate.now();
             resultContent = contentRepository.findByTypeAndAndHelperTypeAndAndDateCreatedStartingWith(ContentType.HELPER,
                     helperType,
                     day,
                     pageRequest);
+            log.info("Found all today helper's.");
         }
 
-        List<Content> resultContent;
-
-        if (Objects.nonNull(contentType)) {
-
-            List<ContentUser> favorites = contentUserRepository.findByUserIdAndContent_Type(userFromContext.getId(), contentType, pageRequest);
-            resultContent = favorites.stream().map(ContentUser::getContent).collect(Collectors.toList());
-
-        } else {
-
-            List<ContentUser> favorites = contentUserRepository.findByUserId(userFromContext.getId(), pageRequest);
-            resultContent = favorites.stream().map(ContentUser::getContent).collect(Collectors.toList());
-
-        }
         return resultContent.stream()
-                .map(post -> conversionService.convert(post, ContentResponse.class))
+                .map(post -> conversionService.convert(post, HelperResponse.class))
                 .collect(Collectors.toList());
+    }
 
-        return null;
+    @Override
+    public List<HelperResponse> findAllHelpers(HelperEnum helperType, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdOn").descending());
+        List<Content> resultContent = contentRepository.findByTypeAndHelperType(ContentType.HELPER,
+                helperType,
+                pageRequest);
+        log.info("Found all helper's of type " + helperType + ".");
+        return resultContent.stream()
+                .map(content -> conversionService.convert(content, HelperResponse.class))
+                .collect(Collectors.toList());
     }
 
     private void updateContent(Content content, HelperRequest newContent) {
 
-        if (StringUtils.hasLength(newContent.getName())) {
-            content.setName(newContent.getName());
+        if (StringUtils.hasLength(newContent.getTitle())) {
+            content.setName(newContent.getTitle());
         }
 
-        if (StringUtils.hasLength(newContent.getText())) {
-            content.setDescription(newContent.getText());
+        if (StringUtils.hasLength(newContent.getDescription())) {
+            content.setDescription(newContent.getDescription());
         }
-
-        content.setLike(newContent.getLike());
     }
 
     private Content getById(Long id) {

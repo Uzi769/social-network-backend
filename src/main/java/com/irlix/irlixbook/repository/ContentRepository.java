@@ -1,10 +1,12 @@
 package com.irlix.irlixbook.repository;
 
 import com.irlix.irlixbook.dao.entity.Content;
+import com.irlix.irlixbook.dao.entity.UserEntity;
 import com.irlix.irlixbook.dao.entity.enams.ContentType;
 import com.irlix.irlixbook.dao.entity.enams.HelperEnum;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -30,7 +32,12 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
                                                                     LocalDate day,
                                                                     Pageable pageable);
 
-    List<Content> findByTypeAndAndHelperTypeAndCreator(ContentType contentType,
+    List<Content> findByTypeAndHelperTypeAndCreator(ContentType contentType,
                                                        HelperEnum helperType,
+                                                       UserEntity creator,
                                                        Pageable pageable);
+
+    List<Content> findByTypeAndHelperType(ContentType contentType,
+                                    HelperEnum helperType,
+                                    Pageable pageable);
 }

@@ -12,12 +12,8 @@ import javax.validation.constraints.NotBlank;
 public class HelperRequest {
 
     @NotBlank
-    private String name;
+    private String title;
 
     @NotBlank
-    private String text;
-
-    private int like;
-
-//    private List<UUID> pictureId
+    private String description;
 }

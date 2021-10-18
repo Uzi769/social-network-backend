@@ -23,5 +23,4 @@ public class HelperSearchRequest {
     private boolean showMyHelpers;
     private boolean showTodayHelpers;
 
-    private int like;
 }

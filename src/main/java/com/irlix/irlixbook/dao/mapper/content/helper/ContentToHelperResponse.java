@@ -11,10 +11,11 @@ public class ContentToHelperResponse implements Converter<Content, HelperRespons
     @Override
     public HelperResponse convert(Content content) {
         return HelperResponse.builder()
-                .name(content.getName())
+                .id(content.getId())
+                .title(content.getName())
                 .helperType(content.getHelperType())
-                .creator(content.getCreator().getName())
-                .text(content.getDescription())
+                .author(content.getCreator().getName())
+                .description(content.getDescription())
                 .deepLink(content.getDeeplink())
                 .creatingDate(content.getDateCreated())
                 .comments(content
@@ -23,6 +24,7 @@ public class ContentToHelperResponse implements Converter<Content, HelperRespons
                         .map(Comment::getId)
                         .collect(Collectors.toList()))
                 .like(content.getLike())
+                .avatar(content.getCreator().getAvatar())
                 .build();
     }
 }

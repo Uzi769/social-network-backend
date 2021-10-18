@@ -13,10 +13,12 @@ import java.util.List;
 @Builder
 public class HelperResponse {
 
-    private String name;
+    private Long id;
+    private String title;
     private HelperEnum helperType;
-    private String creator;
-    private String text;
+    private String author;
+    private String avatar;
+    private String description;
     private String deepLink;
     private LocalDateTime creatingDate;
     private List<Long> comments;

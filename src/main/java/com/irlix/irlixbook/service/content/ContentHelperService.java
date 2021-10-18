@@ -15,4 +15,6 @@ public interface ContentHelperService {
     HelperResponse findById(Long id);
 
     List<HelperResponse> findHelpers(HelperEnum helperType, HelperSearchRequest helperRequest, int page, int size);
+
+    List<HelperResponse> findAllHelpers(HelperEnum helperType, int page, int size);
 }

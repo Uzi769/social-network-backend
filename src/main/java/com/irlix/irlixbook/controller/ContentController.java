@@ -5,12 +5,15 @@ import com.irlix.irlixbook.dao.entity.enams.ContentType;
 import com.irlix.irlixbook.dao.entity.enams.HelperEnum;
 import com.irlix.irlixbook.dao.entity.enams.PeriodType;
 import com.irlix.irlixbook.dao.entity.enams.RoleEnum;
+import com.irlix.irlixbook.dao.model.content.comment.CommentRequest;
+import com.irlix.irlixbook.dao.model.content.comment.CommentResponse;
 import com.irlix.irlixbook.dao.model.content.helper.request.HelperRequest;
 import com.irlix.irlixbook.dao.model.content.helper.request.HelperSearchRequest;
 import com.irlix.irlixbook.dao.model.content.helper.response.HelperResponse;
 import com.irlix.irlixbook.dao.model.content.request.ContentPersistRequest;
 import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 import com.irlix.irlixbook.exception.BadRequestException;
+import com.irlix.irlixbook.service.comment.CommentService;
 import com.irlix.irlixbook.service.content.ContentHelperService;
 import com.irlix.irlixbook.service.content.ContentService;
 import com.irlix.irlixbook.service.user.user.UserService;
@@ -36,6 +39,7 @@ public class ContentController {
     private final ContentService contentService;
     private final ContentHelperService contentHelperService;
     private final UserService userService;
+    private final CommentService commentService;
 
     @GetMapping("/{type}/important")
     @RoleAndPermissionCheck(RoleEnum.USER)
@@ -164,12 +168,12 @@ public class ContentController {
         return contentHelperService.save(helperRequest, helperType);
     }
 
-    @PutMapping("/helper/{id}")
-    @RoleAndPermissionCheck(RoleEnum.USER)
-    public HelperResponse updateHelper(@PathVariable("id") Long id,
-                                       @RequestBody @Valid HelperRequest helperRequest) {
-        return contentHelperService.update(id, helperRequest);
-    }
+//    @PutMapping("/helper/{id}")
+//    @RoleAndPermissionCheck(RoleEnum.USER)
+//    public HelperResponse updateHelper(@PathVariable("id") Long id,
+//                                       @RequestBody @Valid HelperRequest helperRequest) {
+//        return contentHelperService.update(id, helperRequest);
+//    }
 
     @GetMapping("/helper/{id}")
     @RoleAndPermissionCheck(RoleEnum.USER)
@@ -186,29 +190,37 @@ public class ContentController {
         return contentHelperService.findHelpers(helperType, helperRequest, page, size);
     }
 
-    /*
-    * get my
-    * get today
-    * get sort by date
-    * get all*/
+    @GetMapping("/helper/all")
+    @RoleAndPermissionCheck(RoleEnum.USER)
+    public List<HelperResponse> findAllHelpers(@RequestParam HelperEnum helperType,
+                                            @RequestParam(required = false, defaultValue = "0") int page,
+                                            @RequestParam(required = false, defaultValue = "10") int size) {
+        return contentHelperService.findAllHelpers(helperType, page, size);
+    }
+
+    //find helper of user?
 
     // ================================================================================ COMMENT METHODS
 
+    @PostMapping("/helper/{helperId}/comment")
+    @ResponseStatus(HttpStatus.CREATED)
+    @RoleAndPermissionCheck(RoleEnum.USER)
+    public CommentResponse createHelper(@PathVariable("helperId") Long helperId,
+                                        @RequestBody @Valid CommentRequest commentRequest) {
+        return commentService.save(helperId, commentRequest);
+    }
 
+    @DeleteMapping("/helper/comment/{commentId}")
+    @RoleAndPermissionCheck(RoleEnum.USER)
+    public ResponseEntity<?> deleteComment(@PathVariable("commentId") Long id) {
+        commentService.delete(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
     /*
-    * post comment
     * update comment
     * reply comment?
     * delete list comment
     * get comments of helper
-    *
-    * post helper check
-    * update helper check
-    * get helper by name with comments  checkoo
-    * get helper by id with comment    checkoo
-    * get helper by type   checkoo
-    * get helper of user
-    * get helper for today
     * */
 
 }
