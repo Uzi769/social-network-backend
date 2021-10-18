@@ -1,16 +1,15 @@
 package com.irlix.irlixbook.dao.entity;
 
 import com.irlix.irlixbook.dao.entity.enams.ContentType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.irlix.irlixbook.dao.entity.enams.HelperEnum;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -72,4 +71,14 @@ public class Content {
 
     @OneToMany(mappedBy = "content")
     private List<ContentCommunity> contentCommunities;
+
+    @Column(name = "helper_type")
+    @Enumerated(EnumType.STRING)
+    private HelperEnum helperType;
+
+    @Column(name = "number_of_like")
+    private int like;
+
+    @OneToMany(mappedBy = "content")
+    private List<Comment> comments;
 }

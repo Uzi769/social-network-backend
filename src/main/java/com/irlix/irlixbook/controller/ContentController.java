@@ -2,13 +2,22 @@ package com.irlix.irlixbook.controller;
 
 import com.irlix.irlixbook.config.security.annotation.RoleAndPermissionCheck;
 import com.irlix.irlixbook.dao.entity.enams.ContentType;
+import com.irlix.irlixbook.dao.entity.enams.HelperEnum;
 import com.irlix.irlixbook.dao.entity.enams.PeriodType;
 import com.irlix.irlixbook.dao.entity.enams.RoleEnum;
+import com.irlix.irlixbook.dao.model.content.comment.CommentRequest;
+import com.irlix.irlixbook.dao.model.content.comment.CommentResponse;
+import com.irlix.irlixbook.dao.model.content.helper.request.HelperRequest;
+import com.irlix.irlixbook.dao.model.content.helper.request.HelperSearchRequest;
+import com.irlix.irlixbook.dao.model.content.helper.response.HelperResponse;
 import com.irlix.irlixbook.dao.model.content.request.ContentPersistRequest;
 import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 import com.irlix.irlixbook.exception.BadRequestException;
+import com.irlix.irlixbook.service.comment.CommentService;
+import com.irlix.irlixbook.service.content.ContentHelperService;
 import com.irlix.irlixbook.service.content.ContentService;
 import com.irlix.irlixbook.service.user.user.UserService;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -28,7 +37,9 @@ import java.util.regex.Pattern;
 public class ContentController {
 
     private final ContentService contentService;
+    private final ContentHelperService contentHelperService;
     private final UserService userService;
+    private final CommentService commentService;
 
     @GetMapping("/{type}/important")
     @RoleAndPermissionCheck(RoleEnum.USER)
@@ -36,10 +47,8 @@ public class ContentController {
                                         @RequestParam(required = false, defaultValue = "0") int page,
                                         @RequestParam(required = false, defaultValue = "10") int size
     ) {
-
         List<ContentResponse> list = contentService.findImportant(type, page, size);
         return new ResponseEntity(list, HttpStatus.OK);
-
     }
 
     @GetMapping
@@ -85,7 +94,6 @@ public class ContentController {
 
         this.validateSearchName(name);
         return contentService.search(contentType, name, page, size);
-
     }
 
     @GetMapping("/byType/{contentType}")
@@ -116,10 +124,8 @@ public class ContentController {
     @DeleteMapping("/all")
     @RoleAndPermissionCheck(RoleEnum.ADMIN)
     public ResponseEntity<?> deleteAll() {
-
         contentService.deleteAll();
         return new ResponseEntity<>(HttpStatus.OK);
-
     }
 
     @GetMapping("/favorites")
@@ -152,4 +158,36 @@ public class ContentController {
 
     }
 
+    // ================================================================================ HELPER METHODS
+
+    @PostMapping("/helper/{helperType}")
+    @ResponseStatus(HttpStatus.CREATED)
+    @RoleAndPermissionCheck(RoleEnum.USER)
+    public HelperResponse createHelper(@PathVariable("helperType") HelperEnum helperType,
+                                       @RequestBody @Valid HelperRequest helperRequest) {
+        return contentHelperService.save(helperRequest, helperType);
+    }
+
+    @GetMapping("/helper/{id}")
+    @RoleAndPermissionCheck(RoleEnum.USER)
+    public HelperResponse findHelperById(@NonNull @PathVariable("id") Long id) {
+        return contentHelperService.findById(id);
+    }
+
+    @PostMapping("/helper/search/{helperType}")
+    @RoleAndPermissionCheck(RoleEnum.USER)
+    public List<HelperResponse> findHelpers(@PathVariable("helperType") HelperEnum helperType,
+                                      @RequestParam(required = false, defaultValue = "0") int page,
+                                      @RequestParam(required = false, defaultValue = "10") int size,
+                                            @RequestBody(required = false) @Valid HelperSearchRequest helperRequest) {
+        return contentHelperService.findHelpers(helperType, helperRequest, page, size);
+    }
+
+    @GetMapping("/helper/all")
+    @RoleAndPermissionCheck(RoleEnum.USER)
+    public List<HelperResponse> findAllHelpers(@RequestParam HelperEnum helperType,
+                                            @RequestParam(required = false, defaultValue = "0") int page,
+                                            @RequestParam(required = false, defaultValue = "10") int size) {
+        return contentHelperService.findAllHelpers(helperType, page, size);
+    }
 }

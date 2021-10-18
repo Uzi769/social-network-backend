@@ -4,6 +4,10 @@ import com.irlix.irlixbook.dao.mapper.community.CommunityPersistRequestToCommuni
 import com.irlix.irlixbook.dao.mapper.community.CommunityToCommunityResponse;
 import com.irlix.irlixbook.dao.mapper.content.ContentPersistRequestToContent;
 import com.irlix.irlixbook.dao.mapper.content.ContentToContentResponse;
+import com.irlix.irlixbook.dao.mapper.content.comment.CommentRequestToComment;
+import com.irlix.irlixbook.dao.mapper.content.comment.CommentToCommentResponse;
+import com.irlix.irlixbook.dao.mapper.content.helper.ContentToHelperResponse;
+import com.irlix.irlixbook.dao.mapper.content.helper.HelperRequestToContent;
 import com.irlix.irlixbook.dao.mapper.picture.PictureToPictureOutput;
 import com.irlix.irlixbook.dao.mapper.sticker.StickerToStickerResponse;
 import com.irlix.irlixbook.dao.mapper.user.*;
@@ -31,6 +35,10 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addConverter(new CommunityPersistRequestToCommunity());
         registry.addConverter(new CommunityToCommunityResponse());
         registry.addConverter(new UserStatusDTOToUserEntityOutputWithStatus());
+        registry.addConverter(new ContentToHelperResponse());
+        registry.addConverter(new HelperRequestToContent());
+        registry.addConverter(new CommentRequestToComment());
+        registry.addConverter(new CommentToCommentResponse());
     }
 
     /**

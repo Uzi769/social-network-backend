@@ -4,5 +4,6 @@ public enum ContentType {
     LINK,
     STREAM,
     EVENT,
-    NEWS
+    NEWS,
+    HELPER
 }

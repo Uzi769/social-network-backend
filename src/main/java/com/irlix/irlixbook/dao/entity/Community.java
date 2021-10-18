@@ -53,5 +53,5 @@ public class Community {
 
     @Column(name = "date_of_creation")
     @Builder.Default
-    private LocalDateTime creatingDate = LocalDateTime.now();;
+    private LocalDateTime creatingDate = LocalDateTime.now();
 }
