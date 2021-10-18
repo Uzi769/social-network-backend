@@ -190,36 +190,4 @@ public class ContentController {
                                             @RequestParam(required = false, defaultValue = "10") int size) {
         return contentHelperService.findAllHelpers(helperType, page, size);
     }
-
-//    @PutMapping("/helper/{id}")
-//    @RoleAndPermissionCheck(RoleEnum.USER)
-//    public HelperResponse updateHelper(@PathVariable("id") Long id,
-//                                       @RequestBody @Valid HelperRequest helperRequest) {
-//        return contentHelperService.update(id, helperRequest);
-//    }
-
-
-    // ================================================================================ COMMENT METHODS
-
-    @PostMapping("/helper/{helperId}/comment")
-    @ResponseStatus(HttpStatus.CREATED)
-    @RoleAndPermissionCheck(RoleEnum.USER)
-    public CommentResponse createHelper(@PathVariable("helperId") Long helperId,
-                                        @RequestBody @Valid CommentRequest commentRequest) {
-        return commentService.save(helperId, commentRequest);
-    }
-
-    @DeleteMapping("/helper/comment/{commentId}")
-    @RoleAndPermissionCheck(RoleEnum.USER)
-    public ResponseEntity<?> deleteComment(@PathVariable("commentId") Long id) {
-        commentService.delete(id);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-    /*
-    * update comment
-    * reply comment?
-    * delete list comment
-    * get comments of helper
-    * */
-
 }
