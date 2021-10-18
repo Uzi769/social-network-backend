@@ -168,25 +168,18 @@ public class ContentController {
         return contentHelperService.save(helperRequest, helperType);
     }
 
-//    @PutMapping("/helper/{id}")
-//    @RoleAndPermissionCheck(RoleEnum.USER)
-//    public HelperResponse updateHelper(@PathVariable("id") Long id,
-//                                       @RequestBody @Valid HelperRequest helperRequest) {
-//        return contentHelperService.update(id, helperRequest);
-//    }
-
     @GetMapping("/helper/{id}")
     @RoleAndPermissionCheck(RoleEnum.USER)
     public HelperResponse findHelperById(@NonNull @PathVariable("id") Long id) {
         return contentHelperService.findById(id);
     }
 
-    @GetMapping("/helper/{helperType}")
+    @PostMapping("/helper/search/{helperType}")
     @RoleAndPermissionCheck(RoleEnum.USER)
     public List<HelperResponse> findHelpers(@PathVariable("helperType") HelperEnum helperType,
-                                      @RequestBody(required = false) @Valid HelperSearchRequest helperRequest,
                                       @RequestParam(required = false, defaultValue = "0") int page,
-                                      @RequestParam(required = false, defaultValue = "10") int size) {
+                                      @RequestParam(required = false, defaultValue = "10") int size,
+                                            @RequestBody(required = false) @Valid HelperSearchRequest helperRequest) {
         return contentHelperService.findHelpers(helperType, helperRequest, page, size);
     }
 
@@ -198,7 +191,13 @@ public class ContentController {
         return contentHelperService.findAllHelpers(helperType, page, size);
     }
 
-    //find helper of user?
+//    @PutMapping("/helper/{id}")
+//    @RoleAndPermissionCheck(RoleEnum.USER)
+//    public HelperResponse updateHelper(@PathVariable("id") Long id,
+//                                       @RequestBody @Valid HelperRequest helperRequest) {
+//        return contentHelperService.update(id, helperRequest);
+//    }
+
 
     // ================================================================================ COMMENT METHODS
 

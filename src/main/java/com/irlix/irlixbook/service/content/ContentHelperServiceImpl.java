@@ -97,7 +97,7 @@ public class ContentHelperServiceImpl implements ContentHelperService{
     public List<HelperResponse> findHelpers(HelperEnum helperType, HelperSearchRequest helperRequest, int page, int size) {
 
         UserEntity userFromContext = SecurityContextUtils.getUserFromContext();
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdOn").descending());
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("dateCreated").descending());
 
         List<Content> resultContent = new ArrayList<>();
 
@@ -108,10 +108,12 @@ public class ContentHelperServiceImpl implements ContentHelperService{
                     pageRequest);
             log.info("Found all helper's of current user.");
         } else if (helperRequest.isShowTodayHelpers()) {//todo need to check date
-            LocalDate day = LocalDate.now();
-            resultContent = contentRepository.findByTypeAndAndHelperTypeAndAndDateCreatedStartingWith(ContentType.HELPER,
+            LocalDateTime start = LocalDate.now().atStartOfDay();
+            LocalDateTime end = LocalDate.now().plusDays(1L).atStartOfDay().minusSeconds(1L);
+            resultContent = contentRepository.findByTypeAndAndHelperTypeAndDateCreatedBetween(ContentType.HELPER,
                     helperType,
-                    day,
+                    start,
+                    end,
                     pageRequest);
             log.info("Found all today helper's.");
         }
@@ -123,7 +125,7 @@ public class ContentHelperServiceImpl implements ContentHelperService{
 
     @Override
     public List<HelperResponse> findAllHelpers(HelperEnum helperType, int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdOn").descending());
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("dateCreated").descending());
         List<Content> resultContent = contentRepository.findByTypeAndHelperType(ContentType.HELPER,
                 helperType,
                 pageRequest);

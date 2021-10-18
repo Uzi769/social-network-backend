@@ -11,15 +11,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class HelperSearchRequest {
-
-    @NotBlank
-    private String name;
-
-    @NotBlank
-    private String text;
-
-    private UUID creator;
-
     private boolean showMyHelpers;
     private boolean showTodayHelpers;
 
