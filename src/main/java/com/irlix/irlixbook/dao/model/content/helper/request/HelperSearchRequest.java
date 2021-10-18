@@ -8,7 +8,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Builder
 public class HelperSearchRequest {
 
