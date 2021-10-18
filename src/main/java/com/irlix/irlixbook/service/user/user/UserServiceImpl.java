@@ -442,8 +442,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         userEntity.setPassword(passwordEncoder.encode(password));
 
         roleRepository.findByName(userCreateInput.getRole()).ifPresent(userEntity::setRole);
-
         Role role = userEntity.getRole();
+
+        userRepository.save(userEntity);
 
         RoleStatusUserCommunity roleStatusUserCommunity = RoleStatusUserCommunity.builder()
                 .role(role)
