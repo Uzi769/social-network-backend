@@ -238,9 +238,11 @@ public class ContentServiceImpl implements ContentService {
         List<Content> contents = contentRepository.findByType(contentType, pageRequest);
 
         return contents.stream()
-                .map(post -> conversionService.convert(post, ContentResponse.class))
+                .map(post -> {
+                    contentRepository.save(post);
+                    return conversionService.convert(post, ContentResponse.class);
+                })
                 .collect(Collectors.toList());
-
     }
 
     @Override

@@ -77,7 +77,7 @@ public class Content {
     private HelperEnum helperType;
 
     @Column(name = "number_of_like", columnDefinition = "integer default 0")
-    private int like;
+    private Integer like;
 
     @OneToMany(mappedBy = "content")
     private List<Comment> comments;
