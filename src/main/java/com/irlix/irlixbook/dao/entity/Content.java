@@ -76,7 +76,7 @@ public class Content {
     @Enumerated(EnumType.STRING)
     private HelperEnum helperType;
 
-    @Column(name = "number_of_like")
+    @Column(name = "number_of_like", columnDefinition = "integer default 0")
     private int like;
 
     @OneToMany(mappedBy = "content")
