@@ -54,7 +54,7 @@ public class CommunityController {
     @RoleAndPermissionCheck(RoleEnum.USER)
     public List<UserEntityOutputWithStatus> findCommunityUsers(@PathVariable("name")String name,
                                                                @RequestParam(required = false, defaultValue = "0") int page,
-                                                               @RequestParam(required = false, defaultValue = "0") int size) {
+                                                               @RequestParam(required = false, defaultValue = "10") int size) {
         return communityService.findCommunityUsers(name, page, size);
     }
 
@@ -62,7 +62,7 @@ public class CommunityController {
     @RoleAndPermissionCheck(RoleEnum.USER)
     public List<ContentResponse> findCommunityContents(@PathVariable("name")String name,
                                                        @RequestParam(required = false, defaultValue = "0") int page,
-                                                       @RequestParam(required = false, defaultValue = "0") int size) {
+                                                       @RequestParam(required = false, defaultValue = "10") int size) {
         return communityService.findCommunityContents(name, page, size);
     }
 

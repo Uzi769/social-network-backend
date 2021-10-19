@@ -54,4 +54,7 @@
                                  referencedColumnNames="id"
                                  referencedTableName="user_entity"/>
     </changeSet>
+    <changeSet id="18102021-4" author="Kurkin">
+        <addDefaultValue tableName="content" columnName="number_of_like" defaultValueNumeric="0"/>
+    </changeSet>
 </databaseChangeLog>

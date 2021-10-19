@@ -24,9 +24,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -42,6 +42,7 @@ public class CommunityServiceImpl implements CommunityService{
     private final UserService userService;
     private final StatusRepository statusRepository;
     private final RoleStatusUserCommunityRepository roleStatusUserCommunityRepository;
+    private final EntityManager entityManager;
 
     @Value("${url.root}")
     private String urlRoot;
@@ -110,16 +111,26 @@ public class CommunityServiceImpl implements CommunityService{
 
     @Override
     public CommunityResponse findById(UUID uuid) {
-        CommunityResponse communityResponse = conversionService.convert(getById(uuid), CommunityResponse.class);
-        log.info("Return Community found by id. Class CommunityServiceImpl, method findById");
-        return communityResponse;
+        Community community = getById(uuid);
+        if (community != null) {
+            CommunityResponse communityResponse = conversionService.convert(community, CommunityResponse.class);
+            log.info("Return Community found by id. Class CommunityServiceImpl, method findById");
+            return communityResponse;
+        } else {
+            throw new NotFoundException("There is no community with id " + uuid);
+        }
     }
 
     @Override
     public CommunityResponse findByName(String name) {
-        CommunityResponse communityResponse = conversionService.convert(getByName(name), CommunityResponse.class);
-        log.info("Return Community found by id. Class CommunityServiceImpl, method findById");
-        return communityResponse;
+        Community community = getByName(name);
+        if (community != null) {
+            CommunityResponse communityResponse = conversionService.convert(community, CommunityResponse.class);
+            log.info("Return Community found by name. Class CommunityServiceImpl, method findByName");
+            return communityResponse;
+        } else {
+            throw new NotFoundException("There is no community with name " + name);
+        }
     }
 
     @Override
@@ -180,13 +191,19 @@ public class CommunityServiceImpl implements CommunityService{
     public void delete(String name) {
 
         Community communityForDelete = getByName(name);
+        Collection<Community> communities = new HashSet<>();
+        communities.add(communityForDelete);
 
         if (name.equals("start")) {
             throw new IllegalArgumentException("You can't delete \"start\" community");
         }
 
         if (communityForDelete != null) {
-            communityRepository.delete(communityForDelete);
+            communityRepository.save(communityForDelete);
+            deleteRoleStatusUserCommunities(communityForDelete);
+            deleteContentCommunities(communityForDelete);
+            communityRepository.deleteInBatch(communities);
+            communityRepository.flush();
             log.info("Community deleted. Class CommunityServiceImpl, method delete");
         } else {
             throw new NotFoundException("Community with name " + name +  "not found.");
@@ -240,5 +257,15 @@ public class CommunityServiceImpl implements CommunityService{
         PageRequest pageRequest = PageRequest.of(page, size);
         return roleStatusUserCommunityRepository
                 .findByCommunityName(name, pageRequest);
+    }
+
+    private void deleteRoleStatusUserCommunities(Community community) {
+        List<RoleStatusUserCommunity> forDelete = roleStatusUserCommunityRepository.findByCommunityName(community.getName());
+        roleStatusUserCommunityRepository.deleteInBatch(forDelete);
+    }
+
+    private void deleteContentCommunities(Community community) {
+        List<ContentCommunity> forDelete = contentCommunityRepository.findByCommunityName(community.getName());
+        contentCommunityRepository.deleteInBatch(forDelete);
     }
 }
