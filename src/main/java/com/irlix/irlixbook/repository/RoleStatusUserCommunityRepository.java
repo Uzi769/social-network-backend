@@ -16,4 +16,6 @@ public interface RoleStatusUserCommunityRepository extends JpaRepository<RoleSta
     List<RoleStatusUserCommunity> findByCommunityName(String name);
 
     List<RoleStatusUserCommunity> findByDateJoinedBefore(LocalDateTime date);
+
+    List<RoleStatusUserCommunity> findByUserName(String name);
 }

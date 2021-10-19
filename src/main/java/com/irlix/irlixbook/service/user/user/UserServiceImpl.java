@@ -196,10 +196,20 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Transactional
     public UserEntityOutput deletedUser(UUID id) {
 
-        UserEntity userEntity = findById(id);
-        log.info(USER_DELETED);
-        userRepository.delete(userEntity);
-        return conversionService.convert(userEntity, UserEntityOutput.class);
+        UserEntity user = findById(id);
+        Collection<UserEntity> forDelete = new HashSet<>();
+        forDelete.add(user);
+
+        if (user != null) {
+            userRepository.save(user);
+            deleteRoleStatusUserCommunities(user);
+            userRepository.deleteInBatch(forDelete);
+            userRepository.flush();
+            log.info(USER_DELETED);
+            return conversionService.convert(user, UserEntityOutput.class);
+        } else {
+            throw new NotFoundException("User with id " + id + " not found.");
+        }
 
     }
 
@@ -355,7 +365,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         LocalDateTime blockedDate = LocalDateTime.now().minusMonths(2);
         List<UserEntity> blockedUsers = userRepository.findByBlockedLessThanEqual(blockedDate);
+
+        for (UserEntity user : blockedUsers) {
+            deleteRoleStatusUserCommunities(user);
+        }
         userRepository.deleteAll(blockedUsers);
+        userRepository.flush();
         log.info("DELETE {} USERS how was blocked : {}", blockedUsers.size(), blockedDate);
 
     }
@@ -515,5 +530,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             throw new BadRequestException("All these users are members of community.");
         }
         return roleStatusUserCommunities;
+    }
+
+    private void deleteRoleStatusUserCommunities(UserEntity user) {
+        List<RoleStatusUserCommunity> forDelete = roleStatusUserCommunityRepository.findByUserName(user.getName());
+        roleStatusUserCommunityRepository.deleteInBatch(forDelete);
     }
 }
