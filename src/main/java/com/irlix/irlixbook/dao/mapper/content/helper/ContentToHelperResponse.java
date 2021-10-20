@@ -26,7 +26,7 @@ public class ContentToHelperResponse implements Converter<Content, HelperRespons
                         .stream()
                         .map(Comment::getId)
                         .collect(Collectors.toList()) : null)
-                .like(content.getLike())
+                .like(content.getLike() != null ? content.getLike() : 0)
                 .avatar(content.getCreator().getAvatar())
                 .build();
     }
