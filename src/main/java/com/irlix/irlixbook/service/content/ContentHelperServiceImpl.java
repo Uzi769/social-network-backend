@@ -53,6 +53,7 @@ public class ContentHelperServiceImpl implements ContentHelperService{
         content.setDateCreated(LocalDateTime.now());
         content.setHelperType(helperType);
         content.setType(ContentType.HELPER);
+        content.setLike(0);
 
         Content savedContent = contentRepository.save(content);
         savedContent.setDeeplink(urlRoot + savedContent.getType().name() + "/" + helperType + "/" + savedContent.getId());
