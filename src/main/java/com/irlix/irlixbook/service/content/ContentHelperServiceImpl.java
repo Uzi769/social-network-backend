@@ -9,6 +9,7 @@ import com.irlix.irlixbook.dao.model.content.helper.request.HelperRequest;
 import com.irlix.irlixbook.dao.model.content.helper.request.HelperSearchRequest;
 import com.irlix.irlixbook.dao.model.content.helper.response.HelperResponse;
 import com.irlix.irlixbook.exception.BadRequestException;
+import com.irlix.irlixbook.exception.ForbiddenException;
 import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.ContentRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,7 @@ public class ContentHelperServiceImpl implements ContentHelperService{
 
     private final ConversionService conversionService;
     private final ContentRepository contentRepository;
+    private final ContentService contentService;
 
     @Value("${url.root}")
     private String urlRoot;
@@ -134,6 +136,21 @@ public class ContentHelperServiceImpl implements ContentHelperService{
         return resultContent.stream()
                 .map(content -> conversionService.convert(content, HelperResponse.class))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteHelper(Long id) {
+        Content content = getById(id);
+        if (content.getType() != ContentType.HELPER) {
+            throw new BadRequestException("In this method you can delete only helper's.");
+        }
+        UserEntity currentUser = SecurityContextUtils.getUserFromContext();
+        UserEntity creatorOfHelper = content.getCreator();
+        if (currentUser == creatorOfHelper) {
+            contentService.delete(id);
+        } else {
+            throw new ForbiddenException("You have no permissions for deleting this helper");
+        }
     }
 
     private void updateContent(Content content, HelperRequest newContent) {

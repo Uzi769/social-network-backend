@@ -250,11 +250,15 @@ public class ContentServiceImpl implements ContentService {
     public void delete(Long id) {
 
         Content contentForDelete = getById(id);
+        Collection<Content> forDelete = new HashSet<>();
+        forDelete.add(contentForDelete);
 
         if (contentForDelete != null) {
 
             contentRepository.save(contentForDelete);
-            contentRepository.delete(contentForDelete);
+            deleteContentCommunities(contentForDelete);
+            contentRepository.deleteInBatch(forDelete);
+            contentRepository.flush();
             log.info("Content deleted. Class ContentServiceImpl, method delete");
 
         } else {
@@ -401,4 +405,10 @@ public class ContentServiceImpl implements ContentService {
         }
         return contentCommunities;
     }
+
+    private void deleteContentCommunities(Content content) {
+        List<ContentCommunity> forDelete = contentCommunityRepository.findByContent(content);
+        contentCommunityRepository.deleteInBatch(forDelete);
+    }
+
 }

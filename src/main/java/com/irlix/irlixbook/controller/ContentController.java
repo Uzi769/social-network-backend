@@ -190,4 +190,10 @@ public class ContentController {
                                             @RequestParam(required = false, defaultValue = "10") int size) {
         return contentHelperService.findAllHelpers(helperType, page, size);
     }
+
+    @DeleteMapping("/helper/{id}")
+    @RoleAndPermissionCheck(RoleEnum.USER)
+    public void deleteHelper(@PathVariable Long id) {
+        contentHelperService.deleteHelper(id);
+    }
 }
