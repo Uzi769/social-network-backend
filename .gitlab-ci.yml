@@ -42,7 +42,6 @@ deploy:
     - ssh-add - <<< "${SSH_PRIVATE_KEY}"
     - 'mkdir -p ~/.ssh && ssh-keyscan -H "$SSH_KNOWN_HOST" >> ~/.ssh/known_hosts'
   script:
-    - export
     - ssh "$SSH_LOGIN"@"$SSH_KNOWN_HOST" "cd $LOCATION; docker-compose down; docker-compose pull; docker-compose up -d; exit"
   only:
     - develop
