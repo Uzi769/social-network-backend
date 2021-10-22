@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -142,11 +143,11 @@ public class ContentHelperServiceImpl implements ContentHelperService{
     public void deleteHelper(Long id) {
         Content content = getById(id);
         if (content.getType() != ContentType.HELPER) {
-            throw new BadRequestException("In this method you can delete only helper's.");
+            throw new BadRequestException("In this request you can delete only helper's.");
         }
-        UserEntity currentUser = SecurityContextUtils.getUserFromContext();
-        UserEntity creatorOfHelper = content.getCreator();
-        if (currentUser == creatorOfHelper) {
+        UUID currentUser = SecurityContextUtils.getUserFromContext().getId();
+        UUID creatorOfHelper = content.getCreator().getId();
+        if (currentUser.equals(creatorOfHelper)) {
             contentService.delete(id);
         } else {
             throw new ForbiddenException("You have no permissions for deleting this helper");
