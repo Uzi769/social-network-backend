@@ -19,7 +19,7 @@ public interface CommunityService {
 
     CommunityResponse findByName(String name);
 
-    List<UserEntityOutputWithStatus> findCommunityUsers(String name, int page, int size);
+    List<UserEntityOutputWithStatus> findCommunityUsers(UUID id, int page, int size);
 
     List<ContentResponse> findCommunityContents(String name, int page, int size);
 

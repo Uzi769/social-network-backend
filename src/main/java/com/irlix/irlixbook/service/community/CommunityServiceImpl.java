@@ -135,8 +135,8 @@ public class CommunityServiceImpl implements CommunityService{
 
     @Override
     @Transactional
-    public List<UserEntityOutputWithStatus> findCommunityUsers(String name, int page, int size) {
-        List<RoleStatusUserCommunity> roleStatusUserCommunities = getRoleStatusUserCommunities(name, page, size);
+    public List<UserEntityOutputWithStatus> findCommunityUsers(UUID id, int page, int size) {
+        List<RoleStatusUserCommunity> roleStatusUserCommunities = getRoleStatusUserCommunities(id, page, size);
 
         List<UserStatusDTO> userStatusDTOS = roleStatusUserCommunities.stream()
                 .map(u -> UserStatusDTO.builder()
@@ -253,10 +253,10 @@ public class CommunityServiceImpl implements CommunityService{
                 .findAllByCommunityName(name, pageRequest);
     }
 
-    private List<RoleStatusUserCommunity> getRoleStatusUserCommunities(String name, int page, int size) {
+    private List<RoleStatusUserCommunity> getRoleStatusUserCommunities(UUID id, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
         return roleStatusUserCommunityRepository
-                .findByCommunityName(name, pageRequest);
+                .findByCommunityId(id, pageRequest);
     }
 
     private void deleteRoleStatusUserCommunities(Community community) {
