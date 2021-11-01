@@ -3,10 +3,7 @@ package com.irlix.irlixbook.controller;
 import com.irlix.irlixbook.config.security.annotation.RoleAndPermissionCheck;
 import com.irlix.irlixbook.dao.entity.enams.RoleEnum;
 import com.irlix.irlixbook.dao.model.user.UserPasswordWithCodeInput;
-import com.irlix.irlixbook.dao.model.user.input.UserCreateInput;
-import com.irlix.irlixbook.dao.model.user.input.UserPasswordInput;
-import com.irlix.irlixbook.dao.model.user.input.UserSearchInput;
-import com.irlix.irlixbook.dao.model.user.input.UserUpdateInput;
+import com.irlix.irlixbook.dao.model.user.input.*;
 import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
 import com.irlix.irlixbook.service.user.password.PasswordService;
 import com.irlix.irlixbook.service.user.user.UserService;
@@ -121,8 +118,8 @@ public class UserController {
     }
 
     @PostMapping("/code")
-    public void updatePassword(@RequestParam String email) {
-        passwordService.sendGeneratedCode(email);
+    public void updatePassword(@RequestBody UserEmailInput userEmailInput) {
+        passwordService.sendGeneratedCode(userEmailInput.getEmail());
     }
 
 }
