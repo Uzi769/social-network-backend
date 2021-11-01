@@ -46,6 +46,18 @@ public class AuthController {
 
     }
 
+    @PostMapping("/sign-in/v2")
+    @ResponseBody
+    public AuthResponse authentication(
+            @RequestHeader(value = "user-app-code", required = false) String code,
+            @RequestBody AuthRequest request) {
+
+        AuthResponse authResponse = authService.authUser(request, code);
+
+        return authResponse;
+
+    }
+
     @Operation(summary = "Logout in POST request")
     @PostMapping("/logout")
     public ResponseEntity<String> logout(@RequestHeader("Authorization") String value) {
