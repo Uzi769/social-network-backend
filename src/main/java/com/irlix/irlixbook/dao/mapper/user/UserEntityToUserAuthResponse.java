@@ -19,15 +19,10 @@ public class UserEntityToUserAuthResponse implements Converter<UserEntity, UserA
         List<Community> userCommunities = userEntity.getCommunities();
         String defaultCommunityId;
 
-        if (userCommunities.size() != 0) {
-            defaultCommunityId = userCommunities.get(0).getId().toString();
-        } else {
-            defaultCommunityId = "User has no communities now.";
-        }
-
         return UserAuthResponse.builder()
                 .id(userEntity.getId())
-                .defaultCommunityId(defaultCommunityId)
+                .defaultCommunityId(userCommunities.size() != 0 ? userCommunities.get(0).getId().toString()
+                        : "User has no communities now.")
                 .build();
     }
 
