@@ -57,7 +57,7 @@ public class AuthServiceImpl implements AuthService {
                     .token(token.getValue())
                     .userAuthResponse(conversionService.convert(userEntity, UserAuthResponse.class))
                     .build();
-        } else throw new BadRequestException("User not active or Wrong Password");
+        } else throw new BadRequestException("Неверный логин или пароль.");
     }
 
     @Override
