@@ -39,6 +39,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addConverter(new HelperRequestToContent());
         registry.addConverter(new CommentRequestToComment());
         registry.addConverter(new CommentToCommentResponse());
+        registry.addConverter(new UserEntityToUserAuthResponse());
     }
 
     /**
