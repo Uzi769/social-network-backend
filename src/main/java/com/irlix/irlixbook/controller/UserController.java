@@ -118,8 +118,8 @@ public class UserController {
     }
 
     @PostMapping("/code")
-    public void updatePassword(@RequestBody UserEmailInput userEmailInput) {
-        passwordService.sendGeneratedCode(userEmailInput.getEmail());
+    public void updatePassword(@RequestParam String email) {
+        passwordService.sendGeneratedCode(email);
     }
 
 }
