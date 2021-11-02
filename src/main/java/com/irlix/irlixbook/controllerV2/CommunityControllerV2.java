@@ -20,7 +20,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api2/community")
+@RequestMapping("/api/v2/community")
 public class CommunityControllerV2 {
 
     private final CommunityService communityService;

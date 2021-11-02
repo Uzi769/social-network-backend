@@ -28,4 +28,8 @@ public interface CommunityService {
     void delete(String name);
 
     CommunityResponse addContents(CommunityContentsRequest communityContentsRequest);
+
+    List<UserEntityOutputWithStatus> findCommunityUsersByName(String name, int page, int size);
+
+    List<ContentResponse> findCommunityContentsByName(String name, int page, int size);
 }

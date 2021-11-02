@@ -230,6 +230,40 @@ public class CommunityServiceImpl implements CommunityService{
         return conversionService.convert(community, CommunityResponse.class);
     }
 
+    @Override
+    public List<UserEntityOutputWithStatus> findCommunityUsersByName(String name, int page, int size) {
+        List<RoleStatusUserCommunity> roleStatusUserCommunities = getRoleStatusUserCommunitiesByName(name, page, size);
+
+        List<UserStatusDTO> userStatusDTOS = roleStatusUserCommunities.stream()
+                .map(u -> UserStatusDTO.builder()
+                        .user(u.getUser())
+                        .statusEnum(u.getStatus().getName())
+                        .build())
+                .collect(Collectors.toList());
+
+        return userStatusDTOS.stream()
+                .map(u -> conversionService.convert(u, UserEntityOutputWithStatus.class))
+                .collect(Collectors.toList());
+
+    }
+
+    @Override
+    public List<ContentResponse> findCommunityContentsByName(String name, int page, int size) {
+        if (communityRepository.findByName(name) == null) {
+            log.error("There are no community with given name.");
+            throw new BadRequestException("There are no community with given name.");
+        }
+
+        List<ContentCommunity> userContentCommunities = getContentCommunitiesByName(name, page, size);
+        List<Content> contents = userContentCommunities.stream()
+                .map(ContentCommunity::getContent)
+                .collect(Collectors.toList());
+        return contents.stream()
+                .map(u -> conversionService.convert(u, ContentResponse.class))
+                .collect(Collectors.toList());
+
+    }
+
     private Community getById(UUID uuid) {
         return communityRepository.findById(uuid)
                 .orElseThrow(() -> {
@@ -253,10 +287,22 @@ public class CommunityServiceImpl implements CommunityService{
                 .findAllByCommunityId(id, pageRequest);
     }
 
+    private List<ContentCommunity> getContentCommunitiesByName(String name, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return contentCommunityRepository
+                .findAllByCommunityName(name, pageRequest);
+    }
+
     private List<RoleStatusUserCommunity> getRoleStatusUserCommunities(UUID id, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
         return roleStatusUserCommunityRepository
                 .findByCommunityId(id, pageRequest);
+    }
+
+    private List<RoleStatusUserCommunity> getRoleStatusUserCommunitiesByName(String name, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return roleStatusUserCommunityRepository
+                .findByCommunityName(name, pageRequest);
     }
 
     private void deleteRoleStatusUserCommunities(Community community) {
