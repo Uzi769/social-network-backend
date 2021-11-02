@@ -19,13 +19,17 @@ public interface CommunityService {
 
     CommunityResponse findByName(String name);
 
-    List<UserEntityOutputWithStatus> findCommunityUsers(String name, int page, int size);
+    List<UserEntityOutputWithStatus> findCommunityUsers(UUID id, int page, int size);
 
-    List<ContentResponse> findCommunityContents(String name, int page, int size);
+    List<ContentResponse> findCommunityContents(UUID id, int page, int size);
 
     CommunityResponse addUsers(CommunityUsersRequest communityUsersRequest);
 
     void delete(String name);
 
     CommunityResponse addContents(CommunityContentsRequest communityContentsRequest);
+
+    List<UserEntityOutputWithStatus> findCommunityUsersByName(String name, int page, int size);
+
+    List<ContentResponse> findCommunityContentsByName(String name, int page, int size);
 }

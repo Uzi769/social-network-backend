@@ -20,5 +20,5 @@ public interface RoleStatusUserCommunityRepository extends JpaRepository<RoleSta
 
     List<RoleStatusUserCommunity> findByUserName(String name);
 
-    List<RoleStatusUserCommunity> findByUserId(UUID uuid);
+    List<RoleStatusUserCommunity> findByCommunityId(UUID id, Pageable pageable);
 }

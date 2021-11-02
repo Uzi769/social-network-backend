@@ -135,8 +135,8 @@ public class CommunityServiceImpl implements CommunityService{
 
     @Override
     @Transactional
-    public List<UserEntityOutputWithStatus> findCommunityUsers(String name, int page, int size) {
-        List<RoleStatusUserCommunity> roleStatusUserCommunities = getRoleStatusUserCommunities(name, page, size);
+    public List<UserEntityOutputWithStatus> findCommunityUsers(UUID id, int page, int size) {
+        List<RoleStatusUserCommunity> roleStatusUserCommunities = getRoleStatusUserCommunities(id, page, size);
 
         List<UserStatusDTO> userStatusDTOS = roleStatusUserCommunities.stream()
                 .map(u -> UserStatusDTO.builder()
@@ -152,13 +152,13 @@ public class CommunityServiceImpl implements CommunityService{
 
     @Override
     @Transactional
-    public List<ContentResponse> findCommunityContents(String name, int page, int size) {
-        if (communityRepository.findByName(name) == null) {
+    public List<ContentResponse> findCommunityContents(UUID id, int page, int size) {
+        if (communityRepository.findById(id).get() == null) {
             log.error("There are no community with given name.");
             throw new BadRequestException("There are no community with given name.");
         }
 
-        List<ContentCommunity> userContentCommunities = getContentCommunities(name, page, size);
+        List<ContentCommunity> userContentCommunities = getContentCommunities(id, page, size);
         List<Content> contents = userContentCommunities.stream()
                 .map(ContentCommunity::getContent)
                 .collect(Collectors.toList());
@@ -230,6 +230,40 @@ public class CommunityServiceImpl implements CommunityService{
         return conversionService.convert(community, CommunityResponse.class);
     }
 
+    @Override
+    public List<UserEntityOutputWithStatus> findCommunityUsersByName(String name, int page, int size) {
+        List<RoleStatusUserCommunity> roleStatusUserCommunities = getRoleStatusUserCommunitiesByName(name, page, size);
+
+        List<UserStatusDTO> userStatusDTOS = roleStatusUserCommunities.stream()
+                .map(u -> UserStatusDTO.builder()
+                        .user(u.getUser())
+                        .statusEnum(u.getStatus().getName())
+                        .build())
+                .collect(Collectors.toList());
+
+        return userStatusDTOS.stream()
+                .map(u -> conversionService.convert(u, UserEntityOutputWithStatus.class))
+                .collect(Collectors.toList());
+
+    }
+
+    @Override
+    public List<ContentResponse> findCommunityContentsByName(String name, int page, int size) {
+        if (communityRepository.findByName(name) == null) {
+            log.error("There are no community with given name.");
+            throw new BadRequestException("There are no community with given name.");
+        }
+
+        List<ContentCommunity> userContentCommunities = getContentCommunitiesByName(name, page, size);
+        List<Content> contents = userContentCommunities.stream()
+                .map(ContentCommunity::getContent)
+                .collect(Collectors.toList());
+        return contents.stream()
+                .map(u -> conversionService.convert(u, ContentResponse.class))
+                .collect(Collectors.toList());
+
+    }
+
     private Community getById(UUID uuid) {
         return communityRepository.findById(uuid)
                 .orElseThrow(() -> {
@@ -247,13 +281,25 @@ public class CommunityServiceImpl implements CommunityService{
         }
     }
 
-    private List<ContentCommunity> getContentCommunities(String name, int page, int size) {
+    private List<ContentCommunity> getContentCommunities(UUID id, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return contentCommunityRepository
+                .findAllByCommunityId(id, pageRequest);
+    }
+
+    private List<ContentCommunity> getContentCommunitiesByName(String name, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
         return contentCommunityRepository
                 .findAllByCommunityName(name, pageRequest);
     }
 
-    private List<RoleStatusUserCommunity> getRoleStatusUserCommunities(String name, int page, int size) {
+    private List<RoleStatusUserCommunity> getRoleStatusUserCommunities(UUID id, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return roleStatusUserCommunityRepository
+                .findByCommunityId(id, pageRequest);
+    }
+
+    private List<RoleStatusUserCommunity> getRoleStatusUserCommunitiesByName(String name, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
         return roleStatusUserCommunityRepository
                 .findByCommunityName(name, pageRequest);

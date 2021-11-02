@@ -55,7 +55,7 @@ public class CommunityController {
     public List<UserEntityOutputWithStatus> findCommunityUsers(@PathVariable("name")String name,
                                                                @RequestParam(required = false, defaultValue = "0") int page,
                                                                @RequestParam(required = false, defaultValue = "10") int size) {
-        return communityService.findCommunityUsers(name, page, size);
+        return communityService.findCommunityUsersByName(name, page, size);
     }
 
     @GetMapping("/{name}/contents")
@@ -63,7 +63,7 @@ public class CommunityController {
     public List<ContentResponse> findCommunityContents(@PathVariable("name")String name,
                                                        @RequestParam(required = false, defaultValue = "0") int page,
                                                        @RequestParam(required = false, defaultValue = "10") int size) {
-        return communityService.findCommunityContents(name, page, size);
+        return communityService.findCommunityContentsByName(name, page, size);
     }
 
     //todo parameter users
