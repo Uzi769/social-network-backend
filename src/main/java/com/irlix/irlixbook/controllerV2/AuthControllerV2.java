@@ -1,8 +1,7 @@
-package com.irlix.irlixbook.controller;
+package com.irlix.irlixbook.controllerV2;
 
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
 import com.irlix.irlixbook.dao.model.auth.AuthResponse;
-import com.irlix.irlixbook.dao.model.user.output.UserAuthOutput;
 import com.irlix.irlixbook.service.auth.AuthService;
 import com.irlix.irlixbook.service.messaging.MessageSender;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,9 +20,9 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auth")
+@RequestMapping("/auth/v2")
 @Tag(name = "auth", description = "Sign up controller")
-public class AuthController {
+public class AuthControllerV2 {
 
     private final AuthService authService;
 
@@ -34,25 +33,14 @@ public class AuthController {
     })
 
     @PostMapping("/sign-in")
-    public ResponseEntity<String> auth(
+    @ResponseBody
+    public AuthResponse authentication(
             @RequestHeader(value = "user-app-code", required = false) String code,
             @RequestBody AuthRequest request) {
 
         AuthResponse authResponse = authService.authUser(request, code);
 
-        return ResponseEntity.ok()
-                .header("Authorization", authResponse.getToken())
-                .body(authResponse.getToken());
-
-    }
-
-    @Operation(summary = "Logout in POST request")
-    @PostMapping("/logout")
-    public ResponseEntity<String> logout(@RequestHeader("Authorization") String value) {
-
-        authService.logout(value);
-        return ResponseEntity.ok()
-                .body("Logout");
+        return authResponse;
 
     }
 
