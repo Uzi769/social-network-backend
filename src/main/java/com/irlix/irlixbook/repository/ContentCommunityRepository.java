@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface ContentCommunityRepository extends JpaRepository<ContentCommunity, ContentCommunityId> {
 
@@ -15,5 +16,7 @@ public interface ContentCommunityRepository extends JpaRepository<ContentCommuni
     List<ContentCommunity> findByCommunityName(String name);
 
     List<ContentCommunity> findByContent(Content content);
+
+    List<ContentCommunity> findAllByCommunityId(UUID id, Pageable pageable);
 
 }

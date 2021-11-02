@@ -152,13 +152,13 @@ public class CommunityServiceImpl implements CommunityService{
 
     @Override
     @Transactional
-    public List<ContentResponse> findCommunityContents(String name, int page, int size) {
-        if (communityRepository.findByName(name) == null) {
+    public List<ContentResponse> findCommunityContents(UUID id, int page, int size) {
+        if (communityRepository.findById(id).get() == null) {
             log.error("There are no community with given name.");
             throw new BadRequestException("There are no community with given name.");
         }
 
-        List<ContentCommunity> userContentCommunities = getContentCommunities(name, page, size);
+        List<ContentCommunity> userContentCommunities = getContentCommunities(id, page, size);
         List<Content> contents = userContentCommunities.stream()
                 .map(ContentCommunity::getContent)
                 .collect(Collectors.toList());
@@ -247,10 +247,10 @@ public class CommunityServiceImpl implements CommunityService{
         }
     }
 
-    private List<ContentCommunity> getContentCommunities(String name, int page, int size) {
+    private List<ContentCommunity> getContentCommunities(UUID id, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
         return contentCommunityRepository
-                .findAllByCommunityName(name, pageRequest);
+                .findAllByCommunityId(id, pageRequest);
     }
 
     private List<RoleStatusUserCommunity> getRoleStatusUserCommunities(UUID id, int page, int size) {

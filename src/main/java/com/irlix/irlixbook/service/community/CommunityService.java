@@ -21,7 +21,7 @@ public interface CommunityService {
 
     List<UserEntityOutputWithStatus> findCommunityUsers(UUID id, int page, int size);
 
-    List<ContentResponse> findCommunityContents(String name, int page, int size);
+    List<ContentResponse> findCommunityContents(UUID id, int page, int size);
 
     CommunityResponse addUsers(CommunityUsersRequest communityUsersRequest);
 
