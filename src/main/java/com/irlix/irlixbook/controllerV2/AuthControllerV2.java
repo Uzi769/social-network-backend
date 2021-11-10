@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auth/v2")
+@RequestMapping("/api/v2/auth")
 @Tag(name = "auth", description = "Sign up controller")
 public class AuthControllerV2 {
 
