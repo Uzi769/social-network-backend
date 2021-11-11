@@ -1,8 +1,6 @@
 package com.irlix.irlixbook.repository;
 
-import com.irlix.irlixbook.dao.entity.Community;
 import com.irlix.irlixbook.dao.entity.UserEntity;
-import com.irlix.irlixbook.dao.entity.enams.StatusEnum;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -22,7 +22,7 @@ public class UserEntityToUserAuthResponse implements Converter<UserEntity, UserA
         return UserAuthResponse.builder()
                 .id(userEntity.getId())
                 .defaultCommunityId(userCommunities.size() != 0 ? userCommunities.get(0).getId().toString()
-                        : "User has no communities now.")
+                        : null)
                 .build();
     }
 
