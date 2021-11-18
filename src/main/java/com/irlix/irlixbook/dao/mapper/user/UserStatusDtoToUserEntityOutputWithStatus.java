@@ -29,7 +29,7 @@ public class UserStatusDtoToUserEntityOutputWithStatus implements Converter<User
                 .linkedIn(user.getLinkedIn())
                 .avatar(user.getAvatar())
                 .role(user.getRole().getName() != null ? user.getRole().getName().name() : null)
-                .blocked(user.getBlocked() != null)
+                .blocked(Boolean.TRUE.equals(user.getBlocked()))
                 .registrationDate(user.getRegistrationDate())
                 .status(userStatusDTO.getStatusEnum())
                 .build();
