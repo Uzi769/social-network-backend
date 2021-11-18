@@ -1,6 +1,6 @@
 package com.irlix.irlixbook.dao.model.chat.request;
 
-import com.irlix.irlixbook.dao.entity.UserEntity;
+import com.irlix.irlixbook.dao.entity.User;
 import lombok.*;
 
 import java.util.List;
@@ -13,6 +13,6 @@ import java.util.List;
 public class ChatRequest {
 
     private String title;
-    private List<UserEntity> users;
 
+    private List<User> users;
 }

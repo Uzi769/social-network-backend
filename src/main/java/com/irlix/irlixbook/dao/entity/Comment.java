@@ -28,7 +28,7 @@ public class Comment {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private UserEntity author;
+    private User author;
 
     @ManyToOne
     @JoinColumn(name = "content_id")

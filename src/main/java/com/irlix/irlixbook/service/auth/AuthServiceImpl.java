@@ -3,10 +3,9 @@ package com.irlix.irlixbook.service.auth;
 import com.irlix.irlixbook.config.security.utils.JwtProvider;
 import com.irlix.irlixbook.dao.entity.Token;
 import com.irlix.irlixbook.dao.entity.UserAppCode;
-import com.irlix.irlixbook.dao.entity.UserEntity;
+import com.irlix.irlixbook.dao.entity.User;
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
 import com.irlix.irlixbook.dao.model.auth.AuthResponse;
-import com.irlix.irlixbook.dao.model.user.output.UserAuthOutput;
 import com.irlix.irlixbook.dao.model.user.output.UserAuthResponse;
 import com.irlix.irlixbook.exception.BadRequestException;
 import com.irlix.irlixbook.exception.NotFoundException;
@@ -34,19 +33,19 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponse authUser(AuthRequest request, String appCode) {
         String password = request.getPassword();
-        UserEntity userEntity = userService.findUserForAuth(request);
-        if (passwordEncoder.matches(password, userEntity.getPassword()) && userEntity.getBlocked() == null) {
+        User user = userService.findUserForAuth(request);
+        if (passwordEncoder.matches(password, user.getPassword()) && user.getBlocked() == null) {
             userAppCodeService.addNewCode(UserAppCode.builder()
-                    .email(userEntity.getEmail())
-                    .userId(userEntity.getId())
+                    .email(user.getEmail())
+                    .userId(user.getId())
                     .codes(Collections.singleton(appCode))
                     .build());
 
-            String value = JwtProvider.generateToken(userEntity.getEmail());
+            String value = JwtProvider.generateToken(user.getEmail());
             if (tokenRepository.findByValue(value).isPresent()) {
                 return AuthResponse.builder()
                         .token(value)
-                        .userAuthResponse(conversionService.convert(userEntity, UserAuthResponse.class))
+                        .userAuthResponse(conversionService.convert(user, UserAuthResponse.class))
                         .build();
             }
             Token token = Token.builder()
@@ -55,7 +54,7 @@ public class AuthServiceImpl implements AuthService {
             tokenRepository.save(token);
             return AuthResponse.builder()
                     .token(token.getValue())
-                    .userAuthResponse(conversionService.convert(userEntity, UserAuthResponse.class))
+                    .userAuthResponse(conversionService.convert(user, UserAuthResponse.class))
                     .build();
         } else throw new BadRequestException("Неверный логин или пароль.");
     }

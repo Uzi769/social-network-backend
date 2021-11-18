@@ -2,25 +2,24 @@ package com.irlix.irlixbook.dao.mapper.user;
 
 
 import com.irlix.irlixbook.dao.entity.Community;
-import com.irlix.irlixbook.dao.entity.UserEntity;
+import com.irlix.irlixbook.dao.entity.User;
 import com.irlix.irlixbook.dao.model.user.output.UserAuthResponse;
-import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
 import org.springframework.core.convert.converter.Converter;
 
 import java.util.List;
 
-public class UserEntityToUserAuthResponse implements Converter<UserEntity, UserAuthResponse> {
+public class UserEntityToUserAuthResponse implements Converter<User, UserAuthResponse> {
 
 
 
     @Override
-    public UserAuthResponse convert(UserEntity userEntity) {
+    public UserAuthResponse convert(User user) {
 
-        List<Community> userCommunities = userEntity.getCommunities();
+        List<Community> userCommunities = user.getCommunities();
         String defaultCommunityId;
 
         return UserAuthResponse.builder()
-                .id(userEntity.getId())
+                .id(user.getId())
                 .defaultCommunityId(userCommunities.size() != 0 ? userCommunities.get(0).getId().toString()
                         : null)
                 .build();

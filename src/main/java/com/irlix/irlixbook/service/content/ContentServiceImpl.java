@@ -2,8 +2,8 @@ package com.irlix.irlixbook.service.content;
 
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
 import com.irlix.irlixbook.dao.entity.*;
-import com.irlix.irlixbook.dao.entity.enams.ContentType;
-import com.irlix.irlixbook.dao.entity.enams.PeriodType;
+import com.irlix.irlixbook.dao.entity.enams.ContentTypeEnum;
+import com.irlix.irlixbook.dao.entity.enams.PeriodTypeEnum;
 import com.irlix.irlixbook.dao.model.content.request.ContentPersistRequest;
 import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 import com.irlix.irlixbook.exception.BadRequestException;
@@ -60,7 +60,7 @@ public class ContentServiceImpl implements ContentService {
     private String urlRoot;
 
     @Override
-    public List<ContentResponse> findImportant(ContentType type, int page, int size) {
+    public List<ContentResponse> findImportant(ContentTypeEnum type, int page, int size) {
 
         PageRequest pageRequest = PageRequest.of(page, size);
         List<Content> importantContent = contentRepository.findImportantContent(type, pageRequest);
@@ -102,7 +102,7 @@ public class ContentServiceImpl implements ContentService {
 //                "", //todo added logic with code of receiver
 //                "New content was created");
 
-        if (savedContent.getType() == ContentType.NEWS || savedContent.getType() == ContentType.EVENT) {
+        if (savedContent.getType() == ContentTypeEnum.NEWS || savedContent.getType() == ContentTypeEnum.EVENT) {
 
             List<UserAppCode> listOfCodes = userAppCodeRepository.findAll();
 
@@ -136,12 +136,12 @@ public class ContentServiceImpl implements ContentService {
         return getById(id);
     }
 
-    public List<ContentResponse> findByEventDateForPeriod(LocalDate start, PeriodType periodType) {
+    public List<ContentResponse> findByEventDateForPeriod(LocalDate start, PeriodTypeEnum periodTypeEnum) {
 
         LocalDateTime startSearch;
         LocalDateTime endSearch;
 
-        if (PeriodType.DAY == periodType) {
+        if (PeriodTypeEnum.DAY == periodTypeEnum) {
 
             if (start == null) {
                 startSearch = LocalDate.now().atStartOfDay();
@@ -151,7 +151,7 @@ public class ContentServiceImpl implements ContentService {
                 endSearch = LocalDateTime.of(start, LocalTime.MAX);
             }
 
-        } else if (PeriodType.WEEK == periodType) {
+        } else if (PeriodTypeEnum.WEEK == periodTypeEnum) {
 
             if (start == null) {
                 LocalDate now = LocalDate.now();
@@ -162,7 +162,7 @@ public class ContentServiceImpl implements ContentService {
                 endSearch = LocalDateTime.of(start.plusDays(7), LocalTime.MAX);
             }
 
-        } else if (PeriodType.MONTH == periodType) {
+        } else if (PeriodTypeEnum.MONTH == periodTypeEnum) {
 
             if (start == null) {
                 LocalDate now = LocalDate.now();
@@ -177,7 +177,7 @@ public class ContentServiceImpl implements ContentService {
             throw new IllegalArgumentException("PeriodType is null");
         }
 
-        List<Content> contents = contentRepository.findByEventDateGreaterThanEqualAndEventDateLessThanAndType(startSearch, endSearch, ContentType.EVENT);
+        List<Content> contents = contentRepository.findByEventDateGreaterThanEqualAndEventDateLessThanAndType(startSearch, endSearch, ContentTypeEnum.EVENT);
         return contents.stream()
                 .map(c -> conversionService.convert(c, ContentResponse.class))
                 .collect(Collectors.toList());
@@ -201,7 +201,7 @@ public class ContentServiceImpl implements ContentService {
 
         }
 
-        List<Content> contents = contentRepository.findByEventDateGreaterThanEqualAndEventDateLessThanAndType(startSearch, endSearch, ContentType.EVENT);
+        List<Content> contents = contentRepository.findByEventDateGreaterThanEqualAndEventDateLessThanAndType(startSearch, endSearch, ContentTypeEnum.EVENT);
         return contents.stream()
                 .map(Content::getEventDate)
                 .filter(Objects::nonNull)
@@ -220,10 +220,10 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public List<ContentResponse> search(ContentType contentType, String name, int page, int size) {
+    public List<ContentResponse> search(ContentTypeEnum contentTypeEnum, String name, int page, int size) {
 
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("dateCreated").descending());
-        List<Content> contents = contentRepository.findByNameContainingIgnoreCaseAndType(name, contentType, pageRequest);
+        List<Content> contents = contentRepository.findByNameContainingIgnoreCaseAndType(name, contentTypeEnum, pageRequest);
 
         return contents.stream()
                 .map(post -> conversionService.convert(post, ContentResponse.class))
@@ -232,10 +232,10 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public List<ContentResponse> findByType(ContentType contentType, int page, int size) {
+    public List<ContentResponse> findByType(ContentTypeEnum contentTypeEnum, int page, int size) {
 
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("dateCreated").descending());
-        List<Content> contents = contentRepository.findByType(contentType, pageRequest);
+        List<Content> contents = contentRepository.findByType(contentTypeEnum, pageRequest);
 
         return contents.stream()
                 .map(post -> {
@@ -272,18 +272,18 @@ public class ContentServiceImpl implements ContentService {
     public void deleteAll() {
 
         contentRepository.deleteAll();
-        UserEntity user = SecurityContextUtils.getUserFromContext();
+        User user = SecurityContextUtils.getUserFromContext();
         log.info("DELETE ALL CONTENT BY: {}", user.getEmail());
 
     }
 
     @Override
-    public List<ContentResponse> getFavorites(ContentType contentType, int page, int size) {
+    public List<ContentResponse> getFavorites(ContentTypeEnum contentTypeEnum, int page, int size) {
 
-        UserEntity userFromContext = SecurityContextUtils.getUserFromContext();
+        User userFromContext = SecurityContextUtils.getUserFromContext();
         PageRequest pageRequest;
 
-        if (Objects.nonNull(contentType) && contentType == ContentType.NEWS) {
+        if (Objects.nonNull(contentTypeEnum) && contentTypeEnum == ContentTypeEnum.NEWS) {
             pageRequest = PageRequest.of(page, size, Sort.by("createdOn").descending());
         } else {
             pageRequest = PageRequest.of(page, size);
@@ -291,9 +291,9 @@ public class ContentServiceImpl implements ContentService {
 
         List<Content> resultContent;
 
-        if (Objects.nonNull(contentType)) {
+        if (Objects.nonNull(contentTypeEnum)) {
 
-            List<ContentUser> favorites = contentUserRepository.findByUserIdAndContent_Type(userFromContext.getId(), contentType, pageRequest);
+            List<ContentUser> favorites = contentUserRepository.findByUserIdAndContent_Type(userFromContext.getId(), contentTypeEnum, pageRequest);
             resultContent = favorites.stream().map(ContentUser::getContent).collect(Collectors.toList());
 
         } else {
@@ -344,7 +344,7 @@ public class ContentServiceImpl implements ContentService {
             content.setName(newContent.getName());
         }
         if (StringUtils.hasLength(newContent.getType())) {
-            content.setType(ContentType.valueOf(newContent.getType()));
+            content.setType(ContentTypeEnum.valueOf(newContent.getType()));
         }
         if (StringUtils.hasLength(newContent.getDescription())) {
             content.setDescription(newContent.getDescription());

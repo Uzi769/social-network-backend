@@ -14,7 +14,8 @@ import java.util.UUID;
 public class ChatOutput {
 
     private UUID chatId;
-    private String title;
-    List<UserEntityOutput> users;
 
+    private String title;
+
+    List<UserEntityOutput> users;
 }

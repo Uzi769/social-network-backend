@@ -11,7 +11,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class HelperSearchRequest {
-    private boolean showMyHelpers;
-    private boolean showTodayHelpers;
 
+    private boolean showMyHelpers;
+
+    private boolean showTodayHelpers;
 }

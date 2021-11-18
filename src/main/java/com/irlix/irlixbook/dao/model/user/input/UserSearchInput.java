@@ -3,7 +3,8 @@ package com.irlix.irlixbook.dao.model.user.input;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -11,8 +12,11 @@ import lombok.*;
 public class UserSearchInput {
 
     private String surname;
+
     private String name;
+
     private String phone;
+
     private String email;
 
     @Builder.Default

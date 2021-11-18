@@ -1,4 +1,4 @@
-package com.irlix.irlixbook.utils.serdes;
+package com.irlix.irlixbook.utils.transformation;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;

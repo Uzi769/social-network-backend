@@ -3,7 +3,7 @@ package com.irlix.irlixbook.config.security.aspect;
 import com.irlix.irlixbook.config.security.annotation.RoleAndPermissionCheck;
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
 import com.irlix.irlixbook.dao.entity.Role;
-import com.irlix.irlixbook.dao.entity.UserEntity;
+import com.irlix.irlixbook.dao.entity.User;
 import com.irlix.irlixbook.dao.entity.enams.RoleEnum;
 import com.irlix.irlixbook.exception.ForbiddenException;
 import org.aspectj.lang.JoinPoint;
@@ -27,7 +27,7 @@ public class RoleAndPermissionChecker {
         RoleAndPermissionCheck myAnnotation = method.getAnnotation(RoleAndPermissionCheck.class);
         RoleEnum availableRole = myAnnotation.value();
 
-        UserEntity userFromContext = SecurityContextUtils.getUserFromContext();
+        User userFromContext = SecurityContextUtils.getUserFromContext();
         Role role = userFromContext.getRole();
 
         RoleEnum[] includeRoles = role.getName().includeRoles();

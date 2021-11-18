@@ -1,6 +1,6 @@
 package com.irlix.irlixbook.dao.entity;
 
-import com.irlix.irlixbook.dao.entity.enams.MessageStatus;
+import com.irlix.irlixbook.dao.entity.enams.MessageStatusEnum;
 import lombok.*;
 
 import javax.persistence.*;
@@ -29,11 +29,11 @@ public class ChatMessage {
 
     @OneToOne
     @JoinColumn(name = "user_id")
-    private UserEntity sender;
+    private User sender;
 
     @Column(name = "message_status")
     @Enumerated(EnumType.STRING)
-    private MessageStatus status;
+    private MessageStatusEnum status;
 
     @Column(name = "timestamp")
     private LocalDateTime timestamp;

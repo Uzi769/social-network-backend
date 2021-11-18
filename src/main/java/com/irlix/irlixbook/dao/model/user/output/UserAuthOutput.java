@@ -13,8 +13,10 @@ import java.util.UUID;
 public class UserAuthOutput {
 
     private UUID id;
-    private String surname;
-    private String name;
-    private String avatar;
 
+    private String surname;
+
+    private String name;
+
+    private String avatar;
 }

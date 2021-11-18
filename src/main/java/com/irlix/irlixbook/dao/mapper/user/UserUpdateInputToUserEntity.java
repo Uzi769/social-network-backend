@@ -1,14 +1,14 @@
 package com.irlix.irlixbook.dao.mapper.user;
 
-import com.irlix.irlixbook.dao.entity.UserEntity;
+import com.irlix.irlixbook.dao.entity.User;
 import com.irlix.irlixbook.dao.model.user.input.UserUpdateInput;
 import org.springframework.core.convert.converter.Converter;
 
-public class UserUpdateInputToUserEntity implements Converter<UserUpdateInput, UserEntity> {
+public class UserUpdateInputToUserEntity implements Converter<UserUpdateInput, User> {
 
     @Override
-    public UserEntity convert(UserUpdateInput userUpdateInput) {
-        return UserEntity.builder()
+    public User convert(UserUpdateInput userUpdateInput) {
+        return User.builder()
                 .surname(userUpdateInput.getSurname())
                 .name(userUpdateInput.getName())
                 .phone(userUpdateInput.getPhone())

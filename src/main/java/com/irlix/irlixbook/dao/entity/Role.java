@@ -24,7 +24,7 @@ public class Role {
     private RoleEnum name;
 
     @OneToMany(mappedBy = "role", cascade = CascadeType.MERGE)
-    private List<UserEntity> users;
+    private List<User> users;
 
     @ManyToMany(cascade = CascadeType.MERGE)
     @JoinTable(name = "role_permission",

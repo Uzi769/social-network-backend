@@ -12,6 +12,6 @@ import java.util.UUID;
 public class UserAuthResponse {
 
     private UUID id;
-    private String defaultCommunityId;
 
+    private String defaultCommunityId;
 }

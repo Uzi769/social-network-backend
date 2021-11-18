@@ -12,7 +12,8 @@ import java.util.UUID;
 public class PictureOutput {
 
     private UUID pictureId;
-    private String url;
-    private Long contentId;
 
+    private String url;
+
+    private Long contentId;
 }

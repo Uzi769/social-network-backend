@@ -49,9 +49,8 @@ public class AuthControllerV2 {
     private MessageSender messageSender;
 
     @PostMapping("/send")
-    public ResponseEntity send(@RequestParam String code, @RequestParam String text, @RequestParam String title) {
+    public void send(@RequestParam String code, @RequestParam String text, @RequestParam String title) {
         messageSender.send(title, code, text);
-        return new ResponseEntity(HttpStatus.OK);
     }
 
 }

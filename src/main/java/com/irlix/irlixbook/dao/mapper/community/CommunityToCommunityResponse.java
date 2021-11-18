@@ -20,7 +20,7 @@ public class CommunityToCommunityResponse implements Converter<Community, Commun
         List<ContentCommunity> contentCommunities = community.getContentCommunities();
         List<RoleStatusUserCommunity> roleStatusUserCommunities = community.getRoleStatusUserCommunities();
         List<Content> contents = null;
-        List<UserEntity> users = null;
+        List<User> users = null;
 
         if (!CollectionUtils.isEmpty(contentCommunities)) {
 
@@ -32,7 +32,7 @@ public class CommunityToCommunityResponse implements Converter<Community, Commun
                     .collect(Collectors.toList());
 
             try {
-                UserEntity currentUser = SecurityContextUtils.getUserFromContext();
+                User currentUser = SecurityContextUtils.getUserFromContext();
             } catch (UnauthorizedException e) {
                 log.error("Convert content to content response without authorization");
             }

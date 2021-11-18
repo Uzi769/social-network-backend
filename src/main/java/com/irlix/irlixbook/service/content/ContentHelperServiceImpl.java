@@ -2,8 +2,8 @@ package com.irlix.irlixbook.service.content;
 
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
 import com.irlix.irlixbook.dao.entity.Content;
-import com.irlix.irlixbook.dao.entity.UserEntity;
-import com.irlix.irlixbook.dao.entity.enams.ContentType;
+import com.irlix.irlixbook.dao.entity.User;
+import com.irlix.irlixbook.dao.entity.enams.ContentTypeEnum;
 import com.irlix.irlixbook.dao.entity.enams.HelperEnum;
 import com.irlix.irlixbook.dao.model.content.helper.request.HelperRequest;
 import com.irlix.irlixbook.dao.model.content.helper.request.HelperSearchRequest;
@@ -55,7 +55,7 @@ public class ContentHelperServiceImpl implements ContentHelperService{
         content.setCreator(SecurityContextUtils.getUserFromContext());
         content.setDateCreated(LocalDateTime.now());
         content.setHelperType(helperType);
-        content.setType(ContentType.HELPER);
+        content.setType(ContentTypeEnum.HELPER);
         content.setLike(0);
 
         Content savedContent = contentRepository.save(content);
@@ -88,7 +88,7 @@ public class ContentHelperServiceImpl implements ContentHelperService{
 
         Content content = getById(id);
 
-        if (content.getType() != ContentType.HELPER) {
+        if (content.getType() != ContentTypeEnum.HELPER) {
             log.error("This content belongs not for a helper.");
             throw new BadRequestException("This content belongs not for a helper.");
         }
@@ -100,13 +100,13 @@ public class ContentHelperServiceImpl implements ContentHelperService{
     @Override
     public List<HelperResponse> findHelpers(HelperEnum helperType, HelperSearchRequest helperRequest, int page, int size) {
 
-        UserEntity userFromContext = SecurityContextUtils.getUserFromContext();
+        User userFromContext = SecurityContextUtils.getUserFromContext();
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("dateCreated").descending());
 
         List<Content> resultContent = new ArrayList<>();
 
         if (helperRequest.isShowMyHelpers()) {
-            resultContent = contentRepository.findByTypeAndHelperTypeAndCreator(ContentType.HELPER,
+            resultContent = contentRepository.findByTypeAndHelperTypeAndCreator(ContentTypeEnum.HELPER,
                     helperType,
                     userFromContext,
                     pageRequest);
@@ -114,7 +114,7 @@ public class ContentHelperServiceImpl implements ContentHelperService{
         } else if (helperRequest.isShowTodayHelpers()) {//todo need to check date
             LocalDateTime start = LocalDate.now().atStartOfDay();
             LocalDateTime end = LocalDate.now().plusDays(1L).atStartOfDay().minusSeconds(1L);
-            resultContent = contentRepository.findByTypeAndAndHelperTypeAndDateCreatedBetween(ContentType.HELPER,
+            resultContent = contentRepository.findByTypeAndAndHelperTypeAndDateCreatedBetween(ContentTypeEnum.HELPER,
                     helperType,
                     start,
                     end,
@@ -130,7 +130,7 @@ public class ContentHelperServiceImpl implements ContentHelperService{
     @Override
     public List<HelperResponse> findAllHelpers(HelperEnum helperType, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("dateCreated").descending());
-        List<Content> resultContent = contentRepository.findByTypeAndHelperType(ContentType.HELPER,
+        List<Content> resultContent = contentRepository.findByTypeAndHelperType(ContentTypeEnum.HELPER,
                 helperType,
                 pageRequest);
         log.info("Found all helper's of type " + helperType + ".");
@@ -142,7 +142,7 @@ public class ContentHelperServiceImpl implements ContentHelperService{
     @Override
     public void deleteHelper(Long id) {
         Content content = getById(id);
-        if (content.getType() != ContentType.HELPER) {
+        if (content.getType() != ContentTypeEnum.HELPER) {
             throw new BadRequestException("In this request you can delete only helper's.");
         }
         UUID currentUser = SecurityContextUtils.getUserFromContext().getId();

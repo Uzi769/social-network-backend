@@ -23,5 +23,4 @@ public class UserPasswordInput {
     @NotEmpty
     @Size(min = 8)
     private String verificationPassword;
-
 }

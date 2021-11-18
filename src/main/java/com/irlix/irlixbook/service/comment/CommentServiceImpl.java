@@ -2,11 +2,8 @@ package com.irlix.irlixbook.service.comment;
 
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
 import com.irlix.irlixbook.dao.entity.Comment;
-import com.irlix.irlixbook.dao.entity.Content;
-import com.irlix.irlixbook.dao.entity.enams.ContentType;
 import com.irlix.irlixbook.dao.model.content.comment.CommentRequest;
 import com.irlix.irlixbook.dao.model.content.comment.CommentResponse;
-import com.irlix.irlixbook.dao.model.content.helper.response.HelperResponse;
 import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.CommentRepository;
 import com.irlix.irlixbook.repository.ContentRepository;
@@ -15,8 +12,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 
 @Log4j2
 @Service

@@ -1,9 +1,8 @@
 package com.irlix.irlixbook.service.user.user;
 
 import com.irlix.irlixbook.dao.entity.Community;
-import com.irlix.irlixbook.dao.entity.ContentCommunity;
 import com.irlix.irlixbook.dao.entity.RoleStatusUserCommunity;
-import com.irlix.irlixbook.dao.entity.UserEntity;
+import com.irlix.irlixbook.dao.entity.User;
 import com.irlix.irlixbook.dao.entity.enams.RoleEnum;
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
 import com.irlix.irlixbook.dao.model.user.input.UserCreateInput;
@@ -16,7 +15,7 @@ import java.util.UUID;
 
 public interface UserService {
 
-    UserEntity findById(UUID id);
+    User findById(UUID id);
 
     UserEntityOutput findUserOutputById(UUID id);
 
@@ -40,11 +39,11 @@ public interface UserService {
 
     UserEntityOutput assignRole(RoleEnum roleEnum);
 
-    UserEntity findUserForAuth(AuthRequest request);
+    User findUserForAuth(AuthRequest request);
 
-    UserEntity addFavorites(Long favoritesContentId);
+    User addFavorites(Long favoritesContentId);
 
-    UserEntity deleteFavorites(Long favoritesContentId);
+    User deleteFavorites(Long favoritesContentId);
 
     List<RoleStatusUserCommunity> addUsersToRoleStatusUserCommunity(List<UUID> usersIdList,
                                                                     Community community);

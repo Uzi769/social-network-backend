@@ -20,7 +20,7 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class UserControllerV2 {
 
-    @Autowired private AvatarService avatarService;
+    private final AvatarService avatarService;
     private final UserService userService;
     private final PasswordService passwordService;
 
