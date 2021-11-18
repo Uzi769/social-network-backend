@@ -3,10 +3,7 @@ package com.irlix.irlixbook.dao.model.user.input;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.irlix.irlixbook.dao.entity.enams.RoleEnum;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -15,7 +12,8 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -40,13 +38,20 @@ public class UserUpdateInput {
     private LocalDate birthDate;
 
     private String gender;
-    private String description;
-    private String vk;
-    private String faceBook;
-    private String skype;
-    private String telegram;
-    private String linkedIn;
-    private String instagram;
-    private RoleEnum role;
 
+    private String description;
+
+    private String vk;
+
+    private String faceBook;
+
+    private String skype;
+
+    private String telegram;
+
+    private String linkedIn;
+
+    private String instagram;
+
+    private RoleEnum role;
 }

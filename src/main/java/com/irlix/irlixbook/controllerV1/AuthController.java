@@ -1,8 +1,7 @@
-package com.irlix.irlixbook.controller;
+package com.irlix.irlixbook.controllerV1;
 
 import com.irlix.irlixbook.dao.model.auth.AuthRequest;
 import com.irlix.irlixbook.dao.model.auth.AuthResponse;
-import com.irlix.irlixbook.dao.model.user.output.UserAuthOutput;
 import com.irlix.irlixbook.service.auth.AuthService;
 import com.irlix.irlixbook.service.messaging.MessageSender;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,7 +14,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +30,6 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "You are successfully logged in!",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = AuthResponse.class))))
     })
-
     @PostMapping("/sign-in")
     public ResponseEntity<String> auth(
             @RequestHeader(value = "user-app-code", required = false) String code,
@@ -53,7 +50,6 @@ public class AuthController {
         authService.logout(value);
         return ResponseEntity.ok()
                 .body("Logout");
-
     }
 
     @Autowired
@@ -61,9 +57,8 @@ public class AuthController {
     private MessageSender messageSender;
 
     @PostMapping("/send")
-    public ResponseEntity send(@RequestParam String code, @RequestParam String text, @RequestParam String title) {
+    public void send(@RequestParam String code, @RequestParam String text, @RequestParam String title) {
         messageSender.send(title, code, text);
-        return new ResponseEntity(HttpStatus.OK);
     }
 
 }

@@ -1,6 +1,6 @@
 package com.irlix.irlixbook.repository.summary;
 
-import com.irlix.irlixbook.dao.entity.UserEntity;
+import com.irlix.irlixbook.dao.entity.User;
 import com.irlix.irlixbook.dao.model.user.input.UserSearchInput;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -21,11 +21,11 @@ public class UserRepositorySummary {
 
     private final EntityManager entityManager;
 
-    public List<UserEntity> search(UserSearchInput userSearchInput) {
+    public List<User> search(UserSearchInput userSearchInput) {
 
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<UserEntity> query = builder.createQuery(UserEntity.class);
-        Root<UserEntity> root = query.from(UserEntity.class);
+        CriteriaQuery<User> query = builder.createQuery(User.class);
+        Root<User> root = query.from(User.class);
         List<Predicate> predicates = new ArrayList<>();
 
         if (userSearchInput.getSurname() != null) {

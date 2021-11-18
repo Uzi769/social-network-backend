@@ -3,8 +3,8 @@ package com.irlix.irlixbook.service.scheduler;
 import com.irlix.irlixbook.dao.entity.Content;
 import com.irlix.irlixbook.dao.entity.ContentUser;
 import com.irlix.irlixbook.dao.entity.UserAppCode;
-import com.irlix.irlixbook.dao.entity.UserEntity;
-import com.irlix.irlixbook.dao.entity.enams.ContentType;
+import com.irlix.irlixbook.dao.entity.User;
+import com.irlix.irlixbook.dao.entity.enams.ContentTypeEnum;
 import com.irlix.irlixbook.repository.ContentRepository;
 import com.irlix.irlixbook.repository.UserAppCodeRepository;
 import com.irlix.irlixbook.service.messaging.MessageSender;
@@ -36,7 +36,7 @@ public class EventPushScheduler {
         List<Content> events = contentRepository.findByEventDateGreaterThanEqualAndEventDateLessThanAndType(
                 LocalDateTime.now().plusDays(1).minusMinutes(29).minusSeconds(59),
                 LocalDateTime.now().plusDays(1).plusMinutes(30),
-                ContentType.EVENT);
+                ContentTypeEnum.EVENT);
 
         pushMessage(events);
 
@@ -48,7 +48,7 @@ public class EventPushScheduler {
         List<Content> events = contentRepository.findByEventDateGreaterThanEqualAndEventDateLessThanAndType(
                 LocalDateTime.now().plusHours(1).minusSeconds(149),
                 LocalDateTime.now().plusHours(1).plusSeconds(150),
-                ContentType.EVENT);
+                ContentTypeEnum.EVENT);
 
         pushMessage(events);
 
@@ -56,7 +56,7 @@ public class EventPushScheduler {
 
     private void pushMessage(List<Content> events) {
 
-        List<UserEntity> users;
+        List<User> users;
         List<Optional<UserAppCode>> listOfCodes;
 
         for (Content event : events) {

@@ -27,7 +27,7 @@ public class RoleStatusUserCommunity {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("userId")
-    private UserEntity user;
+    private User user;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @MapsId("communityId")

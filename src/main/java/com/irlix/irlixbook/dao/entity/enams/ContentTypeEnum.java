@@ -1,6 +1,6 @@
 package com.irlix.irlixbook.dao.entity.enams;
 
-public enum ContentType {
+public enum ContentTypeEnum {
     LINK,
     STREAM,
     EVENT,

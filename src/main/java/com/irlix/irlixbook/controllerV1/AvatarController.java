@@ -1,8 +1,9 @@
-package com.irlix.irlixbook.controller;
+package com.irlix.irlixbook.controllerV1;
 
 import com.irlix.irlixbook.config.security.annotation.RoleAndPermissionCheck;
 import com.irlix.irlixbook.dao.entity.enams.RoleEnum;
 import com.irlix.irlixbook.service.user.avatar.AvatarService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,10 +12,10 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/avatar")
+@RequiredArgsConstructor
 public class AvatarController {
 
-    @Autowired
-    private AvatarService avatarService;
+    private final  AvatarService avatarService;
 
     @GetMapping
     @RoleAndPermissionCheck(RoleEnum.USER)

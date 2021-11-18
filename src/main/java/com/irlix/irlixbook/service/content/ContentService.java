@@ -3,8 +3,8 @@ package com.irlix.irlixbook.service.content;
 import com.irlix.irlixbook.dao.entity.Community;
 import com.irlix.irlixbook.dao.entity.Content;
 import com.irlix.irlixbook.dao.entity.ContentCommunity;
-import com.irlix.irlixbook.dao.entity.enams.ContentType;
-import com.irlix.irlixbook.dao.entity.enams.PeriodType;
+import com.irlix.irlixbook.dao.entity.enams.ContentTypeEnum;
+import com.irlix.irlixbook.dao.entity.enams.PeriodTypeEnum;
 import com.irlix.irlixbook.dao.model.content.request.ContentPersistRequest;
 import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 
@@ -21,15 +21,15 @@ public interface ContentService {
 
     Content findByIdOriginal(Long id);
 
-    List<ContentResponse> findByEventDateForPeriod(LocalDate start, PeriodType periodType);
+    List<ContentResponse> findByEventDateForPeriod(LocalDate start, PeriodTypeEnum periodTypeEnum);
 
     Collection<String> findByEventDateForMonth(LocalDate start);
 
     List<ContentResponse> findAll();
 
-    List<ContentResponse> search(ContentType contentType, String name, int page, int size);
+    List<ContentResponse> search(ContentTypeEnum contentTypeEnum, String name, int page, int size);
 
-    List<ContentResponse> findByType(ContentType contentType, int page, int size);
+    List<ContentResponse> findByType(ContentTypeEnum contentTypeEnum, int page, int size);
 
     ContentResponse update(Long id, @Valid ContentPersistRequest contentPersistRequest);
 
@@ -37,9 +37,9 @@ public interface ContentService {
 
     void deleteAll();
 
-    List<ContentResponse> getFavorites(ContentType contentType, int page, int size);
+    List<ContentResponse> getFavorites(ContentTypeEnum contentTypeEnum, int page, int size);
 
-    List<ContentResponse> findImportant(ContentType type, int page, int size);
+    List<ContentResponse> findImportant(ContentTypeEnum type, int page, int size);
 
     List<ContentCommunity> addContentsToContentCommunity(List<Long> contentsIdList, Community community);
 

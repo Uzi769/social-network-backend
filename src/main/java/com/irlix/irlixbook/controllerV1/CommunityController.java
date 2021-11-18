@@ -1,4 +1,4 @@
-package com.irlix.irlixbook.controller;
+package com.irlix.irlixbook.controllerV1;
 
 import com.irlix.irlixbook.config.security.annotation.RoleAndPermissionCheck;
 import com.irlix.irlixbook.dao.entity.enams.RoleEnum;
@@ -11,7 +11,6 @@ import com.irlix.irlixbook.dao.model.user.output.UserEntityOutputWithStatus;
 import com.irlix.irlixbook.service.community.CommunityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -82,8 +81,7 @@ public class CommunityController {
 
     @DeleteMapping("/{name}")
     @RoleAndPermissionCheck(RoleEnum.ADMIN)
-    public ResponseEntity<?> delete(@PathVariable("name") String name) {
+    public void delete(@PathVariable("name") String name) {
         communityService.delete(name);
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

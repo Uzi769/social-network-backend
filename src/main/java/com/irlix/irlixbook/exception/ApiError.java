@@ -13,6 +13,7 @@ import java.util.List;
 public class ApiError {
 
     private String message;
+
     private String debugMessage;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -23,17 +24,13 @@ public class ApiError {
     }
 
     public ApiError(String message, String debugMessage) {
-
         this.message = message;
         this.debugMessage = debugMessage;
-
     }
 
     public ApiError(String message, String debugMessage, List<String> errors) {
-
         this.message = message;
         this.debugMessage = debugMessage;
         this.errors = errors;
-
     }
 }

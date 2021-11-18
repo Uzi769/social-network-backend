@@ -1,7 +1,7 @@
 package com.irlix.irlixbook.service.user.avatar;
 
 import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
-import com.irlix.irlixbook.dao.entity.UserEntity;
+import com.irlix.irlixbook.dao.entity.User;
 import com.irlix.irlixbook.exception.AlreadyExistException;
 import com.irlix.irlixbook.exception.FileNullPointerException;
 import com.irlix.irlixbook.exception.MultipartException;
@@ -18,7 +18,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -41,7 +40,7 @@ public class AvatarServiceImpl implements AvatarService {
     @Override
     public String getAvatar() {
 
-        UserEntity user = SecurityContextUtils.getUserFromContext();
+        User user = SecurityContextUtils.getUserFromContext();
         return user.getAvatar();
 
     }
@@ -49,7 +48,7 @@ public class AvatarServiceImpl implements AvatarService {
     @Override
     public String getAvatarByUserID(UUID id) {
 
-        Optional<UserEntity> user = userRepository.findById(id);
+        Optional<User> user = userRepository.findById(id);
 
         if (user.isEmpty()) {
             throw new NotFoundException("Cannot find avatar of user with id: " + id);
@@ -77,7 +76,7 @@ public class AvatarServiceImpl implements AvatarService {
             throw new IllegalArgumentException("Wrong type of image file for avatar.");
         }
 
-        UserEntity user = SecurityContextUtils.getUserFromContext();
+        User user = SecurityContextUtils.getUserFromContext();
         String folderName = user.getEmail().substring(0, user.getEmail().indexOf("@"));
         String folderPath = uploadPath + "/" + folderName;
         File uploadDir = new File(folderPath);
@@ -111,7 +110,7 @@ public class AvatarServiceImpl implements AvatarService {
     @Override
     public void delete() {
 
-        UserEntity user = SecurityContextUtils.getUserFromContext();
+        User user = SecurityContextUtils.getUserFromContext();
         String avatar = user.getAvatar();
 
         String filepath = avatar.replace(uploadRoot, uploadPath + "/");

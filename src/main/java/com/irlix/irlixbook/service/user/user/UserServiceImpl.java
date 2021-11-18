@@ -62,15 +62,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @PostConstruct
     public void init() {
 
-        List<UserEntity> users = roleStatusUserCommunityRepository.findByCommunityName("start").stream()
+        List<User> users = roleStatusUserCommunityRepository.findByCommunityName("start").stream()
                 .map(RoleStatusUserCommunity::getUser).collect(Collectors.toList());
 
-        List<UserEntity> allUsers = userRepository.findAll();
+        List<User> allUsers = userRepository.findAll();
 
         boolean raper = allUsers.removeAll(users);
 
         if (raper & allUsers.size() != 0) {
-            for (UserEntity user : allUsers) {
+            for (User user : allUsers) {
                 RoleStatusUserCommunity roleStatusUserCommunity = RoleStatusUserCommunity.builder()
                         .role(user.getRole())
                         .status(statusRepository.findByName(StatusEnum.NEW_MEMBER))
@@ -83,14 +83,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                                 communityRepository.findByName("start").getId()))
                         .build();
                 roleStatusUserCommunityRepository.save(roleStatusUserCommunity);
-                UserEntity savedUser = userRepository.save(user);
+                User savedUser = userRepository.save(user);
                 log.info(allUsers.size() + " users added to \"start\" community");
             }
         }
     }
 
     @Override
-    public UserEntity findById(UUID id) {
+    public User findById(UUID id) {
         return userRepository.findById(id).orElseThrow(() -> {
             log.error(USER_NOT_FOUND);
             return new ConflictException(USER_NOT_FOUND);
@@ -112,7 +112,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public UserEntityOutput findUserFromContext() {
 
         UUID id = SecurityContextUtils.getUserFromContext().getId();
-        UserEntity user = findById(id);
+        User user = findById(id);
 
         return conversionService.convert(user, UserEntityOutput.class);
 
@@ -120,7 +120,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public List<UserEntityOutput> findByComplexQuery(UserSearchInput input) {
-        List<UserEntity> users = userRepositorySummary.search(input);
+        List<User> users = userRepositorySummary.search(input);
         return users.stream()
                 .map(user -> conversionService.convert(user, UserEntityOutput.class))
                 .collect(Collectors.toList());
@@ -144,25 +144,25 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Transactional
     public UserEntityOutput updateUser(UserUpdateInput userUpdateInput, UUID id) {
 
-        UserEntity userEntity;
+        User userEntity;
         if (id == null) {
             userEntity = SecurityContextUtils.getUserFromContext();
         } else {
             userEntity = findById(id);
         }
 
-        UserEntity userEntityForUpdate = conversionService.convert(userUpdateInput, UserEntity.class);
-        if (userEntityForUpdate == null) {
+        User userForUpdate = conversionService.convert(userUpdateInput, User.class);
+        if (userForUpdate == null) {
             throw new BadRequestException(CONVERSION_ERROR);
         }
 
-        checkingUpdatedData(userEntity, userEntityForUpdate);
+        checkingUpdatedData(userEntity, userForUpdate);
         if (userUpdateInput.getRole() != null) {
             roleRepository.findByName(userUpdateInput.getRole())
                     .ifPresent(userEntity::setRole);
         }
 
-        UserEntity user = userRepository.save(userEntity);
+        User user = userRepository.save(userEntity);
         log.info(USER_UPDATED);
         return conversionService.convert(user, UserEntityOutput.class);
 
@@ -172,9 +172,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Transactional
     public UserEntityOutput blockedUser(UUID id) {
 
-        UserEntity userEntity = findById(id);
-        userEntity.setBlocked(LocalDateTime.now());
-        UserEntity savedUser = userRepository.save(userEntity);
+        User user = findById(id);
+        user.setBlocked(LocalDateTime.now());
+        User savedUser = userRepository.save(user);
         log.info(USER_BLOCKED);
         return conversionService.convert(savedUser, UserEntityOutput.class);
 
@@ -184,9 +184,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Transactional
     public UserEntityOutput unblockedUser(UUID id) {
 
-        UserEntity userEntity = findById(id);
-        userEntity.setBlocked(null);
-        UserEntity savedUser = userRepository.save(userEntity);
+        User user = findById(id);
+        user.setBlocked(null);
+        User savedUser = userRepository.save(user);
         log.info(USER_UNBLOCKED);
         return conversionService.convert(savedUser, UserEntityOutput.class);
 
@@ -196,8 +196,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Transactional
     public UserEntityOutput deletedUser(UUID id) {
 
-        UserEntity user = findById(id);
-        Collection<UserEntity> forDelete = new HashSet<>();
+        User user = findById(id);
+        Collection<User> forDelete = new HashSet<>();
         forDelete.add(user);
 
         if (user != null) {
@@ -217,15 +217,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public List<UserEntityOutput> search(String surname, String name, int page, int size) {
 
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("id").ascending());
-        List<UserEntity> userEntityList;
+        List<User> userList;
 
         if (StringUtils.hasLength(surname)) {
-            userEntityList = userRepository.findByNameContainingIgnoreCase(name, pageRequest);
+            userList = userRepository.findByNameContainingIgnoreCase(name, pageRequest);
         } else {
-            userEntityList = userRepository.findByNameContainingIgnoreCaseAndSurnameContainingIgnoreCase(name, surname, pageRequest);
+            userList = userRepository.findByNameContainingIgnoreCaseAndSurnameContainingIgnoreCase(name, surname, pageRequest);
         }
 
-        return userEntityList.stream()
+        return userList.stream()
                 .map(userEntity -> conversionService.convert(userEntity, UserEntityOutput.class))
                 .collect(Collectors.toList());
 
@@ -235,11 +235,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Transactional
     public UserEntityOutput assignRole(RoleEnum roleEnum) {
 
-        UserEntity user = SecurityContextUtils.getUserFromContext();
-        Optional<UserEntity> persistedUserOptional = userRepository.findById(user.getId());
+        User user = SecurityContextUtils.getUserFromContext();
+        Optional<User> persistedUserOptional = userRepository.findById(user.getId());
 
         if (persistedUserOptional.isPresent()) {
-            UserEntity persistedUser = persistedUserOptional.get();
+            User persistedUser = persistedUserOptional.get();
 
             roleRepository.findByName(roleEnum).ifPresent(user::setRole);
             userRepository.save(user);
@@ -272,7 +272,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public UserEntity findUserForAuth(AuthRequest request) {
+    public User findUserForAuth(AuthRequest request) {
 
         String email = request.getEmail();
 
@@ -286,16 +286,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     @Transactional
-    public UserEntity addFavorites(Long favoritesContentId) {
+    public User addFavorites(Long favoritesContentId) {
 
         Content content = contentService.findByIdOriginal(favoritesContentId);
-        UserEntity userFromContext = SecurityContextUtils.getUserFromContext();
-        Optional<UserEntity> currentUser = userRepository.findById(userFromContext.getId());
+        User userFromContext = SecurityContextUtils.getUserFromContext();
+        Optional<User> currentUser = userRepository.findById(userFromContext.getId());
 
         if (currentUser.isPresent()) {
 
-            UserEntity userEntity = currentUser.get();
-            List<ContentUser> contentUsers = userEntity.getContentUsers();
+            User user = currentUser.get();
+            List<ContentUser> contentUsers = user.getContentUsers();
             List<Content> favoritesContents = contentUsers != null ? contentUsers.stream().map(ContentUser::getContent).collect(Collectors.toList()) : new ArrayList<>();
             boolean alreadyFavorites = favoritesContents.stream().anyMatch(c -> c.getId().equals(favoritesContentId));
 
@@ -305,9 +305,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
                 contentUserRepository.save(ContentUser.builder()
                         .content(content)
-                        .user(userEntity)
+                        .user(user)
                         .createdOn(LocalDateTime.now())
-                        .id(new ContentUserId(content.getId(), userEntity.getId()))
+                        .id(new ContentUserId(content.getId(), user.getId()))
                         .build());
                 return userRepository.findById(userFromContext.getId()).get();
 
@@ -321,19 +321,19 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     @Transactional
-    public UserEntity deleteFavorites(Long favoritesContentId) {
+    public User deleteFavorites(Long favoritesContentId) {
 
         Content content = contentService.findByIdOriginal(favoritesContentId);
 
         if (content != null) {
 
-            UserEntity userFromContext = SecurityContextUtils.getUserFromContext();
-            Optional<UserEntity> currentUser = userRepository.findById(userFromContext.getId());
+            User userFromContext = SecurityContextUtils.getUserFromContext();
+            Optional<User> currentUser = userRepository.findById(userFromContext.getId());
 
             if (currentUser.isPresent()) {
 
-                UserEntity userEntity = currentUser.get();
-                List<ContentUser> contentUsers = userEntity.getContentUsers();
+                User user = currentUser.get();
+                List<ContentUser> contentUsers = user.getContentUsers();
 
                 Optional<ContentUser> first = contentUsers.stream().filter(c -> c.getContent().getId().equals(favoritesContentId)).findFirst();
 
@@ -344,7 +344,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                     content.getContentUsers().remove(contentUser);
                     contentUser.setContent(null);
                     contentUser.setUser(null);
-                    return userRepository.save(userEntity);
+                    return userRepository.save(user);
 
                 } else {
                     throw new BadRequestException("Content with id: " + favoritesContentId + " is not favorite");
@@ -364,9 +364,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public void deleteUsers() {
 
         LocalDateTime blockedDate = LocalDateTime.now().minusMonths(2);
-        List<UserEntity> blockedUsers = userRepository.findByBlockedLessThanEqual(blockedDate);
+        List<User> blockedUsers = userRepository.findByBlockedLessThanEqual(blockedDate);
 
-        for (UserEntity user : blockedUsers) {
+        for (User user : blockedUsers) {
             deleteRoleStatusUserCommunities(user);
         }
         userRepository.deleteAll(blockedUsers);
@@ -385,108 +385,108 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         roleStatusUserCommunityRepository.saveAll(users);
     }
 
-    private void checkingPhoneForUniqueness(UserEntity userEntity, String phone) {
+    private void checkingPhoneForUniqueness(User user, String phone) {
 
         if (userRepository.findByPhone(phone).orElse(null) != null) { //todo add exception handling if a lot users with same number
             throw new BadRequestException(USER_WITH_PHONE_ALREADY_EXISTS);
         } else {
-            userEntity.setPhone(phone);
+            user.setPhone(phone);
         }
 
     }
 
-    private void checkingUpdatedData(UserEntity userEntity, UserEntity userEntityForUpdate) {
+    private void checkingUpdatedData(User user, User userForUpdate) {
 
-        if (userEntityForUpdate.getSurname() != null && !userEntityForUpdate.getSurname().equals(userEntity.getSurname())) {
-            userEntity.setSurname(userEntityForUpdate.getSurname());
+        if (userForUpdate.getSurname() != null && !userForUpdate.getSurname().equals(user.getSurname())) {
+            user.setSurname(userForUpdate.getSurname());
         }
-        if (userEntityForUpdate.getName() != null && !userEntityForUpdate.getName().equals(userEntity.getName())) {
-            userEntity.setName(userEntityForUpdate.getName());
+        if (userForUpdate.getName() != null && !userForUpdate.getName().equals(user.getName())) {
+            user.setName(userForUpdate.getName());
         }
-        if (userEntityForUpdate.getPhone() != null && !userEntityForUpdate.getPhone().equals(userEntity.getPhone())) {
-            checkingPhoneForUniqueness(userEntity, userEntityForUpdate.getPhone());
+        if (userForUpdate.getPhone() != null && !userForUpdate.getPhone().equals(user.getPhone())) {
+            checkingPhoneForUniqueness(user, userForUpdate.getPhone());
         }
-        if (userEntityForUpdate.getSkype() != null && !userEntityForUpdate.getSkype().equals(userEntity.getSkype())) {
-            userEntity.setSkype(userEntityForUpdate.getSkype());
+        if (userForUpdate.getSkype() != null && !userForUpdate.getSkype().equals(user.getSkype())) {
+            user.setSkype(userForUpdate.getSkype());
         }
-        if (userEntityForUpdate.getBirthDate() != null && !userEntityForUpdate.getBirthDate().equals(userEntity.getBirthDate())) {
-            userEntity.setBirthDate(userEntityForUpdate.getBirthDate());
+        if (userForUpdate.getBirthDate() != null && !userForUpdate.getBirthDate().equals(user.getBirthDate())) {
+            user.setBirthDate(userForUpdate.getBirthDate());
         }
-        if (userEntityForUpdate.getEmail() != null & !userEntityForUpdate.getEmail().equals(userEntity.getEmail())) {
-            checkingMailForUniqueness(userEntity, userEntityForUpdate.getEmail());
+        if (userForUpdate.getEmail() != null & !userForUpdate.getEmail().equals(user.getEmail())) {
+            checkingMailForUniqueness(user, userForUpdate.getEmail());
         }
-        if (userEntityForUpdate.getGender() != null && !userEntityForUpdate.getGender().equals(userEntity.getGender())) {
-            userEntity.setGender(userEntityForUpdate.getGender());
+        if (userForUpdate.getGender() != null && !userForUpdate.getGender().equals(user.getGender())) {
+            user.setGender(userForUpdate.getGender());
         }
-        if (userEntityForUpdate.getDescription() != null && !userEntityForUpdate.getDescription().equals(userEntity.getDescription())) {
-            userEntity.setDescription(userEntityForUpdate.getDescription());
+        if (userForUpdate.getDescription() != null && !userForUpdate.getDescription().equals(user.getDescription())) {
+            user.setDescription(userForUpdate.getDescription());
         }
 
-        if (userEntityForUpdate.getVk() != null && !userEntityForUpdate.getVk().equals(userEntity.getVk())) {
-            userEntity.setVk(userEntityForUpdate.getVk());
+        if (userForUpdate.getVk() != null && !userForUpdate.getVk().equals(user.getVk())) {
+            user.setVk(userForUpdate.getVk());
         }
-        if (userEntityForUpdate.getFaceBook() != null && !userEntityForUpdate.getFaceBook().equals(userEntity.getFaceBook())) {
-            userEntity.setFaceBook(userEntityForUpdate.getFaceBook());
+        if (userForUpdate.getFaceBook() != null && !userForUpdate.getFaceBook().equals(user.getFaceBook())) {
+            user.setFaceBook(userForUpdate.getFaceBook());
         }
-        if (userEntityForUpdate.getSkype() != null && !userEntityForUpdate.getSkype().equals(userEntity.getSkype())) {
-            userEntity.setSkype(userEntityForUpdate.getSkype());
+        if (userForUpdate.getSkype() != null && !userForUpdate.getSkype().equals(user.getSkype())) {
+            user.setSkype(userForUpdate.getSkype());
         }
-        if (userEntityForUpdate.getTelegram() != null && !userEntityForUpdate.getTelegram().equals(userEntity.getTelegram())) {
-            userEntity.setTelegram(userEntityForUpdate.getTelegram());
+        if (userForUpdate.getTelegram() != null && !userForUpdate.getTelegram().equals(user.getTelegram())) {
+            user.setTelegram(userForUpdate.getTelegram());
         }
-        if (userEntityForUpdate.getInstagram() != null && !userEntityForUpdate.getInstagram().equals(userEntity.getInstagram())) {
-            userEntity.setInstagram(userEntityForUpdate.getInstagram());
+        if (userForUpdate.getInstagram() != null && !userForUpdate.getInstagram().equals(user.getInstagram())) {
+            user.setInstagram(userForUpdate.getInstagram());
         }
-        if (userEntityForUpdate.getLinkedIn() != null && !userEntityForUpdate.getLinkedIn().equals(userEntity.getLinkedIn())) {
-            userEntity.setLinkedIn(userEntityForUpdate.getLinkedIn());
+        if (userForUpdate.getLinkedIn() != null && !userForUpdate.getLinkedIn().equals(user.getLinkedIn())) {
+            user.setLinkedIn(userForUpdate.getLinkedIn());
         }
 
     }
 
     private UserEntityOutput create(UserCreateInput userCreateInput) {
 
-        UserEntity userEntity = conversionService.convert(userCreateInput, UserEntity.class);
+        User user = conversionService.convert(userCreateInput, User.class);
 
-        if (userEntity == null) {
+        if (user == null) {
             throw new ConflictException("Error conversion user. Class UserServiceImpl, method createUser");
         }
 
-        checkingMailForUniqueness(userEntity, userCreateInput.getEmail());
+        checkingMailForUniqueness(user, userCreateInput.getEmail());
         String password = createPassword();
-        messageSender.send("Your password", userEntity.getEmail(), "Your password: " + password);
-        userEntity.setPassword(passwordEncoder.encode(password));
+        messageSender.send("Your password", user.getEmail(), "Your password: " + password);
+        user.setPassword(passwordEncoder.encode(password));
 
-        roleRepository.findByName(userCreateInput.getRole()).ifPresent(userEntity::setRole);
-        Role role = userEntity.getRole();
+        roleRepository.findByName(userCreateInput.getRole()).ifPresent(user::setRole);
+        Role role = user.getRole();
 
-        userRepository.save(userEntity);
+        userRepository.save(user);
 
         RoleStatusUserCommunity roleStatusUserCommunity = RoleStatusUserCommunity.builder()
                 .role(role)
                 .status(statusRepository.findByName(StatusEnum.NEW_MEMBER))
-                .user(userEntity)
+                .user(user)
                 .community(communityRepository.findByName("start"))
                 .Id(new RoleStatusUserCommunityId(
                         role.getId(),
                         statusRepository.findByName(StatusEnum.NEW_MEMBER).getId(),
-                        userEntity.getId(),
+                        user.getId(),
                         communityRepository.findByName("start").getId()))
                 .build();
         roleStatusUserCommunityRepository.save(roleStatusUserCommunity);
 
-        userEntity.setRegistrationDate(LocalDateTime.now());
-        UserEntity savedUser = userRepository.save(userEntity);
+        user.setRegistrationDate(LocalDateTime.now());
+        User savedUser = userRepository.save(user);
         log.info(USER_SAVED);
         return conversionService.convert(savedUser, UserEntityOutput.class);
 
     }
 
-    private void checkingMailForUniqueness(UserEntity userEntity, String email) {
+    private void checkingMailForUniqueness(User user, String email) {
 
         if (userRepository.findByEmail(email).orElse(null) != null) {
             throw new BadRequestException(USER_WITH_EMAIL_ALREADY_EXISTS);
         } else {
-            userEntity.setEmail(email);
+            user.setEmail(email);
         }
     }
 
@@ -532,7 +532,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return roleStatusUserCommunities;
     }
 
-    private void deleteRoleStatusUserCommunities(UserEntity user) {
+    private void deleteRoleStatusUserCommunities(User user) {
         List<RoleStatusUserCommunity> forDelete = roleStatusUserCommunityRepository.findByUserName(user.getName());
         roleStatusUserCommunityRepository.deleteInBatch(forDelete);
     }

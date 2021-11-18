@@ -1,8 +1,6 @@
 package com.irlix.irlixbook.dao.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -10,7 +8,8 @@ import java.io.Serializable;
 import java.util.UUID;
 
 @Embeddable
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class ContentUserId implements Serializable {
@@ -20,5 +19,4 @@ public class ContentUserId implements Serializable {
 
     @Column(name = "user_id")
     private UUID userId;
-
 }

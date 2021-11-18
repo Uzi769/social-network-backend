@@ -17,9 +17,14 @@ public class CommunityPersistRequest {
     private String name;
 
     private String shortDescription;
+
     private String description;
+
     private String registrationLink;
+
     private String admin;
+
     private List<UUID> usersId;
+
     private List<Long> contentsId;
 }

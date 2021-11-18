@@ -64,7 +64,7 @@ public class CommunityServiceImpl implements CommunityService{
 
         //todo add sticker
 
-        UserEntity userFromContext = SecurityContextUtils.getUserFromContext();
+        User userFromContext = SecurityContextUtils.getUserFromContext();
         community.setCreator(userFromContext);
 
         Community savedCommunity = communityRepository.save(community);

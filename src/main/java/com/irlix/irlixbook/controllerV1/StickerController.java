@@ -1,58 +1,45 @@
-package com.irlix.irlixbook.controller;
+package com.irlix.irlixbook.controllerV1;
 
 import com.irlix.irlixbook.config.security.annotation.RoleAndPermissionCheck;
 import com.irlix.irlixbook.dao.entity.enams.RoleEnum;
 import com.irlix.irlixbook.dao.model.sticker.input.StickerUpdateRequest;
 import com.irlix.irlixbook.dao.model.sticker.output.StickerResponse;
 import com.irlix.irlixbook.service.sticker.StickerService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/sticker")
+@RequiredArgsConstructor
 public class StickerController {
 
-    @Autowired
-    private StickerService stickerService;
+    private final StickerService stickerService;
 
     @GetMapping("/all")
     @RoleAndPermissionCheck(RoleEnum.USER)
-    public ResponseEntity<List<StickerResponse>> findAll() {
-
-        List<StickerResponse> all = stickerService.findAll();
-        return new ResponseEntity<>(all, HttpStatus.OK);
-
+    public List<StickerResponse> findAll() {
+        return stickerService.findAll();
     }
 
     @GetMapping("/{name}")
     @RoleAndPermissionCheck(RoleEnum.USER)
-    public ResponseEntity<StickerResponse> findByName(@PathVariable String name) {
-
-        StickerResponse byName = stickerService.findByName(name);
-        return new ResponseEntity<>(byName, HttpStatus.OK);
-
+    public StickerResponse findByName(@PathVariable String name) {
+        return stickerService.findByName(name);
     }
 
     @PostMapping
     @RoleAndPermissionCheck(RoleEnum.USER)
-    public ResponseEntity<StickerResponse> save(@RequestParam String name) {
-
-        StickerResponse save = stickerService.save(name);
-        return new ResponseEntity<>(save, HttpStatus.OK);
-
+    public StickerResponse save(@RequestParam String name) {
+        return stickerService.save(name);
     }
 
     @PutMapping
     @RoleAndPermissionCheck(RoleEnum.USER)
-    public ResponseEntity<StickerResponse> update(@RequestBody StickerUpdateRequest request) {
-
-        StickerResponse update = stickerService.update(request);
-        return new ResponseEntity<>(update, HttpStatus.OK);
-
+    public StickerResponse update(@RequestBody StickerUpdateRequest request) {
+        return stickerService.update(request);
     }
 
     @DeleteMapping("/{id}")

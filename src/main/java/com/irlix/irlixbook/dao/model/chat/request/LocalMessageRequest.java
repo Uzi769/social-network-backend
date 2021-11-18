@@ -13,8 +13,10 @@ import java.util.UUID;
 public class LocalMessageRequest {
 
     private Long localId;
-    private UUID userId;
-    private LocalDateTime timeStamp;
-    private String content;
 
+    private UUID userId;
+
+    private LocalDateTime timeStamp;
+
+    private String content;
 }

@@ -1,4 +1,4 @@
-package com.irlix.irlixbook.controller;
+package com.irlix.irlixbook.controllerV1;
 
 import com.irlix.irlixbook.config.security.annotation.RoleAndPermissionCheck;
 import com.irlix.irlixbook.dao.entity.enams.RoleEnum;
@@ -25,7 +25,7 @@ public class UserController {
 
     @GetMapping(value = "/{id}")
     @RoleAndPermissionCheck(RoleEnum.USER)
-    public UserEntityOutput getUserEntity(@PathVariable("id") UUID id) {
+    public UserEntityOutput getUser(@PathVariable("id") UUID id) {
         return userService.findUserOutputById(id);
     }
 
@@ -38,10 +38,7 @@ public class UserController {
     @GetMapping("/complex/search")
     @RoleAndPermissionCheck(RoleEnum.USER)
     public List<UserEntityOutput> findComplex(UserSearchInput searchInput) {
-
-        System.out.println(searchInput);
         return userService.findByComplexQuery(searchInput);
-
     }
 
     @PostMapping(value = "/create")
@@ -121,5 +118,4 @@ public class UserController {
     public void updatePassword(@RequestParam String email) {
         passwordService.sendGeneratedCode(email);
     }
-
 }

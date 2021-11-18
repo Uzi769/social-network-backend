@@ -6,7 +6,8 @@ import lombok.*;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,6 +19,6 @@ public class PageableInput {
 
     @PositiveOrZero
     private int page;
-    private boolean sort;
 
+    private boolean sort;
 }

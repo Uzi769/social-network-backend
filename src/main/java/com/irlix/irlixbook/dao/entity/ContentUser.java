@@ -1,14 +1,12 @@
 package com.irlix.irlixbook.dao.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -25,7 +23,7 @@ public class ContentUser {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @MapsId("userId")
-    private UserEntity user;
+    private User user;
 
     @Column(name = "created_on")
     @Builder.Default

@@ -25,7 +25,7 @@ public class Chat {
     private String title;
 
     @OneToMany(mappedBy = "id", cascade = CascadeType.ALL)
-    private List<UserEntity> users;
+    private List<User> users;
 
     @OneToMany(mappedBy = "id", cascade = CascadeType.ALL)
     private List<ChatMessage> chatMessages;

@@ -23,7 +23,7 @@ import java.util.UUID;
 @Entity
 @Builder
 @Table(name = "user_entity")
-public class UserEntity implements UserDetails {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(generator = "UUID")

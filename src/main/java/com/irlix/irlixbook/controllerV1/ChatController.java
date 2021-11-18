@@ -1,4 +1,4 @@
-package com.irlix.irlixbook.controller;
+package com.irlix.irlixbook.controllerV1;
 
 import com.irlix.irlixbook.config.security.annotation.RoleAndPermissionCheck;
 import com.irlix.irlixbook.dao.entity.enams.RoleEnum;
@@ -9,8 +9,6 @@ import com.irlix.irlixbook.dao.model.chat.response.ChatOutput;
 import com.irlix.irlixbook.dao.model.chat.response.MessageOutput;
 import com.irlix.irlixbook.service.chat.MessageService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Nullable;
@@ -41,23 +39,20 @@ public class ChatController {
 
     @DeleteMapping("/{id}")
     @RoleAndPermissionCheck(RoleEnum.ADMIN)
-    public ResponseEntity<?> deleteChat(@PathVariable("id") UUID id) {
-
+    public void deleteChat(@PathVariable("id") UUID id) {
         messageService.deleteChat(id);
-        return new ResponseEntity<>(HttpStatus.OK);
-
     }
 
     // ================================================================================ MESSAGES METHODS
 
     @GetMapping("/messages/{chatId}")
     @RoleAndPermissionCheck(RoleEnum.USER)
-    public ResponseEntity getLastMessages(@PathVariable("chatId") UUID chatId,
+    public List<MessageOutput> getLastMessages(@PathVariable("chatId") UUID chatId,
                                             @RequestParam(required = false, defaultValue = "0") int page,
                                             @RequestParam(required = false, defaultValue = "10") int size)
     {
         List<MessageOutput> list = messageService.getLastMessages(chatId, page, size);
-        return new ResponseEntity(list, HttpStatus.OK);
+        return list;
     }
 
     @PostMapping("/messages/{chatId}")

@@ -2,14 +2,16 @@ package com.irlix.irlixbook.dao.mapper.user;
 
 
 import com.irlix.irlixbook.dao.entity.User;
-import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
+import com.irlix.irlixbook.dao.model.user.UserStatusDTO;
+import com.irlix.irlixbook.dao.model.user.output.UserEntityOutputWithStatus;
 import org.springframework.core.convert.converter.Converter;
 
-public class UserEntityToUserEntityOutput implements Converter<User, UserEntityOutput> {
+public class UserStatusDtoToUserEntityOutputWithStatus implements Converter<UserStatusDTO, UserEntityOutputWithStatus> {
 
     @Override
-    public UserEntityOutput convert(User user) {
-        return UserEntityOutput.builder()
+    public UserEntityOutputWithStatus convert(UserStatusDTO userStatusDTO) {
+        User user = userStatusDTO.getUser();
+        return UserEntityOutputWithStatus.builder()
                 .id(user.getId())
                 .surname(user.getSurname())
                 .name(user.getName())
@@ -27,8 +29,9 @@ public class UserEntityToUserEntityOutput implements Converter<User, UserEntityO
                 .linkedIn(user.getLinkedIn())
                 .avatar(user.getAvatar())
                 .role(user.getRole().getName() != null ? user.getRole().getName().name() : null)
-                .blocked(user.getBlocked() != null)
+                .blocked(Boolean.TRUE.equals(user.getBlocked()))
                 .registrationDate(user.getRegistrationDate())
+                .status(userStatusDTO.getStatusEnum())
                 .build();
     }
 

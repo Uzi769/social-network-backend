@@ -5,7 +5,8 @@ import lombok.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,5 +22,4 @@ public class UserPasswordWithCodeInput {
 
     @NotEmpty
     private String code;
-
 }

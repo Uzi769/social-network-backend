@@ -34,7 +34,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addConverter(new PeriodConvertor());
         registry.addConverter(new CommunityPersistRequestToCommunity());
         registry.addConverter(new CommunityToCommunityResponse());
-        registry.addConverter(new UserStatusDTOToUserEntityOutputWithStatus());
+        registry.addConverter(new UserStatusDtoToUserEntityOutputWithStatus());
         registry.addConverter(new ContentToHelperResponse());
         registry.addConverter(new HelperRequestToContent());
         registry.addConverter(new CommentRequestToComment());
@@ -53,7 +53,5 @@ public class WebConfig implements WebMvcConfigurer {
                 .exposedHeaders("*")
                 .allowedMethods("*")
                 .allowedHeaders("*");
-
     }
-
 }

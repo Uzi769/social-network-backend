@@ -1,6 +1,6 @@
 package com.irlix.irlixbook.dao.entity;
 
-import com.irlix.irlixbook.dao.entity.enams.ContentType;
+import com.irlix.irlixbook.dao.entity.enams.ContentTypeEnum;
 import com.irlix.irlixbook.dao.entity.enams.HelperEnum;
 import lombok.*;
 
@@ -26,7 +26,7 @@ public class Content {
 
     @Column(name = "type", nullable = false, length = 1500)
     @Enumerated(EnumType.STRING)
-    private ContentType type;
+    private ContentTypeEnum type;
 
     @Column(name = "short_description", length = 1500)
     private String shortDescription;
@@ -48,7 +48,7 @@ public class Content {
 
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "user_id")
-    private UserEntity creator;
+    private User creator;
 
     @Column(name = "deeplink", length = 1500)
     private String deeplink;

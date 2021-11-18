@@ -36,5 +36,4 @@ public class UserCreateInput {
     private String phone;
 
     private RoleEnum role;
-
 }

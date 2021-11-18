@@ -12,11 +12,18 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class CommentResponse {
+
     private Long id;
+
     private String text;
+
     private LocalDateTime dateCreated;
+
     private String author;
+
     private Long contentId;
+
     private Long parentCommentId;
+
     private List<Long> repliesId;
 }

@@ -1,7 +1,7 @@
 package com.irlix.irlixbook.service.messaging;
 
 import com.google.firebase.messaging.*;
-import com.irlix.irlixbook.dao.entity.enams.ContentType;
+import com.irlix.irlixbook.dao.entity.enams.ContentTypeEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -51,7 +51,7 @@ public class FirebaseMessageSenderImpl implements MessageSender {
     }
 
     @Override
-    public void send(String title, String receiver, String text, Long id, ContentType type) {
+    public void send(String title, String receiver, String text, Long id, ContentTypeEnum type) {
 
         Notification notification = Notification
                 .builder()
