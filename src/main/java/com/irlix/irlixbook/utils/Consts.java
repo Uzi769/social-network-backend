@@ -25,6 +25,8 @@ public class Consts {
     public static final String PICTURE_UPLOADED = "Picture was uploaded";
     public static final String FILE_SIZE_EXCEEDED = "File size exceeded";
     public static final String CONTENT_NOT_FOUND = "Content not found";
+    public static final String STICKER_NAME_IS_NULL = "Sticker name is null";
+    public static final String STICKER_NAME_IS_NULL_OR_EMPTY = "Sticker name is null or empty";
 
 
 }

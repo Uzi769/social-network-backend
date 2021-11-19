@@ -9,12 +9,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.irlix.irlixbook.utils.Consts.STICKER_NAME_IS_NULL;
+import static com.irlix.irlixbook.utils.Consts.STICKER_NAME_IS_NULL_OR_EMPTY;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -25,10 +29,11 @@ public class StickerServiceImpl implements StickerService {
     private final ConversionService conversionService;
 
     @Override
+    @Transactional
     public Sticker findOrCreate(String name) {
 
         if (!StringUtils.hasLength(name)) {
-            throw new IllegalArgumentException("Sticker name is nul or empty");
+            throw new IllegalArgumentException(STICKER_NAME_IS_NULL_OR_EMPTY);
         }
         return stickerRepository.findByName(name).orElseGet(() -> stickerRepository.save(
                 Sticker.builder()
@@ -39,10 +44,11 @@ public class StickerServiceImpl implements StickerService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public StickerResponse findByName(String name) {
 
         if (!StringUtils.hasLength(name)) {
-            throw new IllegalArgumentException("Sticker name is nul or empty");
+            throw new IllegalArgumentException(STICKER_NAME_IS_NULL_OR_EMPTY);
         }
 
         Optional<Sticker> byName = stickerRepository.findByName(name);
@@ -51,10 +57,11 @@ public class StickerServiceImpl implements StickerService {
     }
 
     @Override
+    @Transactional
     public StickerResponse save(String stickerName) {
 
         if (Objects.isNull(stickerName)) {
-            throw new IllegalArgumentException("Sticker name is null");
+            throw new IllegalArgumentException(STICKER_NAME_IS_NULL);
         }
 
         Sticker save = stickerRepository.save(Sticker.builder()
@@ -66,6 +73,7 @@ public class StickerServiceImpl implements StickerService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<StickerResponse> findAll() {
         return stickerRepository.findAll()
                 .stream()
@@ -74,11 +82,13 @@ public class StickerServiceImpl implements StickerService {
     }
 
     @Override
+    @Transactional
     public void deleteById(Long id) {
         stickerRepository.deleteById(id);
     }
 
     @Override
+    @Transactional
     public StickerResponse update(StickerUpdateRequest request) {
 
         if (request == null || request.getId() == null) {
@@ -95,7 +105,5 @@ public class StickerServiceImpl implements StickerService {
             Sticker save = stickerRepository.save(sticker);
             return conversionService.convert(save, StickerResponse.class);
         }
-
     }
-
 }
