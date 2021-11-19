@@ -153,9 +153,11 @@ public class CommunityServiceImpl implements CommunityService{
     @Override
     @Transactional
     public List<ContentResponse> findCommunityContents(UUID id, int page, int size) {
-        if (communityRepository.findById(id).get() == null) {
+        Community community = communityRepository.findById(id)
+                .orElseThrow(() -> new BadRequestException("There are no community with given name."));
+
+        if (community == null) {
             log.error("There are no community with given name.");
-            throw new BadRequestException("There are no community with given name.");
         }
 
         List<ContentCommunity> userContentCommunities = getContentCommunities(id, page, size);
