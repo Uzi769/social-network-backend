@@ -4,18 +4,14 @@ import com.irlix.irlixbook.config.security.utils.SecurityContextUtils;
 import com.irlix.irlixbook.dao.entity.*;
 import com.irlix.irlixbook.dao.entity.enams.ContentTypeEnum;
 import com.irlix.irlixbook.dao.entity.enams.PeriodTypeEnum;
+import com.irlix.irlixbook.dao.helper.*;
 import com.irlix.irlixbook.dao.model.content.request.ContentPersistRequest;
 import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 import com.irlix.irlixbook.exception.BadRequestException;
 import com.irlix.irlixbook.exception.ConflictException;
 import com.irlix.irlixbook.exception.NotFoundException;
-import com.irlix.irlixbook.repository.ContentCommunityRepository;
 import com.irlix.irlixbook.repository.ContentRepository;
-import com.irlix.irlixbook.repository.ContentUserRepository;
-import com.irlix.irlixbook.repository.UserAppCodeRepository;
 import com.irlix.irlixbook.service.messaging.MessageSender;
-import com.irlix.irlixbook.service.picture.PictureService;
-import com.irlix.irlixbook.service.sticker.StickerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,11 +42,11 @@ public class ContentServiceImpl implements ContentService {
 
     private final ContentRepository contentRepository;
     private final ConversionService conversionService;
-    private final StickerService stickerService;
-    private final PictureService pictureService;
-    private final ContentUserRepository contentUserRepository;
-    private final UserAppCodeRepository userAppCodeRepository;
-    private final ContentCommunityRepository contentCommunityRepository;
+    private final StickerHelper stickerHelper;
+    private final PictureHelper pictureHelper;
+    private final ContentUserHelper contentUserHelper;
+    private final UserAppCodeHelper userAppCodeHelper;
+    private final ContentCommunityHelper contentCommunityHelper;
 
     @Autowired
     @Qualifier("firebaseSender")
@@ -83,7 +79,7 @@ public class ContentServiceImpl implements ContentService {
         }
 
         if (StringUtils.hasLength(contentPersistRequest.getStickerName())) {
-            Sticker sticker = stickerService.findOrCreate(contentPersistRequest.getStickerName());
+            Sticker sticker = stickerHelper.findOrCreate(contentPersistRequest.getStickerName());
             content.setSticker(sticker);
         }
 
@@ -95,7 +91,7 @@ public class ContentServiceImpl implements ContentService {
         contentRepository.save(savedContent);
 
         if (contentPersistRequest.getPicturesId() != null && !contentPersistRequest.getPicturesId().isEmpty()) {
-            content.setPictures(pictureService.addContentToPicture(contentPersistRequest.getPicturesId(), savedContent));
+            content.setPictures(pictureHelper.addContentToPicture(contentPersistRequest.getPicturesId(), savedContent));
         }
 
 //        messageSender.send("New content was created",
@@ -104,7 +100,7 @@ public class ContentServiceImpl implements ContentService {
 
         if (savedContent.getType() == ContentTypeEnum.NEWS || savedContent.getType() == ContentTypeEnum.EVENT) {
 
-            List<UserAppCode> listOfCodes = userAppCodeRepository.findAll();
+            List<UserAppCode> listOfCodes = userAppCodeHelper.findAll();
 
             for (UserAppCode codes : listOfCodes) {
                 for (String code : codes.getCodes()) {
@@ -123,6 +119,7 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ContentResponse findById(Long id) {
 
         ContentResponse contentResponse = conversionService.convert(getById(id), ContentResponse.class);
@@ -132,10 +129,12 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Content findByIdOriginal(Long id) {
         return getById(id);
     }
 
+    @Transactional(readOnly = true)
     public List<ContentResponse> findByEventDateForPeriod(LocalDate start, PeriodTypeEnum periodTypeEnum) {
 
         LocalDateTime startSearch;
@@ -184,6 +183,7 @@ public class ContentServiceImpl implements ContentService {
 
     }
 
+    @Transactional(readOnly = true)
     public Collection<String> findByEventDateForMonth(LocalDate start) {
 
         LocalDateTime startSearch;
@@ -212,6 +212,7 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ContentResponse> findAll() {
         return contentRepository.findAll()
                 .stream()
@@ -220,6 +221,7 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ContentResponse> search(ContentTypeEnum contentTypeEnum, String name, int page, int size) {
 
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("dateCreated").descending());
@@ -232,6 +234,7 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
+    @Transactional
     public List<ContentResponse> findByType(ContentTypeEnum contentTypeEnum, int page, int size) {
 
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("dateCreated").descending());
@@ -278,6 +281,7 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ContentResponse> getFavorites(ContentTypeEnum contentTypeEnum, int page, int size) {
 
         User userFromContext = SecurityContextUtils.getUserFromContext();
@@ -293,12 +297,12 @@ public class ContentServiceImpl implements ContentService {
 
         if (Objects.nonNull(contentTypeEnum)) {
 
-            List<ContentUser> favorites = contentUserRepository.findByUserIdAndContent_Type(userFromContext.getId(), contentTypeEnum, pageRequest);
+            List<ContentUser> favorites = contentUserHelper.findByUserIdAndContent_Type(userFromContext.getId(), contentTypeEnum, pageRequest);
             resultContent = favorites.stream().map(ContentUser::getContent).collect(Collectors.toList());
 
         } else {
 
-            List<ContentUser> favorites = contentUserRepository.findByUserId(userFromContext.getId(), pageRequest);
+            List<ContentUser> favorites = contentUserHelper.findByUserId(userFromContext.getId(), pageRequest);
             resultContent = favorites.stream().map(ContentUser::getContent).collect(Collectors.toList());
 
         }
@@ -309,6 +313,7 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
+    @Transactional
     public ContentResponse update(Long id, @Valid ContentPersistRequest contentPersistRequest) {
 
         if (contentPersistRequest == null) {
@@ -356,13 +361,13 @@ public class ContentServiceImpl implements ContentService {
             content.setRegistrationLink(newContent.getRegistrationLink());
         }
         if (StringUtils.hasLength(newContent.getStickerName())) {
-            content.setSticker(stickerService.findOrCreate(newContent.getStickerName()));
+            content.setSticker(stickerHelper.findOrCreate(newContent.getStickerName()));
         }
         if (StringUtils.hasLength(newContent.getAuthor())) {
             content.setAuthor(newContent.getAuthor());
         }
         if (!CollectionUtils.isEmpty(newContent.getPicturesId())) {
-            List<Picture> newPictures = pictureService.addContentToPicture(newContent.getPicturesId(), content);
+            List<Picture> newPictures = pictureHelper.addContentToPicture(newContent.getPicturesId(), content);
             content.setPictures(newPictures);
         }
 
@@ -377,10 +382,11 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
+    @Transactional
     public List<ContentCommunity> addContentsToContentCommunity(List<Long> contentsIdList,
                                                        Community community) {
         List<ContentCommunity> contentCommunities = new ArrayList<>();
-        List<Long> allContentsOfCommunity = contentCommunityRepository.findByCommunityName(community.getName()).stream()
+        List<Long> allContentsOfCommunity = contentCommunityHelper.findByCommunityName(community.getName()).stream()
                 .map(r -> r.getContent().getId()).collect(Collectors.toList());
         contentsIdList.removeAll(allContentsOfCommunity);
         if (contentsIdList.size() != 0) {
@@ -395,7 +401,7 @@ public class ContentServiceImpl implements ContentService {
                                 .content(content)
                                 .id(new ContentCommunityId(community.getId(), content.getId()))
                                 .build();
-                        contentCommunityRepository.save(contentCommunity);
+                        contentCommunityHelper.save(contentCommunity);
                         contentRepository.save(content);
                         contentCommunities.add(contentCommunity);
                     });
@@ -407,8 +413,8 @@ public class ContentServiceImpl implements ContentService {
     }
 
     private void deleteContentCommunities(Content content) {
-        List<ContentCommunity> forDelete = contentCommunityRepository.findByContent(content);
-        contentCommunityRepository.deleteInBatch(forDelete);
+        List<ContentCommunity> forDelete = contentCommunityHelper.findByContent(content);
+        contentCommunityHelper.deleteInBatch(forDelete);
     }
 
 }
