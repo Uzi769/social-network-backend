@@ -10,7 +10,10 @@ import com.irlix.irlixbook.dao.model.content.response.ContentResponse;
 import com.irlix.irlixbook.exception.BadRequestException;
 import com.irlix.irlixbook.exception.ConflictException;
 import com.irlix.irlixbook.exception.NotFoundException;
+import com.irlix.irlixbook.repository.ContentCommunityRepository;
 import com.irlix.irlixbook.repository.ContentRepository;
+import com.irlix.irlixbook.repository.ContentUserRepository;
+import com.irlix.irlixbook.repository.UserAppCodeRepository;
 import com.irlix.irlixbook.service.messaging.MessageSender;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -44,9 +47,9 @@ public class ContentServiceImpl implements ContentService {
     private final ConversionService conversionService;
     private final StickerHelper stickerHelper;
     private final PictureHelper pictureHelper;
-    private final ContentUserHelper contentUserHelper;
-    private final UserAppCodeHelper userAppCodeHelper;
-    private final ContentCommunityHelper contentCommunityHelper;
+    private final ContentUserRepository contentUserRepository;
+    private final UserAppCodeRepository userAppCodeRepository;
+    private final ContentCommunityRepository contentCommunityRepository;
 
     @Autowired
     @Qualifier("firebaseSender")
@@ -100,7 +103,7 @@ public class ContentServiceImpl implements ContentService {
 
         if (savedContent.getType() == ContentTypeEnum.NEWS || savedContent.getType() == ContentTypeEnum.EVENT) {
 
-            List<UserAppCode> listOfCodes = userAppCodeHelper.findAll();
+            List<UserAppCode> listOfCodes = userAppCodeRepository.findAll();
 
             for (UserAppCode codes : listOfCodes) {
                 for (String code : codes.getCodes()) {
@@ -297,12 +300,12 @@ public class ContentServiceImpl implements ContentService {
 
         if (Objects.nonNull(contentTypeEnum)) {
 
-            List<ContentUser> favorites = contentUserHelper.findByUserIdAndContent_Type(userFromContext.getId(), contentTypeEnum, pageRequest);
+            List<ContentUser> favorites = contentUserRepository.findByUserIdAndContent_Type(userFromContext.getId(), contentTypeEnum, pageRequest);
             resultContent = favorites.stream().map(ContentUser::getContent).collect(Collectors.toList());
 
         } else {
 
-            List<ContentUser> favorites = contentUserHelper.findByUserId(userFromContext.getId(), pageRequest);
+            List<ContentUser> favorites = contentUserRepository.findByUserId(userFromContext.getId(), pageRequest);
             resultContent = favorites.stream().map(ContentUser::getContent).collect(Collectors.toList());
 
         }
@@ -386,7 +389,7 @@ public class ContentServiceImpl implements ContentService {
     public List<ContentCommunity> addContentsToContentCommunity(List<Long> contentsIdList,
                                                        Community community) {
         List<ContentCommunity> contentCommunities = new ArrayList<>();
-        List<Long> allContentsOfCommunity = contentCommunityHelper.findByCommunityName(community.getName()).stream()
+        List<Long> allContentsOfCommunity = contentCommunityRepository.findByCommunityName(community.getName()).stream()
                 .map(r -> r.getContent().getId()).collect(Collectors.toList());
         contentsIdList.removeAll(allContentsOfCommunity);
         if (contentsIdList.size() != 0) {
@@ -401,7 +404,7 @@ public class ContentServiceImpl implements ContentService {
                                 .content(content)
                                 .id(new ContentCommunityId(community.getId(), content.getId()))
                                 .build();
-                        contentCommunityHelper.save(contentCommunity);
+                        contentCommunityRepository.save(contentCommunity);
                         contentRepository.save(content);
                         contentCommunities.add(contentCommunity);
                     });
@@ -413,8 +416,8 @@ public class ContentServiceImpl implements ContentService {
     }
 
     private void deleteContentCommunities(Content content) {
-        List<ContentCommunity> forDelete = contentCommunityHelper.findByContent(content);
-        contentCommunityHelper.deleteInBatch(forDelete);
+        List<ContentCommunity> forDelete = contentCommunityRepository.findByContent(content);
+        contentCommunityRepository.deleteInBatch(forDelete);
     }
 
 }

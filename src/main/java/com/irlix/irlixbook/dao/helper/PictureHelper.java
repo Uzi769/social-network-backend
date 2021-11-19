@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -26,16 +27,17 @@ public class PictureHelper {
     public List<Picture> addContentToPicture(List<UUID> pictureIdList, Content content) {
 
         List<Picture> pictures = new ArrayList<>();
+
         pictureIdList.stream()
                 .map(id -> pictureRepository.findById(id).orElseThrow(() -> {
                     log.error(Consts.PICTURE_NOT_FOUND);
                     return new ConflictException(Consts.PICTURE_NOT_FOUND);
                 }))
-                .forEach(picture -> {
+                .map(picture -> {
                     picture.setContent(content);
-                    Picture savedPicture = pictureRepository.save(picture);
-                    pictures.add(savedPicture);
-                });
+                    return pictureRepository.save(picture);
+                })
+                .collect(Collectors.toList());
 
         return pictures;
     }
