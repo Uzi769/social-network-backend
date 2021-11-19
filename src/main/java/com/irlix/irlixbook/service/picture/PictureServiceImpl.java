@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.irlix.irlixbook.utils.Consts.FILE_IS_NULL;
 import static com.irlix.irlixbook.utils.Consts.FILE_SIZE_EXCEEDED;
 
 @Slf4j
@@ -40,11 +42,12 @@ public class PictureServiceImpl implements PictureService {
     private String uploadRoot;
 
     @Override
+    @Transactional
     public PictureOutput uploading(MultipartFile file) {
 
         if (file == null) {
-            log.error("File is null");
-            throw new IllegalArgumentException("File is null");
+            log.error(FILE_IS_NULL);
+            throw new IllegalArgumentException(FILE_IS_NULL);
         }
         if (file.getSize() > 10485760) {
             log.info(FILE_SIZE_EXCEEDED);
@@ -67,8 +70,9 @@ public class PictureServiceImpl implements PictureService {
             log.info("Save picture: {}", write);
 
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Picture saving error: {}", e.getMessage());
         }
+
 
         Picture picture = Picture.builder()
                 .id(id)
@@ -83,6 +87,7 @@ public class PictureServiceImpl implements PictureService {
     }
 
     @Override
+    @Transactional
     public void deletePicture(UUID id) {
 
         Picture picture = pictureRepository.findById(id).orElseThrow(() -> {
@@ -99,6 +104,7 @@ public class PictureServiceImpl implements PictureService {
     }
 
     @Override
+    @Transactional
     public List<Picture> addContentToPicture(List<UUID> pictureIdList, Content content) {
 
         List<Picture> pictures = new ArrayList<>();
@@ -117,6 +123,7 @@ public class PictureServiceImpl implements PictureService {
 
     }
 
+    @Transactional(readOnly = true)
     public List<PictureOutput> getList() {
         return pictureRepository.findAll()
                 .stream()
@@ -133,5 +140,4 @@ public class PictureServiceImpl implements PictureService {
         log.info("DELETE FILE RESULT: {}", delete);
 
     }
-
 }
