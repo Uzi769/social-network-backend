@@ -7,7 +7,6 @@ import com.irlix.irlixbook.dao.model.user.input.UserPasswordInput;
 import com.irlix.irlixbook.dao.model.user.output.UserEntityOutput;
 import com.irlix.irlixbook.exception.BadRequestException;
 import com.irlix.irlixbook.exception.ConflictException;
-import com.irlix.irlixbook.exception.NotFoundException;
 import com.irlix.irlixbook.repository.PasswordRecoveryRepository;
 import com.irlix.irlixbook.repository.UserRepository;
 import com.irlix.irlixbook.service.messaging.MessageSender;
@@ -74,18 +73,17 @@ public class PasswordServiceImpl implements PasswordService {
         } else {
             throw new BadRequestException("Code is not valid");
         }
-
     }
 
     @Override
     @Transactional
     public void sendGeneratedCode(String email) {
 
-        Optional<User> byEmail = userRepository.findByEmail(email);
+        User user = userRepository.findByEmail(email).orElseThrow(() -> {
+            log.error(USER_NOT_FOUND);
+            return new ConflictException(USER_NOT_FOUND);
+        });
 
-        if (byEmail.isPresent()) {
-
-            User user = byEmail.get();
             String code = this.generateCode(email);
             PasswordRecovery recoveryEntity = PasswordRecovery.builder()
                     .email(user.getEmail())
@@ -96,13 +94,10 @@ public class PasswordServiceImpl implements PasswordService {
             passwordRecoveryRepository.save(recoveryEntity);
             messageSender.send("Recovery password", email, "Your code for recovery password: " + code);
 
-        } else {
-            throw new NotFoundException("User with email: " + email + " not found");
-        }
-
     }
 
     @Scheduled(cron = "0 0 1 * * *")
+    @Transactional
     public void deleteUsers() {
 
         LocalDateTime deleteDate = LocalDateTime.now().minusDays(1);

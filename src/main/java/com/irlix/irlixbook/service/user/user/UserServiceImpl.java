@@ -133,6 +133,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserEntityOutput> findUsers() {
         return userRepository.findAll()
                 .stream()
@@ -272,6 +273,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public User findUserForAuth(AuthRequest request) {
 
         String email = request.getEmail();
@@ -309,8 +311,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                         .createdOn(LocalDateTime.now())
                         .id(new ContentUserId(content.getId(), user.getId()))
                         .build());
-                return userRepository.findById(userFromContext.getId()).get();
 
+                return userRepository.findById(userFromContext.getId())
+                        .orElseThrow(() -> new ConflictException(USER_NOT_FOUND));
             }
 
         } else {
@@ -335,7 +338,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 User user = currentUser.get();
                 List<ContentUser> contentUsers = user.getContentUsers();
 
-                Optional<ContentUser> first = contentUsers.stream().filter(c -> c.getContent().getId().equals(favoritesContentId)).findFirst();
+                Optional<ContentUser> first = contentUsers.stream()
+                        .filter(c -> c.getContent().getId().equals(favoritesContentId))
+                        .findFirst();
 
                 if (first.isPresent()) {
 
@@ -361,14 +366,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Scheduled(cron = "1 1 */1 * * *")
+    @Transactional
     public void deleteUsers() {
 
         LocalDateTime blockedDate = LocalDateTime.now().minusMonths(2);
         List<User> blockedUsers = userRepository.findByBlockedLessThanEqual(blockedDate);
 
-        for (User user : blockedUsers) {
-            deleteRoleStatusUserCommunities(user);
-        }
+        blockedUsers.forEach(user -> deleteRoleStatusUserCommunities(user));
+
         userRepository.deleteAll(blockedUsers);
         userRepository.flush();
         log.info("DELETE {} USERS how was blocked : {}", blockedUsers.size(), blockedDate);
@@ -376,6 +381,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Scheduled(cron = "1 1 */1 * * *")
+    @Transactional
     public void changeStatus() {
 
         LocalDateTime limitDate = LocalDateTime.now().minusMonths(2).plusDays(1);
@@ -496,6 +502,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    @Transactional
     public List<RoleStatusUserCommunity> addUsersToRoleStatusUserCommunity(List<UUID> usersIdList,
                                                                 Community community) {
         List<RoleStatusUserCommunity> roleStatusUserCommunities = new ArrayList<>();
