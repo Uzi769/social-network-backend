@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -42,10 +43,10 @@ public class AvatarServiceImpl implements AvatarService {
 
         User user = SecurityContextUtils.getUserFromContext();
         return user.getAvatar();
-
     }
 
     @Override
+    @Transactional(readOnly = true)
     public String getAvatarByUserID(UUID id) {
 
         Optional<User> user = userRepository.findById(id);
@@ -58,7 +59,9 @@ public class AvatarServiceImpl implements AvatarService {
 
     }
 
+
     @Override
+    @Transactional
     public String uploading(MultipartFile file) {
 
         if (file == null) {
@@ -104,10 +107,10 @@ public class AvatarServiceImpl implements AvatarService {
         userRepository.save(user);
         log.info(PHOTO_UPLOADED);
         return photoName;
-
     }
 
     @Override
+    @Transactional
     public void delete() {
 
         User user = SecurityContextUtils.getUserFromContext();
@@ -117,7 +120,6 @@ public class AvatarServiceImpl implements AvatarService {
         this.deleteFile(filepath);
         user.setAvatar(null);
         userRepository.save(user);
-
     }
 
     @Override
@@ -125,7 +127,6 @@ public class AvatarServiceImpl implements AvatarService {
 
         this.delete();
         return this.uploading(file);
-
     }
 
     private void deleteFile(String filepath) {
@@ -134,7 +135,5 @@ public class AvatarServiceImpl implements AvatarService {
         log.info("File for delete: {} {} {}", file.isFile(), file.exists(), file.getAbsolutePath());
         boolean delete = file.delete();
         log.info("DELETE FILE RESULT: {}", delete);
-
     }
-
 }
